@@ -2,9 +2,23 @@
 
 ## Automated validation
 
-Every push to `main` and every pull request runs `node scripts/validate-site.mjs`. The check verifies the document shell, Russian language and viewport metadata, Telegram WebApp SDK inclusion, duplicate IDs, in-page links, required profile controls, local profile storage hooks, and inline JavaScript syntax.
+Every push to `main` and every pull request runs:
 
-This is a source-level smoke check. It does not prove that Telegram authentication, backend APIs, AI requests, database persistence, or the visual layout work in a real browser.
+- `node scripts/validate-site.mjs` for the document shell, Russian language and viewport metadata, Telegram WebApp SDK inclusion, duplicate IDs, in-page links, profile controls, local profile handling, accessibility hooks, and inline JavaScript syntax.
+- `node --test scripts/backend-auth.test.cjs` for Telegram `initData` signature validation, tamper detection, timestamp expiry, and malformed input.
+
+These are source-level and unit checks. They do not prove that Supabase credentials, live Telegram authentication, profile persistence, or the visual layout work in a real browser.
+
+## Backend checks
+
+- Follow `BACKEND_SETUP.md` to configure Supabase and Vercel environment variables.
+- Open `/api/health`. Before configuration, the expected result is `telegramAuth: "setup_required"` and `profileService: "setup_required"`; after configuration each should report `"configured"`.
+- Open the Mini App in Telegram and confirm the page reports a verified session only after `GET /api/session` succeeds.
+- Test `GET /api/profile`, `PUT /api/profile`, and `DELETE /api/profile` only from an authenticated Telegram Mini App session.
+- Confirm `DELETE /api/profile` removes only the authenticated user's record.
+- Confirm unauthenticated requests receive HTTP 401.
+- Confirm unsupported methods receive HTTP 405.
+- Confirm profile data is scoped to the authenticated Telegram user.
 
 ## Manual browser and Telegram checks
 
@@ -20,8 +34,8 @@ This is a source-level smoke check. It does not prove that Telegram authenticati
 - Use Tab and Shift+Tab in the profile dialog and confirm keyboard focus stays inside the dialog.
 - Close the dialog and confirm keyboard focus returns to the control that opened it.
 - Corrupt or remove the `orvex_agent_profile` localStorage entry and confirm invalid saved data does not bypass first-time profile setup.
-- Confirm that profile data is currently device-local and is not synchronized to a server.
+- Confirm the current profile form still uses device-local storage until the server-sync flow and privacy requirements are completed.
 
 ## Current implementation boundary
 
-The current repository contains a single static `index.html`. Server-side Telegram `initData` verification, real account registration, shared database storage, AI provider requests, and agent execution are not implemented. Do not enter API keys or bot tokens into the browser code.
+The repository contains a static `index.html` plus Vercel Node.js API routes for backend health and Telegram-authenticated profile storage. The profile API requires a Supabase table and three server-side Vercel environment variables. The frontend profile still uses local storage and does not yet send profile data to the API. AI provider requests and agent execution are not implemented. Do not enter API keys or bot tokens into browser code.
