@@ -47,3 +47,16 @@ test("rejects missing credentials", () => {
 test("rejects malformed user payload", () => {
   assert.equal(verifyTelegramInitData(makeInitData({ user: "not-json" }), botToken, { now }).error, "invalid_user");
 });
+
+test("rejects future-dated initData", () => {
+  const futureDate = String(Math.floor(now / 1000) + 120);
+  assert.equal(verifyTelegramInitData(makeInitData({ auth_date: futureDate }), botToken, { now }).error, "expired_init_data");
+});
+
+test("rejects non-positive Telegram user IDs", () => {
+  assert.equal(verifyTelegramInitData(makeInitData({ user: JSON.stringify({ id: 0 }) }), botToken, { now }).error, "invalid_user");
+});
+
+test("rejects a signature made with a different bot token", () => {
+  assert.equal(verifyTelegramInitData(makeInitData(), "another-test-token", { now }).error, "invalid_signature");
+});
