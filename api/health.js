@@ -11,13 +11,13 @@ module.exports = function healthHandler(req, res) {
   try {
     validSupabaseUrl = new URL(process.env.SUPABASE_URL || "").protocol === "https:";
   } catch {}
-  const configured = Boolean(
-    process.env.TELEGRAM_BOT_TOKEN &&
-    validSupabaseUrl &&
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+  const telegramAuthConfigured = Boolean(process.env.TELEGRAM_BOT_TOKEN);
+  const profileServiceConfigured = Boolean(
+    telegramAuthConfigured && validSupabaseUrl && process.env.SUPABASE_SERVICE_ROLE_KEY
   );
   return res.status(200).json({
     status: "ok",
-    profileService: configured ? "configured" : "setup_required"
+    telegramAuth: telegramAuthConfigured ? "configured" : "setup_required",
+    profileService: profileServiceConfigured ? "configured" : "setup_required"
   });
 };
