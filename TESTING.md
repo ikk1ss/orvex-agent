@@ -12,7 +12,8 @@ These are source-level and unit checks. They do not prove that Supabase credenti
 ## Backend checks
 
 - Follow `BACKEND_SETUP.md` to configure Supabase and Vercel environment variables.
-- Open `/api/health`. Before configuration, the expected result is `profileService: "setup_required"`; after configuration it should be `"configured"`.
+- Open `/api/health`. Before configuration, the expected result is `telegramAuth: "setup_required"` and `profileService: "setup_required"`; after configuration each should report `"configured"`.
+- Open the Mini App in Telegram and confirm the page reports a verified session only after `GET /api/session` succeeds.
 - Test `GET /api/profile`, `PUT /api/profile`, and `DELETE /api/profile` only from an authenticated Telegram Mini App session.
 - Confirm `DELETE /api/profile` removes only the authenticated user's record.
 - Confirm unauthenticated requests receive HTTP 401.
