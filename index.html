@@ -280,7 +280,7 @@ body{font-size:16px}
 <div class="section-head"><div><div class="kicker">Состояние разработки</div><h2 class="section-title">Что уже готово</h2></div><div class="section-sub">Актуальные статусы без вымышленных показателей и функций.</div></div>
 <div class="status-grid">
 <article class="status-card"><div class="status-top"><span class="status-icon">◈</span><span class="pill ready">Опубликован</span></div><h3>Веб-интерфейс</h3><p>Сайт опубликован и открывается по защищённому HTTPS-адресу.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">⌘</span><span class="pill ready">Настроено</span></div><h3>Запуск в Telegram</h3><p>Кнопка Mini App настроена через BotFather. Проверка Telegram-пользователя на сервере ещё не реализована.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">⌘</span><span class="pill ready">Настроено</span></div><h3>Запуск в Telegram</h3><p id="telegramAuthNote">Кнопка Mini App настроена через BotFather. Серверная проверка пользователя требует настройки.</p></article>
 <article class="status-card"><div class="status-top"><span class="status-icon">◎</span><span class="pill partial">Локально</span></div><h3>Профиль пользователя</h3><p>Имя и настройки сохраняются в браузере. Единой учётной записи и синхронизации пока нет.</p></article>
 <article class="status-card"><div class="status-top"><span class="status-icon">⌁</span><span class="pill pending" id="backendStatus">Требует настройки</span></div><h3>Сервер и база данных</h3><p>API для проверки Telegram и работы с профилями подготовлен. Для запуска нужны база Supabase и серверные настройки Vercel.</p></article>
 <article class="status-card"><div class="status-top"><span class="status-icon">✳</span><span class="pill pending">В планах</span></div><h3>AI-модели и агенты</h3><p>Реальные AI-запросы и запуск агентных задач из интерфейса ещё не реализованы.</p></article>
@@ -342,10 +342,11 @@ try{
 const env=tg&&tg.initData?'Telegram Mini App':'Открыто в браузере';
 document.documentElement.dataset.environment=env;
 const backendStatus=$('#backendStatus');
-if(backendStatus){
- fetch('/api/health',{headers:{Accept:'application/json'},cache:'no-store'})
-  .then(response=>response.ok?response.json():Promise.reject(new Error('Backend unavailable')))
-  .then(data=>{
+const telegramAuthNote=$('#telegramAuthNote');
+fetch('/api/health',{headers:{Accept:'application/json'},cache:'no-store'})
+ .then(response=>response.ok?response.json():Promise.reject(new Error('Backend unavailable')))
+ .then(data=>{
+  if(backendStatus){
    if(data.profileService==='configured'){
     backendStatus.textContent='Настроено';
     backendStatus.classList.remove('pending');
@@ -353,8 +354,26 @@ if(backendStatus){
    }else{
     backendStatus.textContent='Требует настройки';
    }
-  })
-  .catch(()=>{backendStatus.textContent='Проверка недоступна'});
+  }
+  if(telegramAuthNote&&data.telegramAuth!=='configured'){
+   telegramAuthNote.textContent='Кнопка Mini App настроена через BotFather. Для серверной проверки нужен TELEGRAM_BOT_TOKEN в Vercel.';
+  }
+ })
+ .catch(()=>{
+  if(backendStatus)backendStatus.textContent='Проверка недоступна';
+  if(telegramAuthNote)telegramAuthNote.textContent='Серверная проверка Telegram пока недоступна.';
+ });
+if(telegramAuthNote){
+ if(tg&&tg.initData){
+  fetch('/api/session',{headers:{Authorization:'tma '+tg.initData,Accept:'application/json'},cache:'no-store'})
+   .then(response=>response.ok?response.json():Promise.reject(new Error('Telegram verification failed')))
+   .then(data=>{
+    telegramAuthNote.textContent=data.authenticated?'Telegram-пользователь подтверждён сервером.':'Не удалось подтвердить Telegram-пользователя.';
+   })
+   .catch(()=>{telegramAuthNote.textContent='Серверная авторизация Telegram требует настройки.'});
+ }else{
+  telegramAuthNote.textContent='Откройте Mini App в Telegram, чтобы проверить серверную авторизацию.';
+ }
 }
 let profile=null;
 let lastFocusedElement=null;
