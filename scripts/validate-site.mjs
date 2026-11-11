@@ -52,7 +52,7 @@ assert(html.includes("localStorage.removeItem('orvex_agent_profile')"), "Invalid
 assert(html.includes("lastFocusedElement.focus()"), "Profile dialog does not restore keyboard focus after closing");
 assert(html.includes("modal.querySelectorAll('button:not([disabled])"), "Profile dialog keyboard focus trap is missing");
 assert(html.includes("form.elements.consent.checked"), "Profile consent is not checked before saving");
-assert(html.includes('aria-hidden="true"') && html.includes('aria-hidden="false"'), "Profile dialog accessibility state is missing");
+assert(html.includes('aria-hidden="true"') && html.includes("setAttribute('aria-hidden','false')"), "Profile dialog accessibility state is missing");
 
 if (failures.length) {
   console.error("ORVEX Agent validation failed:");
