@@ -415,7 +415,7 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(77,95,180,.16),transpar
       <div class="mbrand"><b></b>ORVEX</div>
       <h2 id="ttl">Обзор</h2>
       <div style="display:flex;gap:10px;align-items:center">
-        <button class="pre-btn" id="openPreReg">Ранний доступ ↗</button>
+        <button class="pre-btn" id="openPreReg">Мой профиль</button>
         <span class="pill hide-m"><span class="dot"></span><span id="onl">Онлайн</span></span>
         <div class="uchip"><div class="av" id="uav">К</div><span id="unm">Командир</span></div>
       </div>
@@ -554,21 +554,22 @@ body{background:radial-gradient(ellipse at 50% -15%,rgba(77,95,180,.16),transpar
   <div class="pre-card" role="dialog" aria-modal="true" aria-labelledby="preTitle">
     <button class="pre-close" id="closePreReg" aria-label="Закрыть">×</button>
     <div id="preFormView">
-      <div class="pre-mark"><span class="dot"></span> ORVEX · EARLY ACCESS</div>
-      <h2 id="preTitle">Будь среди первых, кто попробует ORVEX.</h2>
-      <p class="pre-desc">Оставь контакт, чтобы получить приглашение на раннее тестирование и новости о запуске.</p>
+      <div class="pre-mark"><span class="dot"></span> ORVEX AGENT · ПЕРВЫЙ ВХОД</div>
+      <h2 id="preTitle">Добро пожаловать!</h2>
+      <p class="pre-desc">Давайте познакомимся. Заполните профиль, чтобы мы знали, как к вам обращаться.</p>
       <form id="preRegForm">
-        <label>Как к тебе обращаться<input name="name" type="text" maxlength="60" placeholder="Имя" autocomplete="name" required></label>
-        <label>Email или Telegram<input name="contact" type="text" maxlength="120" placeholder="name@example.com или @username" required></label>
-        <label>Что интереснее всего?
-          <select name="interest"><option value="Личный ИИ-помощник">Личный ИИ-помощник</option><option value="Мультиагентная система">Мультиагентная система</option><option value="Автоматизация задач">Автоматизация задач</option><option value="Все возможности ORVEX">Все возможности ORVEX</option></select>
+        <label>Как к вам обращаться?<input name="name" type="text" maxlength="60" placeholder="Ваше имя" autocomplete="name" required></label>
+        <label>Электронная почта<input name="email" type="email" maxlength="120" placeholder="name@example.com" autocomplete="email" required></label>
+        <label>Telegram или телефон <span class="muted">(необязательно)</span><input name="contact" type="text" maxlength="120" placeholder="@username или +49..." autocomplete="tel"></label>
+        <label>Что вам интересно?
+          <select name="interest"><option value="Личный ИИ-помощник">Личный ИИ-помощник</option><option value="Мультиагентная система">Мультиагентная система</option><option value="Автоматизация задач">Автоматизация задач</option><option value="Все возможности ORVEX Agent">Все возможности ORVEX Agent</option></select>
         </label>
-        <label class="pre-consent"><input type="checkbox" name="consent" required><span>Согласен(на) использовать указанный контакт для связи по поводу раннего доступа ORVEX.</span></label>
-        <button class="pre-submit" type="submit">Записаться в список ожидания</button>
+        <label class="pre-consent"><input type="checkbox" name="consent" required><span>Согласен(на) на использование указанных данных для настройки профиля и связи по вопросам ORVEX Agent.</span></label>
+        <button class="pre-submit" type="submit">Сохранить профиль</button>
       </form>
-      <p class="pre-note">Это предварительная заявка. Данные пока сохраняются только в этом браузере.</p>
+      <p class="pre-note">Сейчас профиль сохраняется в памяти этого браузера или устройства. Серверную регистрацию подключим отдельно перед публичным запуском.</p>
     </div>
-    <div class="pre-success" id="preSuccess"><div class="check">✓</div><h3>Заявка сохранена</h3><p class="muted">Спасибо! Контакт добавлен в локальный список ожидания на этом устройстве.</p><button class="btn" id="preDone" style="margin-top:20px">Отлично</button></div>
+    <div class="pre-success" id="preSuccess"><div class="check">✓</div><h3>Профиль сохранён</h3><p class="muted">Рады знакомству! Теперь ORVEX Agent будет обращаться к вам по имени.</p><button class="btn" id="preDone" style="margin-top:20px">Продолжить</button></div>
   </div>
 </div>
 <div id="toasts"></div>
@@ -584,11 +585,22 @@ if(reduce)document.body.classList.add('calm');
 
 /* ---------- Telegram Mini App ---------- */
 const tg=window.Telegram&&window.Telegram.WebApp;
-let user={first_name:'Командир',username:'orvex_owner',id:482915037},inTg=false;
+let user={first_name:'',username:'',id:null},inTg=false;
 if(tg){
   try{tg.ready();tg.expand();tg.setHeaderColor('#070a12');tg.setBackgroundColor('#070a12')}catch(e){}
   if(tg.initData){inTg=true;const u=tg.initDataUnsafe&&tg.initDataUnsafe.user;if(u)user=u;
     /* TODO: отправьте tg.initData на backend и проверьте подпись HMAC с токеном бота */}
+}
+let appProfile=null;
+try{appProfile=JSON.parse(localStorage.getItem('orvex_agent_profile')||'null')}catch(e){}
+const displayName=()=>appProfile?.name||user.first_name||'Гость';
+function syncProfileUI(){
+  const name=displayName(),initial=(name.trim()[0]||'Г').toLocaleUpperCase('ru-RU');
+  if($('#unm'))$('#unm').textContent=name;
+  if($('#uav'))$('#uav').textContent=initial;
+  if($('#sav'))$('#sav').textContent=initial;
+  if($('#snm'))$('#snm').textContent=name;
+  if($('#sun'))$('#sun').textContent=appProfile?.email||((user.username?'@'+user.username:'Telegram-профиль не подключён'));
 }
 const hap=(t='light')=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred(t)}catch(e){}};
 const hapN=t=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred(t)}catch(e){}};
@@ -786,7 +798,7 @@ function renderBars(){
 }
 function showOverview(){
   const on=AG.filter(a=>a.st!=='off').length;
-  $('#hi').textContent='Привет, '+user.first_name;
+  $('#hi').textContent='Привет, '+displayName();
   $('#hsub').textContent=`Все системы в норме. В сети ${on} из ${AG.length} агентов, ${PEND.length} действия ждут подтверждения.`;
   $('#coreBadge').textContent=on+' из '+AG.length+' в сети';
   renderPend();buildOrbit();drawSpark(spR);renderBars();
@@ -966,8 +978,7 @@ $('#panic').onclick=()=>{
 const ACC=[['#7c5cff','#19d3ff','rgba(124,92,255,.22)'],['#19d3ff','#3dffa0','rgba(25,211,255,.2)'],['#3dffa0','#19d3ff','rgba(61,255,160,.18)'],['#ff8a3d','#ff5c7a','rgba(255,138,61,.2)'],['#ff5c9d','#7c5cff','rgba(255,92,157,.2)']];
 let accI=0;
 function renderSettings(){
-  $('#sav').textContent=(user.first_name||'К')[0].toUpperCase();$('#snm').textContent=user.first_name+(user.last_name?' '+user.last_name:'');
-  $('#sun').textContent='@'+(user.username||'orvex_owner')+' · ID '+user.id;
+  syncProfileUI();
   $('#stMode').textContent=inTg?'Telegram Mini App':'Браузер, демо';
   $('#swR').innerHTML=ACC.map((c,i)=>`<button class="swc ${i===accI?'on':''}" data-i="${i}" style="background:linear-gradient(135deg,${c[0]},${c[1]})" aria-label="Цвет ${i+1}"></button>`).join('');
   $('#ntf').innerHTML=NTF.map(n=>`<div class="pr"><span>${n[0]}</span>${tgl(n[1])}</div>`).join('');
@@ -980,10 +991,27 @@ $('#intg').addEventListener('click',e=>{const b=e.target.closest('[data-i]');if(
 
 
 
-/* ---------- Early access registration (frontend demo) ---------- */
+/* ---------- First-run profile registration ---------- */
 const preReg=$('#preReg');
-function showPreReg(){preReg.classList.add('open');preReg.setAttribute('aria-hidden','false');document.body.classList.add('lock');setTimeout(()=>$('#preReg input[name="name"]').focus(),180);hap()}
-function hidePreReg(){preReg.classList.remove('open');preReg.setAttribute('aria-hidden','true');document.body.classList.remove('lock');hap()}
+function showPreReg(){
+  $('#preFormView').style.display='block';$('#preSuccess').style.display='none';
+  const form=$('#preRegForm');
+  form.elements.name.value=appProfile?.name||user.first_name||'';
+  form.elements.email.value=appProfile?.email||'';
+  form.elements.contact.value=appProfile?.contact||'';
+  if(appProfile?.interest)form.elements.interest.value=appProfile.interest;
+  form.elements.consent.checked=!!appProfile;
+  $('#preTitle').textContent=appProfile?'Ваш профиль':'Добро пожаловать!';
+  $('#preReg .pre-desc').textContent=appProfile?'Здесь можно изменить данные профиля.':'Давайте познакомимся. Заполните профиль, чтобы мы знали, как к вам обращаться.';
+  $('#preReg .pre-submit').textContent=appProfile?'Сохранить изменения':'Сохранить профиль';
+  $('#closePreReg').style.display=appProfile?'grid':'none';
+  preReg.classList.add('open');preReg.setAttribute('aria-hidden','false');document.body.classList.add('lock');
+  setTimeout(()=>form.elements.name.focus(),180);hap();
+}
+function hidePreReg(){
+  if(!appProfile)return;
+  preReg.classList.remove('open');preReg.setAttribute('aria-hidden','true');document.body.classList.remove('lock');hap();
+}
 $('#openPreReg').addEventListener('click',showPreReg);
 $('#closePreReg').addEventListener('click',hidePreReg);
 $('#preDone').addEventListener('click',hidePreReg);
@@ -991,20 +1019,22 @@ preReg.addEventListener('click',e=>{if(e.target===preReg)hidePreReg()});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&preReg.classList.contains('open'))hidePreReg()});
 $('#preRegForm').addEventListener('submit',e=>{
   e.preventDefault();const f=new FormData(e.currentTarget);
-  const entry={name:String(f.get('name')||'').trim(),contact:String(f.get('contact')||'').trim(),interest:String(f.get('interest')||''),createdAt:new Date().toISOString()};
-  if(!entry.name||!entry.contact||!f.get('consent'))return;
-  try{const key='orvex_waitlist_demo';const list=JSON.parse(localStorage.getItem(key)||'[]');list.push(entry);localStorage.setItem(key,JSON.stringify(list));}
-  catch(err){toast('Не удалось сохранить заявку в этом браузере','bad');return}
-  $('#preFormView').style.display='none';$('#preSuccess').style.display='block';hapN('success');
+  const entry={name:String(f.get('name')||'').trim(),email:String(f.get('email')||'').trim(),contact:String(f.get('contact')||'').trim(),interest:String(f.get('interest')||''),createdAt:new Date().toISOString()};
+  if(!entry.name||!entry.email||!f.get('consent'))return;
+  try{localStorage.setItem('orvex_agent_profile',JSON.stringify(entry));}
+  catch(err){toast('Не удалось сохранить профиль на этом устройстве','bad');return}
+  appProfile=entry;syncProfileUI();
+  $('#preFormView').style.display='none';$('#preSuccess').style.display='block';$('#closePreReg').style.display='none';hapN('success');
 });
 
 /* ---------- Boot ---------- */
 (async function(){
-  $('#unm').textContent=user.first_name;$('#uav').textContent=user.first_name[0].toUpperCase();
-  const li=$$('#bootL li'),bar=$('#bootB');
+  syncProfileUI();
+  const li=$('#bootL li'),bar=$('#bootB');
   for(let i=0;i<li.length;i++){await sleep(reduce?20:300);li[i].classList.add('on');bar.style.width=((i+1)/li.length*100)+'%'}
   await sleep(reduce?20:450);$('#boot').classList.add('done');
   showOverview();
+  if(!appProfile)showPreReg();
 })();
 if(location.hash){const h=location.hash.slice(1);if(NAV.some(n=>n[0]===h))setTimeout(()=>go(h,true),0)}
 })();
