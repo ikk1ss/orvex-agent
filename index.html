@@ -14,7 +14,7 @@
 :root{color-scheme:dark;--bg:#080b13;--surface:#101622;--surface2:#141d2b;--line:rgba(188,205,235,.12);--text:#f3f6fc;--muted:#98a5b9;--blue:#4d8dff;--silver:#c5d3e8;--green:#70d9ad;--amber:#e8bd78;--radius:22px}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:90px}
-body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;line-height:1.6;overflow-x:hidden}
+body{margin:0;min-height:var(--tg-viewport-height,100vh);background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;line-height:1.6;overflow-x:hidden}
 body:before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(ellipse at 16% 5%,rgba(45,93,175,.19),transparent 34%),radial-gradient(ellipse at 88% 35%,rgba(125,151,190,.10),transparent 30%),linear-gradient(180deg,#0b101b 0%,#080b13 65%)}
 body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:58px 58px;mask-image:linear-gradient(to bottom,black,transparent 75%)}
 button,input,select{font:inherit}button{cursor:pointer}
