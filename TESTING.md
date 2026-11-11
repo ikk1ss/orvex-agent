@@ -13,7 +13,8 @@ These are source-level and unit checks. They do not prove that Supabase credenti
 
 - Follow `BACKEND_SETUP.md` to configure Supabase and Vercel environment variables.
 - Open `/api/health`. Before configuration, the expected result is `profileService: "setup_required"`; after configuration it should be `"configured"`.
-- Test `GET /api/profile` and `PUT /api/profile` only from an authenticated Telegram Mini App session.
+- Test `GET /api/profile`, `PUT /api/profile`, and `DELETE /api/profile` only from an authenticated Telegram Mini App session.
+- Confirm `DELETE /api/profile` removes only the authenticated user's record.
 - Confirm unauthenticated requests receive HTTP 401.
 - Confirm unsupported methods receive HTTP 405.
 - Confirm profile data is scoped to the authenticated Telegram user.
