@@ -7,9 +7,13 @@ module.exports = function healthHandler(req, res) {
     res.setHeader("Allow", "GET");
     return res.status(405).json({ status: "method_not_allowed" });
   }
+  let validSupabaseUrl = false;
+  try {
+    validSupabaseUrl = new URL(process.env.SUPABASE_URL || "").protocol === "https:";
+  } catch {}
   const configured = Boolean(
     process.env.TELEGRAM_BOT_TOKEN &&
-    process.env.SUPABASE_URL &&
+    validSupabaseUrl &&
     process.env.SUPABASE_SERVICE_ROLE_KEY
   );
   return res.status(200).json({
