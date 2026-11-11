@@ -997,3 +997,17 @@ $('#preRegForm').addEventListener('submit',e=>{
   catch(err){toast('Не удалось сохранить заявку в этом браузере','bad');return}
   $('#preFormView').style.display='none';$('#preSuccess').style.display='block';hapN('success');
 });
+
+/* ---------- Boot ---------- */
+(async function(){
+  $('#unm').textContent=user.first_name;$('#uav').textContent=user.first_name[0].toUpperCase();
+  const li=$$('#bootL li'),bar=$('#bootB');
+  for(let i=0;i<li.length;i++){await sleep(reduce?20:300);li[i].classList.add('on');bar.style.width=((i+1)/li.length*100)+'%'}
+  await sleep(reduce?20:450);$('#boot').classList.add('done');
+  showOverview();
+})();
+if(location.hash){const h=location.hash.slice(1);if(NAV.some(n=>n[0]===h))setTimeout(()=>go(h,true),0)}
+})();
+</script>
+</body>
+</html>
