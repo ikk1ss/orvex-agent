@@ -601,6 +601,7 @@ function syncProfileUI(){
   if($('#sav'))$('#sav').textContent=initial;
   if($('#snm'))$('#snm').textContent=name;
   if($('#sun'))$('#sun').textContent=appProfile?.email||((user.username?'@'+user.username:'Telegram-профиль не подключён'));
+  if($('#hi'))$('#hi').textContent='Привет, '+name;
 }
 const hap=(t='light')=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred(t)}catch(e){}};
 const hapN=t=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred(t)}catch(e){}};
