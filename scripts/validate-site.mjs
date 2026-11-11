@@ -11,6 +11,7 @@ assert(/^<!doctype html>/i.test(html.trimStart()), "Missing HTML5 doctype");
 assert(/<html\b[^>]*lang=["']ru["']/i.test(html), "Document language should be Russian");
 assert(/<meta\b[^>]*name=["']viewport["']/i.test(html), "Missing viewport meta tag");
 assert(html.includes("https://telegram.org/js/telegram-web-app.js"), "Telegram WebApp SDK is not included");
+assert(html.includes("/api/health") && html.includes("/api/session"), "Backend health and Telegram session checks are missing");
 assert(html.includes("viewportChanged"), "Telegram viewport change handling is missing");
 assert(html.includes("viewportStableHeight"), "Telegram stable viewport height is not used");
 assert(html.includes("telegramBack.onClick(closeModal)"), "Telegram BackButton is not connected to the profile dialog");
