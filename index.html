@@ -348,7 +348,7 @@ try{
  if(savedProfile&&typeof savedProfile==='object'&&typeof savedProfile.name==='string'&&savedProfile.name.trim()){
   profile={name:savedProfile.name.trim(),email:typeof savedProfile.email==='string'?savedProfile.email:'',interest:typeof savedProfile.interest==='string'?savedProfile.interest:'Личный ИИ-помощник'};
  }else if(savedProfile!==null){localStorage.removeItem('orvex_agent_profile')}
-}catch(e){profile=null}
+}catch(e){profile=null;try{localStorage.removeItem('orvex_agent_profile')}catch(storageError){}}
 function fillForm(){form.elements.name.value=profile&&profile.name||'';form.elements.email.value=profile&&profile.email||'';form.elements.interest.value=profile&&profile.interest||'Личный ИИ-помощник'}
 function openModal(){lastFocusedElement=document.activeElement;fillForm();modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack();setTimeout(()=>form.elements.name.focus(),80)}
 function closeModal(){if(!profile)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();if(lastFocusedElement&&typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();lastFocusedElement=null}
