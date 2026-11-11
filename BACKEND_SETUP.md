@@ -23,7 +23,8 @@ Keep all three values server-side. Never add them to `index.html`, commit them t
 
 ## 3. API endpoints
 
-- `GET /api/health`: reports whether the profile service has its required configuration. It never returns secret values.
+- `GET /api/health`: reports Telegram-auth and profile-storage configuration separately. It never returns secret values.
+- `GET /api/session`: verifies the current Telegram Mini App session and returns a minimal user identity without storing it.
 - `GET /api/profile`: verifies Telegram Web App `initData` and returns the authenticated Telegram user's profile.
 - `PUT /api/profile`: verifies Telegram Web App `initData`, validates the submitted profile, and upserts it by Telegram user ID.
 - `DELETE /api/profile`: verifies Telegram Web App `initData` and deletes only that Telegram user's profile.
