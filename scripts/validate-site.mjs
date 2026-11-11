@@ -47,6 +47,12 @@ for (let index = 0; index < inlineScripts.length; index += 1) {
 assert(html.includes("orvex_agent_profile"), "Local profile storage key is missing");
 assert(html.includes("localStorage.setItem"), "Profile save logic is missing");
 assert(html.includes("localStorage.getItem"), "Profile load logic is missing");
+assert(html.includes("savedProfile.name.trim()"), "Saved profile data is not validated before use");
+assert(html.includes("localStorage.removeItem('orvex_agent_profile')"), "Invalid saved profile data is not cleared");
+assert(html.includes("lastFocusedElement.focus()"), "Profile dialog does not restore keyboard focus after closing");
+assert(html.includes("modal.querySelectorAll('button:not([disabled])"), "Profile dialog keyboard focus trap is missing");
+assert(html.includes("form.elements.consent.checked"), "Profile consent is not checked before saving");
+assert(html.includes('aria-hidden="true"') && html.includes('aria-hidden="false"'), "Profile dialog accessibility state is missing");
 
 if (failures.length) {
   console.error("ORVEX Agent validation failed:");
