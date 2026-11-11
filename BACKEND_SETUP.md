@@ -28,6 +28,9 @@ Keep all three values server-side. Never add them to `index.html`, commit them t
 - `GET /api/profile`: verifies Telegram Web App `initData` and returns the authenticated Telegram user's profile.
 - `PUT /api/profile`: verifies Telegram Web App `initData`, validates the submitted profile, and upserts it by Telegram user ID.
 - `DELETE /api/profile`: verifies Telegram Web App `initData` and deletes only that Telegram user's profile.
+- `GET /api/memory`: returns up to 50 memories belonging to the authenticated Telegram user.
+- `POST /api/memory`: stores a validated memory (maximum 1,000 characters) under that Telegram user.
+- `DELETE /api/memory?id=<uuid>`: deletes only the specified memory owned by the authenticated Telegram user.
 
 The profile API accepts the `Authorization: tma <initData>` header. It validates the Telegram HMAC signature and rejects data older than 24 hours or dated more than 60 seconds in the future.
 
