@@ -17,6 +17,9 @@ This is a source-level smoke check. It does not prove that Telegram authenticati
 - Open the Mini App from the Telegram menu button and check that it renders inside Telegram.
 - Resize the Telegram Mini App viewport and confirm the page height follows it.
 - Open the profile dialog and confirm Telegram's Back button closes it; confirm the Back button hides after the dialog closes.
+- Use Tab and Shift+Tab in the profile dialog and confirm keyboard focus stays inside the dialog.
+- Close the dialog and confirm keyboard focus returns to the control that opened it.
+- Corrupt or remove the `orvex_agent_profile` localStorage entry and confirm invalid saved data does not bypass first-time profile setup.
 - Confirm that profile data is currently device-local and is not synchronized to a server.
 
 ## Current implementation boundary
