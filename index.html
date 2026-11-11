@@ -321,18 +321,36 @@ body{font-size:16px}
 const $=s=>document.querySelector(s);
 const modal=$('#profileModal'),form=$('#profileForm');
 const tg=window.Telegram&&window.Telegram.WebApp;
-try{if(tg){tg.ready();tg.expand();if(tg.setHeaderColor)tg.setHeaderColor('#080b13');if(tg.setBackgroundColor)tg.setBackgroundColor('#080b13')}}catch(e){}
+const telegramBack=tg&&tg.BackButton;
+function syncTelegramViewport(){
+ if(!tg)return;
+ const height=tg.viewportStableHeight||tg.viewportHeight;
+ if(height)document.documentElement.style.setProperty('--tg-viewport-height',height+'px');
+}
+function showTelegramBack(){try{if(telegramBack)telegramBack.show()}catch(e){}}
+function hideTelegramBack(){try{if(telegramBack)telegramBack.hide()}catch(e){}}
+try{
+ if(tg){
+  tg.ready();
+  tg.expand();
+  if(tg.setHeaderColor)tg.setHeaderColor('#080b13');
+  if(tg.setBackgroundColor)tg.setBackgroundColor('#080b13');
+  syncTelegramViewport();
+  if(tg.onEvent)tg.onEvent('viewportChanged',syncTelegramViewport);
+ }
+}catch(e){}
 const env=tg&&tg.initData?'Telegram Mini App':'Открыто в браузере';
 document.documentElement.dataset.environment=env;
 let profile=null;
 try{profile=JSON.parse(localStorage.getItem('orvex_agent_profile')||'null')}catch(e){profile=null}
 function fillForm(){form.elements.name.value=profile&&profile.name||'';form.elements.email.value=profile&&profile.email||'';form.elements.interest.value=profile&&profile.interest||'Личный ИИ-помощник'}
-function openModal(){fillForm();modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';setTimeout(()=>form.elements.name.focus(),80)}
-function closeModal(){if(!profile)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow=''}
+function openModal(){fillForm();modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack();setTimeout(()=>form.elements.name.focus(),80)}
+function closeModal(){if(!profile)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack()}
 function toast(message){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=message;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 $('#profileOpen').addEventListener('click',openModal);
 $('#heroProfile').addEventListener('click',openModal);
 $('#profileClose').addEventListener('click',closeModal);
+if(telegramBack&&telegramBack.onClick)telegramBack.onClick(closeModal);
 modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeModal()});
 form.addEventListener('submit',e=>{
