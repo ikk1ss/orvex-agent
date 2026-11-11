@@ -5,7 +5,7 @@
 Every push to `main` and every pull request runs:
 
 - `node scripts/validate-site.mjs` for the document shell, Russian language and viewport metadata, Telegram WebApp SDK inclusion, duplicate IDs, in-page links, profile controls, local profile handling, accessibility hooks, and inline JavaScript syntax.
-- `node --test scripts/backend-auth.test.cjs` for Telegram `initData` signature validation, tamper detection, timestamp expiry, and malformed input.
+- `node --test scripts/backend-auth.test.cjs scripts/memory-api.test.cjs` for Telegram `initData` signature validation, tamper detection, timestamp expiry, malformed input, memory validation, and per-user data scoping.
 
 These are source-level and unit checks. They do not prove that Supabase credentials, live Telegram authentication, profile persistence, or the visual layout work in a real browser.
 
@@ -16,6 +16,7 @@ These are source-level and unit checks. They do not prove that Supabase credenti
 - Open the Mini App in Telegram and confirm the page reports a verified session only after `GET /api/session` succeeds.
 - Test `GET /api/profile`, `PUT /api/profile`, and `DELETE /api/profile` only from an authenticated Telegram Mini App session.
 - Confirm `DELETE /api/profile` removes only the authenticated user's record.
+- Test `GET/POST/DELETE /api/memory` and confirm each operation is scoped to the authenticated Telegram ID.
 - Confirm unauthenticated requests receive HTTP 401.
 - Confirm unsupported methods receive HTTP 405.
 - Confirm profile data is scoped to the authenticated Telegram user.
