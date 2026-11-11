@@ -15,6 +15,8 @@ This is a source-level smoke check. It does not prove that Telegram authenticati
 - Open the profile again and confirm saved values are loaded.
 - Confirm the dialog cannot be dismissed before a profile is saved.
 - Open the Mini App from the Telegram menu button and check that it renders inside Telegram.
+- Resize the Telegram Mini App viewport and confirm the page height follows it.
+- Open the profile dialog and confirm Telegram's Back button closes it; confirm the Back button hides after the dialog closes.
 - Confirm that profile data is currently device-local and is not synchronized to a server.
 
 ## Current implementation boundary
