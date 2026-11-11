@@ -31,8 +31,8 @@ function getConfig() {
 }
 
 module.exports = async function profileHandler(req, res) {
-  if (req.method !== "GET" && req.method !== "PUT") {
-    res.setHeader("Allow", "GET, PUT");
+  if (req.method !== "GET" && req.method !== "PUT" && req.method !== "DELETE") {
+    res.setHeader("Allow", "GET, PUT, DELETE");
     return reply(res, 405, { error: "method_not_allowed" });
   }
 
@@ -66,6 +66,16 @@ module.exports = async function profileHandler(req, res) {
       if (!response.ok) return reply(res, 502, { error: "profile_storage_unavailable" });
       const rows = await response.json();
       return reply(res, 200, { profile: rows[0] || null });
+    }
+
+    if (req.method === "DELETE") {
+      const query = new URLSearchParams({ telegram_id: "eq." + telegramId });
+      const response = await fetch(endpoint + "?" + query.toString(), {
+        method: "DELETE",
+        headers: { ...headers, Prefer: "return=minimal" }
+      });
+      if (!response.ok) return reply(res, 502, { error: "profile_storage_unavailable" });
+      return reply(res, 200, { deleted: true });
     }
 
     const body = req.body && typeof req.body === "object" ? req.body : {};
