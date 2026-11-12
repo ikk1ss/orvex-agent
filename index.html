@@ -270,6 +270,14 @@ body{font-size:16px}
 .memory-warning{font-size:10px;color:#78869c;margin:14px 0 0;line-height:1.65}
 @media(max-width:620px){.memory-panel{padding:17px}.memory-form{grid-template-columns:1fr}.memory-form textarea{grid-column:auto}.memory-form label{font-size:12px}.memory-form textarea,.memory-form select{font-size:13px}.memory-submit{font-size:13px}.memory-content{font-size:13px}}
 
+
+.memory-account-tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.memory-export,.memory-account-delete{border:1px solid var(--line);border-radius:10px;background:#ffffff08;color:#dce5f3;padding:10px 13px;font-size:11px;font-weight:700}
+.memory-account-delete{border-color:#e8bd7830;color:#e8bd78;background:#e8bd780d}
+.memory-export:disabled,.memory-account-delete:disabled{opacity:.45;cursor:not-allowed}
+[hidden]{display:none!important}
+@media(max-width:620px){.memory-export,.memory-account-delete{font-size:12px;width:100%}}
+
 </style>
 </head>
 <body>
@@ -321,6 +329,7 @@ body{font-size:16px}
 </div>
 </form>
 <div class="memory-list" id="memoryList" aria-live="polite"></div>
+<div class="memory-account-tools" id="memoryAccountTools" hidden><button class="memory-export" id="exportAccount" type="button">Скачать мои данные</button><button class="memory-account-delete" id="deleteAccount" type="button">Удалить все данные</button></div>
 <p class="memory-warning">Память доступна только после подтверждения Telegram-сессии и настройки серверной базы. Не сохраняйте пароли, ключи доступа или платёжные данные.</p>
 </div>
 </section>
@@ -450,6 +459,7 @@ form.addEventListener('submit',e=>{
 
 async function initMemoryWorkspace(){
  const state=$('#memoryState'),memoryForm=$('#memoryForm'),list=$('#memoryList'),submit=$('#memorySubmit');
+ const accountTools=$('#memoryAccountTools'),exportButton=$('#exportAccount'),deleteButton=$('#deleteAccount');
  if(!state||!memoryForm||!list)return;
  if(!tg||!tg.initData){
   state.textContent='Откройте ORVEX Agent через Telegram, чтобы использовать персональную память.';
@@ -494,8 +504,46 @@ async function initMemoryWorkspace(){
    }
    state.textContent='Память подключена. Записей: '+(data.memories||[]).length+'.';
    memoryForm.hidden=false;
+   if(accountTools)accountTools.hidden=false;
   };
   await loadMemories();
+  if(exportButton){
+   exportButton.addEventListener('click',async()=>{
+    exportButton.disabled=true;state.textContent='Подготавливаем архив ваших данных…';
+    try{
+     const response=await fetch('/api/account',{headers,cache:'no-store'});
+     if(!response.ok)throw new Error('account_export_failed');
+     const data=await response.json();
+     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+     const url=URL.createObjectURL(blob);
+     const link=document.createElement('a');
+     link.href=url;link.download='orvex-agent-data-'+new Date().toISOString().slice(0,10)+'.json';
+     document.body.appendChild(link);link.click();link.remove();
+     setTimeout(()=>URL.revokeObjectURL(url),1000);
+     state.textContent='Архив ваших данных подготовлен.';
+    }catch(error){state.textContent='Не удалось подготовить архив. Попробуйте ещё раз.'}
+    finally{exportButton.disabled=false}
+   });
+  }
+  if(deleteButton){
+   deleteButton.addEventListener('click',async()=>{
+    if(!window.confirm('Удалить профиль и все записи персональной памяти? Это действие нельзя отменить.'))return;
+    deleteButton.disabled=true;state.textContent='Удаляем ваши данные…';
+    try{
+     const response=await fetch('/api/account',{method:'DELETE',headers});
+     if(!response.ok)throw new Error('account_delete_failed');
+     try{localStorage.removeItem('orvex_agent_profile')}catch(storageError){}
+     profile=null;
+     memoryForm.hidden=true;
+     if(accountTools)accountTools.hidden=true;
+     list.replaceChildren();
+     state.textContent='Профиль и все записи персональной памяти удалены.';
+    }catch(error){
+     state.textContent='Не удалось удалить все данные. Ничего не меняйте и попробуйте ещё раз.';
+     deleteButton.disabled=false;
+    }
+   });
+  }
   memoryForm.addEventListener('submit',async event=>{
    event.preventDefault();
    const content=memoryForm.elements.content.value.trim();
