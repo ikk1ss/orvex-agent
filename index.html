@@ -310,7 +310,7 @@ body{font-size:16px}
 <div class="status-grid">
 <article class="status-card"><div class="status-top"><span class="status-icon">◈</span><span class="pill ready">Опубликован</span></div><h3>Веб-интерфейс</h3><p>Сайт опубликован и открывается по защищённому HTTPS-адресу.</p></article>
 <article class="status-card"><div class="status-top"><span class="status-icon">⌘</span><span class="pill ready">Настроено</span></div><h3>Запуск в Telegram</h3><p id="telegramAuthNote">Кнопка Mini App настроена через BotFather. Серверная проверка пользователя требует настройки.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">◎</span><span class="pill partial">Локально</span></div><h3>Профиль пользователя</h3><p>Имя и настройки сохраняются в браузере. Единой учётной записи и синхронизации пока нет.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">◎</span><span class="pill partial" id="profileStatus">Локально</span></div><h3>Профиль пользователя</h3><p id="profileStatusText">В браузере доступен локальный профиль. В Telegram профиль будет привязан к вашему Telegram ID после настройки серверного хранилища.</p></article>
 <article class="status-card"><div class="status-top"><span class="status-icon">⌁</span><span class="pill pending" id="backendStatus">Требует настройки</span></div><h3>Сервер и база данных</h3><p>API для Telegram, профилей и персональной памяти подготовлен. Для запуска нужны база Supabase и серверные настройки Vercel.</p></article>
 <article class="status-card"><div class="status-top"><span class="status-icon">✳</span><span class="pill pending">В планах</span></div><h3>AI-модели и агенты</h3><p>Реальные AI-запросы и запуск агентных задач из интерфейса ещё не реализованы.</p></article>
 <article class="status-card"><div class="status-top"><span class="status-icon">⌕</span><span class="pill pending">В планах</span></div><h3>Тестирование и мониторинг</h3><p>Автоматические проверки, журналы ошибок и уведомления ещё предстоит настроить.</p></article>
@@ -350,12 +350,12 @@ body{font-size:16px}
 <div id="profileModal" aria-hidden="true">
 <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 <div class="modal-head"><h2 id="modalTitle">Ваш профиль</h2><button class="close" id="profileClose" type="button" aria-label="Закрыть">×</button></div>
-<p class="modal-intro">Укажите имя и настройки отображения. Пока они сохраняются только на этом устройстве.</p>
+<p class="modal-intro" id="profileModalIntro">Укажите имя и настройки отображения. В обычном браузере они сохраняются локально, а в Telegram могут синхронизироваться с вашей учётной записью.</p>
 <form id="profileForm">
 <label class="field">Как к вам обращаться?<input name="name" type="text" maxlength="60" autocomplete="name" placeholder="Ваше имя" required></label>
 <label class="field">Электронная почта <span>(необязательно)</span><input name="email" type="email" maxlength="120" autocomplete="email" placeholder="name@example.com"></label>
 <label class="field">Что вам интересно?<select name="interest"><option value="Личный ИИ-помощник">Личный ИИ-помощник</option><option value="Мультиагентная система">Мультиагентная система</option><option value="Автоматизация задач">Автоматизация задач</option><option value="Все возможности">Все возможности</option></select></label>
-<label class="consent"><input name="consent" type="checkbox" required><span>Я понимаю, что профиль сохраняется только в этом браузере и не отправляется на сервер.</span></label>
+<label class="consent"><input name="consent" type="checkbox" required><span id="profileConsentText">Я подтверждаю сохранение указанных настроек профиля.</span></label>
 <button class="primary" type="submit">Сохранить профиль</button>
 </form>
 <p class="local-note">Локальное сохранение. Серверной регистрации пока нет.</p>
@@ -423,6 +423,22 @@ if(telegramAuthNote){
 }
 let profile=null;
 let lastFocusedElement=null;
+let telegramProfileSession=false;
+const telegramMiniApp=Boolean(tg&&tg.initData);
+const profileStatus=$('#profileStatus');
+const profileStatusText=$('#profileStatusText');
+const profileModalIntro=$('#profileModalIntro');
+const profileConsentText=$('#profileConsentText');
+function setProfileStatus(label,message,ready){
+ if(profileStatus){profileStatus.textContent=label;profileStatus.classList.toggle('ready',Boolean(ready));profileStatus.classList.toggle('partial',!ready)}
+ if(profileStatusText)profileStatusText.textContent=message;
+ if(profileModalIntro)profileModalIntro.textContent=telegramMiniApp
+  ?'Ваш профиль привязывается к Telegram ID и хранится на сервере ORVEX Agent.'
+  :'В обычном браузере профиль сохраняется только на этом устройстве. Для единого профиля откройте ORVEX Agent через Telegram.';
+ if(profileConsentText)profileConsentText.textContent=telegramMiniApp
+  ?'Я подтверждаю сохранение указанных настроек в профиле ORVEX Agent, привязанном к моему Telegram-аккаунту.'
+  :'Я понимаю, что профиль сохраняется только в этом браузере и не отправляется на сервер.';
+}
 try{
  const savedProfile=JSON.parse(localStorage.getItem('orvex_agent_profile')||'null');
  if(savedProfile&&typeof savedProfile==='object'&&typeof savedProfile.name==='string'&&savedProfile.name.trim()){
@@ -449,13 +465,72 @@ document.addEventListener('keydown',e=>{
   else if(!e.shiftKey&&(document.activeElement===last||!modal.contains(document.activeElement))){e.preventDefault();first.focus()}
  }
 });
-form.addEventListener('submit',e=>{
+form.addEventListener('submit',async e=>{
  e.preventDefault();
  const data={name:form.elements.name.value.trim(),email:form.elements.email.value.trim(),interest:form.elements.interest.value,updatedAt:new Date().toISOString()};
  if(!data.name||!form.elements.consent.checked)return;
- try{localStorage.setItem('orvex_agent_profile',JSON.stringify(data));profile=data;closeModal();toast('Профиль сохранён на этом устройстве')}
- catch(err){toast('Не удалось сохранить профиль. Проверьте настройки браузера.')}
+ if(telegramMiniApp){
+  if(!telegramProfileSession){toast('Серверный профиль пока недоступен. Проверьте настройки Supabase и Vercel.');return}
+  const submitButton=form.querySelector('button[type="submit"]');
+  submitButton.disabled=true;
+  try{
+   const response=await fetch('/api/profile',{method:'PUT',headers:{Authorization:'tma '+tg.initData,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)});
+   if(!response.ok)throw new Error('profile_save_failed');
+   const result=await response.json();
+   profile=result.profile||data;
+   localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
+   setProfileStatus('Синхронизирован','Профиль привязан к Telegram ID и хранится в серверной базе ORVEX Agent.',true);
+   closeModal();toast('Профиль синхронизирован с сервером');
+  }catch(error){toast('Не удалось сохранить профиль на сервере. Проверьте соединение и попробуйте ещё раз.')}
+  finally{submitButton.disabled=false}
+  return;
+ }
+ try{
+  localStorage.setItem('orvex_agent_profile',JSON.stringify(data));profile=data;
+  setProfileStatus('Локально','Профиль сохранён в этом браузере. Для синхронизации откройте Mini App через Telegram после настройки сервера.',false);
+  closeModal();toast('Профиль сохранён на этом устройстве');
+ }catch(err){toast('Не удалось сохранить профиль. Проверьте настройки браузера.')}
 });
+
+async function initProfileWorkspace(){
+ if(!telegramMiniApp){
+  setProfileStatus('Локально','Профиль хранится в этом браузере. Откройте Mini App через Telegram, чтобы использовать единый профиль.',false);
+  if(!profile)openModal();
+  return;
+ }
+ setProfileStatus('Проверка…','Проверяем Telegram-сессию и загружаем профиль.',false);
+ const headers={Authorization:'tma '+tg.initData,Accept:'application/json'};
+ try{
+  const sessionResponse=await fetch('/api/session',{headers,cache:'no-store'});
+  if(!sessionResponse.ok)throw new Error('telegram_session_unavailable');
+  const session=await sessionResponse.json();
+  if(!session.authenticated)throw new Error('telegram_session_unavailable');
+  telegramProfileSession=true;
+  const response=await fetch('/api/profile',{headers,cache:'no-store'});
+  if(!response.ok)throw new Error(response.status===503?'profile_service_not_configured':'profile_load_failed');
+  const result=await response.json();
+  const remote=result.profile;
+  if(remote&&typeof remote.display_name==='string'){
+   profile={name:remote.display_name,email:remote.email||'',interest:remote.interest||'Личный ИИ-помощник'};
+   localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
+  }else if(profile){
+   const saveResponse=await fetch('/api/profile',{method:'PUT',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(profile)});
+   if(!saveResponse.ok)throw new Error('profile_migration_failed');
+   const saved=await saveResponse.json();
+   profile=saved.profile||profile;
+   localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
+  }
+  setProfileStatus('Синхронизирован','Профиль привязан к Telegram ID и синхронизируется через серверную базу ORVEX Agent.',true);
+  if(!profile)openModal();
+ }catch(error){
+  telegramProfileSession=false;
+  const message=error.message==='profile_service_not_configured'
+   ?'Telegram подтверждён, но серверный профиль ещё не подключён. Нужны Supabase и переменные Vercel.'
+   :'Не удалось загрузить серверный профиль. Локальные данные не будут выданы за синхронизированные.';
+  setProfileStatus('Требует настройки',message,false);
+  if(!profile)openModal();
+ }
+}
 
 async function initMemoryWorkspace(){
  const state=$('#memoryState'),memoryForm=$('#memoryForm'),list=$('#memoryList'),submit=$('#memorySubmit');
@@ -564,8 +639,7 @@ async function initMemoryWorkspace(){
  }
 }
 initMemoryWorkspace();
-
-if(!profile)openModal();
+initProfileWorkspace();
 })();
 </script>
 </body>
