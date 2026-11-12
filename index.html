@@ -249,13 +249,34 @@ body{font-size:16px}
  .consent{font-size:12px}
 }
 
+
+.memory-panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#131c2bdb,#0e1521e8);padding:22px}
+.memory-state{font-size:12px;color:#9aa8bc;margin:0 0 16px}
+.memory-form{display:grid;grid-template-columns:1fr 190px;gap:12px;align-items:end}
+.memory-form label{display:grid;gap:7px;color:#c5cede;font-size:11px}
+.memory-form textarea,.memory-form select{width:100%;border:1px solid var(--line);border-radius:11px;background:#0a1220;color:var(--text);padding:12px;font:inherit;font-size:12px;outline:none}
+.memory-form textarea{min-height:84px;resize:vertical;grid-column:1}
+.memory-form select{min-height:44px}
+.memory-form textarea:focus,.memory-form select:focus{border-color:var(--silver);box-shadow:0 0 0 3px #c5d3e81a}
+.memory-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.memory-submit{border:0;border-radius:11px;padding:12px 16px;background:linear-gradient(110deg,#4d8dff,#c5d3e8);color:#09111c;font-size:12px;font-weight:800}
+.memory-submit:disabled{opacity:.45;cursor:not-allowed}
+.memory-list{display:grid;gap:9px;margin-top:18px}
+.memory-empty{padding:16px;border:1px dashed var(--line);border-radius:12px;color:#7f8da2;font-size:11px}
+.memory-item{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:12px;background:#ffffff04}
+.memory-content{font-size:12px;color:#dce5f3;white-space:pre-wrap;overflow-wrap:anywhere}
+.memory-meta{font-size:10px;color:#8190a6;margin-top:7px}
+.memory-delete{flex:0 0 auto;border:1px solid #e8bd7830;border-radius:9px;background:#e8bd780d;color:#e8bd78;padding:7px 9px;font-size:10px}
+.memory-warning{font-size:10px;color:#78869c;margin:14px 0 0;line-height:1.65}
+@media(max-width:620px){.memory-panel{padding:17px}.memory-form{grid-template-columns:1fr}.memory-form textarea{grid-column:auto}.memory-form label{font-size:12px}.memory-form textarea,.memory-form select{font-size:13px}.memory-submit{font-size:13px}.memory-content{font-size:13px}}
+
 </style>
 </head>
 <body>
 <header class="header wrap">
 <a class="brand" href="#home" aria-label="ORVEX Agent, на главную"><span class="brand-symbol" aria-hidden="true"></span><span>ORVEX AGENT</span></a>
 <div class="header-right">
-<nav class="nav" aria-label="Основная навигация"><a href="#status">Статус</a><a href="#roadmap">Планы</a></nav>
+<nav class="nav" aria-label="Основная навигация"><a href="#status">Статус</a><a href="#memory">Память</a><a href="#roadmap">Планы</a></nav>
 <button class="profile-btn" id="profileOpen" type="button">Мой профиль</button>
 </div>
 </header>
@@ -287,14 +308,30 @@ body{font-size:16px}
 <article class="status-card"><div class="status-top"><span class="status-icon">⌕</span><span class="pill pending">В планах</span></div><h3>Тестирование и мониторинг</h3><p>Автоматические проверки, журналы ошибок и уведомления ещё предстоит настроить.</p></article>
 </div>
 </section>
+
+<section class="section" id="memory">
+<div class="section-head"><div><div class="kicker">Личное пространство</div><h2 class="section-title">Персональная память</h2></div><div class="section-sub">Сохраняйте заметки, предпочтения и цели в защищённом хранилище.</div></div>
+<div class="memory-panel">
+<p class="memory-state" id="memoryState" role="status" aria-live="polite">Проверяем доступ к персональной памяти…</p>
+<form class="memory-form" id="memoryForm" hidden>
+<label>Новая запись<textarea name="content" maxlength="1000" placeholder="Например: предпочитаю краткие ответы и пошаговые инструкции." required></textarea></label>
+<div>
+<label>Категория<select name="category"><option value="preference">Предпочтение</option><option value="fact">Факт</option><option value="goal">Цель</option><option value="instruction">Инструкция</option><option value="note">Заметка</option></select></label>
+<div class="memory-actions" style="margin-top:10px"><button class="memory-submit" id="memorySubmit" type="submit">Сохранить запись</button></div>
+</div>
+</form>
+<div class="memory-list" id="memoryList" aria-live="polite"></div>
+<p class="memory-warning">Память доступна только после подтверждения Telegram-сессии и настройки серверной базы. Не сохраняйте пароли, ключи доступа или платёжные данные.</p>
+</div>
+</section>
 <section class="roadmap" id="roadmap">
 <div class="roadmap-layout">
 <div class="roadmap-intro"><div class="kicker">Дорожная карта</div><h2 class="section-title">Следующие шаги</h2><p>Развиваем платформу последовательно. Каждый новый модуль появится в интерфейсе после его реальной реализации и проверки.</p></div>
 <div class="roadmap-list">
-<div class="roadmap-item"><span class="roadmap-num">01</span><div><b>Интеграция Telegram</b><small>Связать интерфейс с Telegram WebApp API и проверить сценарии запуска.</small></div><span class="roadmap-label">Следующий этап</span></div>
-<div class="roadmap-item"><span class="roadmap-num">02</span><div><b>Backend и авторизация</b><small>Добавить сервер, проверку initData и хранение профилей.</small></div><span class="roadmap-label">Запланировано</span></div>
-<div class="roadmap-item"><span class="roadmap-num">03</span><div><b>Подключение AI</b><small>Интегрировать модели, обработку запросов и агентные сценарии.</small></div><span class="roadmap-label">Запланировано</span></div>
-<div class="roadmap-item"><span class="roadmap-num">04</span><div><b>Диагностика и тесты</b><small>Добавить проверки функций, сбор ошибок и контроль обновлений.</small></div><span class="roadmap-label">Запланировано</span></div>
+<div class="roadmap-item"><span class="roadmap-num">01</span><div><b>Настроить сервер и базу</b><small>Создать проект Supabase и добавить серверные переменные в Vercel.</small></div><span class="roadmap-label">Ожидает настройки</span></div>
+<div class="roadmap-item"><span class="roadmap-num">02</span><div><b>Подключить персональную память</b><small>Проверить сохранение, загрузку и удаление личных записей.</small></div><span class="roadmap-label">После настройки сервера</span></div>
+<div class="roadmap-item"><span class="roadmap-num">03</span><div><b>AI-чат и выбор модели</b><small>Подключить провайдера, диалоги и работу с контекстом памяти.</small></div><span class="roadmap-label">Следующий этап</span></div>
+<div class="roadmap-item"><span class="roadmap-num">04</span><div><b>Проверка и диагностика</b><small>Проверить работу на компьютере, телефоне и внутри Telegram.</small></div><span class="roadmap-label">После интеграции</span></div>
 </div>
 </div>
 </section>
@@ -410,6 +447,76 @@ form.addEventListener('submit',e=>{
  try{localStorage.setItem('orvex_agent_profile',JSON.stringify(data));profile=data;closeModal();toast('Профиль сохранён на этом устройстве')}
  catch(err){toast('Не удалось сохранить профиль. Проверьте настройки браузера.')}
 });
+
+async function initMemoryWorkspace(){
+ const state=$('#memoryState'),memoryForm=$('#memoryForm'),list=$('#memoryList'),submit=$('#memorySubmit');
+ if(!state||!memoryForm||!list)return;
+ if(!tg||!tg.initData){
+  state.textContent='Откройте ORVEX Agent через Telegram, чтобы использовать персональную память.';
+  return;
+ }
+ const headers={Authorization:'tma '+tg.initData,Accept:'application/json'};
+ try{
+  const sessionResponse=await fetch('/api/session',{headers,cache:'no-store'});
+  if(!sessionResponse.ok)throw new Error('telegram_auth');
+  const session=await sessionResponse.json();
+  if(!session.authenticated)throw new Error('telegram_auth');
+  const loadMemories=async()=>{
+   state.textContent='Загружаем ваши записи…';
+   const response=await fetch('/api/memory',{headers,cache:'no-store'});
+   if(!response.ok)throw new Error(response.status===503?'storage_not_ready':'memory_load_failed');
+   const data=await response.json();
+   list.replaceChildren();
+   if(!Array.isArray(data.memories)||data.memories.length===0){
+    list.innerHTML='<div class="memory-empty">Пока нет сохранённых записей. Добавьте первую заметку выше.</div>';
+   }else{
+    const categoryNames={preference:'Предпочтение',fact:'Факт',goal:'Цель',instruction:'Инструкция',note:'Заметка'};
+    data.memories.forEach(item=>{
+     const article=document.createElement('article');article.className='memory-item';
+     const body=document.createElement('div');
+     const content=document.createElement('div');content.className='memory-content';content.textContent=item.content;
+     const meta=document.createElement('div');meta.className='memory-meta';
+     const date=item.created_at?new Date(item.created_at):null;
+     meta.textContent=(categoryNames[item.category]||'Запись')+(date&&!Number.isNaN(date.getTime())?' · '+date.toLocaleString('ru-RU'):'');
+     body.append(content,meta);
+     const remove=document.createElement('button');remove.type='button';remove.className='memory-delete';remove.textContent='Удалить';
+     remove.setAttribute('aria-label','Удалить запись памяти');
+     remove.addEventListener('click',async()=>{
+      remove.disabled=true;
+      try{
+       const response=await fetch('/api/memory?id='+encodeURIComponent(item.id),{method:'DELETE',headers});
+       if(!response.ok)throw new Error('memory_delete_failed');
+       await loadMemories();
+      }catch(error){remove.disabled=false;state.textContent='Не удалось удалить запись. Попробуйте ещё раз.'}
+     });
+     article.append(body,remove);list.append(article);
+    });
+   }
+   state.textContent='Память подключена. Записей: '+(data.memories||[]).length+'.';
+   memoryForm.hidden=false;
+  };
+  await loadMemories();
+  memoryForm.addEventListener('submit',async event=>{
+   event.preventDefault();
+   const content=memoryForm.elements.content.value.trim();
+   const category=memoryForm.elements.category.value;
+   if(!content)return;
+   submit.disabled=true;state.textContent='Сохраняем запись…';
+   try{
+    const response=await fetch('/api/memory',{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({content,category})});
+    if(!response.ok)throw new Error(response.status===503?'storage_not_ready':'memory_save_failed');
+    memoryForm.reset();
+    await loadMemories();
+   }catch(error){
+    state.textContent=error.message==='storage_not_ready'?'Сервер памяти пока не настроен. Добавьте переменные Supabase в Vercel и выполните SQL-схему.':'Не удалось сохранить запись. Проверьте соединение и попробуйте ещё раз.';
+   }finally{submit.disabled=false}
+  });
+ }catch(error){
+  state.textContent=error.message==='storage_not_ready'?'Сервер памяти пока не настроен.':'Не удалось подтвердить Telegram-сессию или загрузить память. Откройте Mini App в Telegram после настройки сервера.';
+ }
+}
+initMemoryWorkspace();
+
 if(!profile)openModal();
 })();
 </script>
