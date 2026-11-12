@@ -5,7 +5,7 @@
 Every push to `main` and every pull request runs:
 
 - `node scripts/validate-site.mjs` for the document shell, Russian language and viewport metadata, Telegram WebApp SDK inclusion, duplicate IDs, in-page links, profile controls, personal memory UI/API wiring, safe text rendering, local profile handling, accessibility hooks, and inline JavaScript syntax.
-- `node --test scripts/backend-auth.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs` for Telegram `initData` signature validation, tamper detection, timestamp expiry, malformed input, memory validation, per-user data scoping, account export, and atomic account deletion.
+- `node --test scripts/backend-auth.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs` for Telegram `initData` signature validation, profile API authorization and validation, profile upsert scoping, memory validation, per-user data scoping, account export, and atomic account deletion.
 
 These are source-level and unit checks. They do not prove that Supabase credentials, live Telegram authentication, profile persistence, or the visual layout work in a real browser.
 
@@ -40,8 +40,8 @@ These are source-level and unit checks. They do not prove that Supabase credenti
 - Use Tab and Shift+Tab in the profile dialog and confirm keyboard focus stays inside the dialog.
 - Close the dialog and confirm keyboard focus returns to the control that opened it.
 - Corrupt or remove the `orvex_agent_profile` localStorage entry and confirm invalid saved data does not bypass first-time profile setup.
-- Confirm the current profile form still uses device-local storage until the server-sync flow and privacy requirements are completed.
+- Inside Telegram, confirm the profile loads from `/api/profile`, and that an existing local profile is migrated when no server profile exists. Confirm profile changes are sent to the server and remain after reopening the Mini App. Outside Telegram, confirm the profile is clearly labelled as local-only.
 
 ## Current implementation boundary
 
-The repository contains a static `index.html` plus Vercel Node.js API routes for backend health, Telegram session verification, profile storage, and personal memory. The memory UI is available only inside an authenticated Telegram Mini App session and requires the Supabase table plus three server-side Vercel environment variables. The frontend profile still uses local storage and does not yet send profile data to the API. AI provider requests and agent execution are not implemented. Do not enter API keys or bot tokens into browser code.
+The repository contains a static `index.html` plus Vercel Node.js API routes for backend health, Telegram session verification, profile storage, and personal memory. The memory UI is available only inside an authenticated Telegram Mini App session and requires the Supabase table plus three server-side Vercel environment variables. The Telegram Mini App profile now reads and writes through `/api/profile`; local storage is retained as a cache and for browser-only use. AI provider requests and agent execution are not implemented. Do not enter API keys or bot tokens into browser code.
