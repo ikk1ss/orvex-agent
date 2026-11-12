@@ -143,3 +143,27 @@ test("uses sb_secret API keys only in the apikey header", async () => {
     global.fetch = originalFetch;
   }
 });
+
+
+test("returns safe diagnostics when Supabase rejects a profile upsert", async () => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: false,
+    status: 401,
+    json: async () => ({ code: "PGRST301", message: "Sensitive response details are not returned" })
+  });
+  try {
+    const res = makeResponse();
+    await handler(makeRequest("PUT", {
+      body: { name: "Test User", email: "", interest: "Все возможности" }
+    }), res);
+    assert.equal(res.statusCode, 502);
+    assert.equal(res.payload.error, "profile_storage_unavailable");
+    assert.equal(res.payload.stage, "profile_upsert");
+    assert.equal(res.payload.storageStatus, 401);
+    assert.equal(res.payload.storageCode, "PGRST301");
+    assert.equal("message" in res.payload, false);
+  } finally {
+    global.fetch = originalFetch;
+  }
+});
