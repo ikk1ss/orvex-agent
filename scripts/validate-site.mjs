@@ -69,6 +69,9 @@ assert(html.includes("Профиль синхронизирован с серв�
 
 assert(html.includes('aria-hidden="true"') && html.includes("setAttribute('aria-hidden','false')"), "Profile dialog accessibility state is missing");
 
+assert(html.includes('id="profileAvatarImage"') && html.includes('id="replayOnboarding"'), "Profile avatar and onboarding replay controls are missing");
+assert(html.includes("renderProfileAvatar") && html.includes("telegramAvatarUrl"), "Telegram avatar rendering is not wired");
+
 if (failures.length) {
   console.error("ORVEX Agent validation failed:");
   for (const failure of failures) console.error("- " + failure);
@@ -78,5 +81,3 @@ if (failures.length) {
 console.log("ORVEX Agent validation passed.");
 console.log("Checked: " + ids.length + " unique IDs, in-page links, profile controls, Telegram SDK and " + inlineScripts.length + " inline script(s).");
 
-assert(html.includes('id="profileAvatarImage"') && html.includes('id="replayOnboarding"'), "Profile avatar and onboarding replay controls are missing");
-assert(html.includes("renderProfileAvatar") && html.includes("telegramAvatarUrl"), "Telegram avatar rendering is not wired");
