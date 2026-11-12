@@ -797,6 +797,98 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .entry-loader-track span{background:linear-gradient(90deg,#72d8d0,#a996ff,#ffc09a)}
 .nav a:after{background:linear-gradient(90deg,#72d8d0,#a996ff)}
 
+
+
+/* Profile workspace: clearer hierarchy and a more usable scroll area */
+#profileModal .modal{
+ width:min(520px,100%);
+ max-height:min(90vh,850px);
+ padding:clamp(20px,3vw,28px);
+ border-radius:24px;
+ overscroll-behavior:contain;
+ scrollbar-width:thin;
+ scrollbar-color:rgba(174,197,231,.35) transparent;
+}
+#profileModal .modal-head{
+ position:sticky;
+ top:0;
+ z-index:4;
+ padding:3px 0 12px;
+ margin-bottom:5px;
+ background:linear-gradient(180deg,rgba(31,43,68,.98),rgba(31,43,68,.92) 82%,rgba(31,43,68,0));
+}
+#profileModal .profile-avatar-row{
+ gap:16px;
+ margin:7px 0 23px;
+ padding:15px;
+ border-color:rgba(177,195,229,.17);
+ border-radius:16px;
+ background:linear-gradient(125deg,rgba(77,141,255,.09),rgba(255,255,255,.025));
+}
+#profileModal .profile-avatar{width:60px;height:60px;flex-basis:60px}
+#profileModal .profile-avatar-copy{gap:5px}
+#profileModal .profile-avatar-copy span{max-width:330px;line-height:1.55}
+#profileModal .profile-divider{
+ margin:25px 0 13px;
+ font-size:10px;
+ letter-spacing:.14em;
+}
+#profileModal .field{
+ gap:8px;
+ margin:15px 0;
+ color:#d2dced;
+}
+#profileModal .field input,
+#profileModal .field select,
+#profileModal .field textarea{
+ border-color:rgba(188,205,235,.16);
+ border-radius:12px;
+ background:rgba(7,14,26,.78);
+ transition:border-color .18s,box-shadow .18s,background .18s;
+}
+#profileModal .field input:hover,
+#profileModal .field select:hover,
+#profileModal .field textarea:hover{border-color:rgba(188,205,235,.28)}
+#profileModal .field input:focus,
+#profileModal .field select:focus,
+#profileModal .field textarea:focus{
+ border-color:rgba(141,182,255,.75);
+ background:rgba(8,17,32,.96);
+ box-shadow:0 0 0 3px rgba(77,141,255,.13);
+}
+#profileModal .consent{
+ margin:20px 0;
+ padding:12px 13px;
+ border:1px solid var(--line);
+ border-radius:12px;
+ background:rgba(255,255,255,.025);
+}
+#profileModal .profile-account-actions{
+ gap:12px;
+ margin-top:25px;
+ padding-top:19px;
+ border-top:1px solid var(--line);
+}
+#profileModal .profile-account-section{padding:17px}
+#profileModal .profile-account-section h3{font-size:13px}
+#profileModal .profile-account-section p{font-size:12px;line-height:1.65}
+#profileModal .profile-account-button{min-height:40px;padding:10px 14px}
+#profileModal .local-note{padding-top:5px}
+@media(max-width:620px){
+ #profileModal{padding:12px}
+ #profileModal .modal{
+  max-height:calc(100dvh - 24px);
+  padding:19px;
+  border-radius:20px;
+ }
+ #profileModal .modal-head{padding-bottom:10px}
+ #profileModal .profile-avatar-row{gap:12px;padding:12px;margin-bottom:19px}
+ #profileModal .profile-avatar{width:54px;height:54px;flex-basis:54px}
+ #profileModal .profile-divider{margin:22px 0 11px}
+ #profileModal .field{margin:13px 0}
+ #profileModal .profile-account-section{padding:14px}
+}
+
 </style>
 </head>
 <body class="orvex-booting">
