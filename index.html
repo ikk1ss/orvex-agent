@@ -507,9 +507,77 @@ body:before{
  .status-card,.roadmap-item,.profile-btn,.primary-link,.outline-link{will-change:auto}
 }
 
+
+/* ORVEX entry loader, page transitions and ambient background */
+.orvex-entry-loader{
+ position:fixed;inset:0;z-index:1000;display:grid;place-content:center;justify-items:center;
+ gap:13px;overflow:hidden;background:
+ radial-gradient(ellipse at 50% 42%,rgba(56,101,171,.25),transparent 34%),
+ linear-gradient(145deg,#0b1220,#070a12 72%);
+ opacity:1;visibility:visible;transition:opacity .65s ease,visibility .65s ease;
+}
+.orvex-entry-loader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.entry-loader-glow{position:absolute;width:260px;height:260px;border-radius:50%;background:#4d8dff2b;filter:blur(65px);animation:orvex-glow 2.8s ease-in-out infinite}
+.entry-loader-mark{position:relative;width:66px;height:66px;border:1px solid rgba(190,211,245,.38);border-radius:21px;background:linear-gradient(145deg,rgba(113,157,225,.35),rgba(15,25,43,.72));box-shadow:0 0 45px rgba(77,141,255,.25),inset 0 1px 0 rgba(255,255,255,.24);display:grid;place-items:center;animation:orvex-float 3.2s ease-in-out infinite}
+.entry-loader-mark:before,.entry-loader-mark:after{content:"";position:absolute;width:27px;height:13px;border:2px solid #d8e6fb;border-radius:50%;transform:rotate(45deg)}
+.entry-loader-mark:after{transform:rotate(-45deg);border-color:#8db6ff}
+.entry-loader-name{position:relative;font:800 15px Manrope,sans-serif;letter-spacing:.2em;color:#e7eef9}
+.entry-loader-name b{font-weight:500;color:#9db9e8}
+.entry-loader-caption{position:relative;color:#8797b0;font-size:12px;letter-spacing:.04em}
+.entry-loader-track{position:relative;width:150px;height:2px;overflow:hidden;border-radius:5px;background:rgba(190,211,245,.13);margin-top:5px}
+.entry-loader-track span{display:block;width:42%;height:100%;border-radius:5px;background:linear-gradient(90deg,#4d8dff,#d4e2f5);animation:orvex-loading-bar 1.25s ease-in-out infinite}
+@keyframes orvex-loading-bar{0%{transform:translateX(-110%)}100%{transform:translateX(260%)}}
+body.orvex-booting{overflow:hidden}
+.ambient-scene{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;contain:strict}
+.ambient-orb{position:absolute;display:block;border-radius:50%;filter:blur(2px);opacity:.38;mix-blend-mode:screen}
+.orb-a{width:360px;height:360px;top:11%;left:-210px;background:radial-gradient(circle,rgba(65,117,203,.22),rgba(65,117,203,0) 70%);animation:orvex-ambient-drift 24s ease-in-out infinite}
+.orb-b{width:460px;height:460px;right:-260px;top:43%;background:radial-gradient(circle,rgba(155,184,225,.15),transparent 70%);animation:orvex-ambient-drift 29s ease-in-out infinite reverse}
+.orb-c{width:420px;height:420px;bottom:-250px;left:35%;background:radial-gradient(circle,rgba(56,103,173,.17),transparent 70%);animation:orvex-ambient-drift 32s ease-in-out infinite}
+.ambient-streak{position:absolute;width:1px;height:52vh;top:12%;background:linear-gradient(180deg,transparent,rgba(166,197,244,.13),transparent);transform:rotate(34deg);opacity:.55}
+.streak-a{left:22%;animation:orvex-streak 18s ease-in-out infinite}
+.streak-b{right:17%;top:35%;height:42vh;animation:orvex-streak 23s ease-in-out infinite reverse}
+@keyframes orvex-ambient-drift{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(35px,-24px,0) scale(1.1)}}
+@keyframes orvex-streak{0%,100%{opacity:.15;translate:0 -12px}50%{opacity:.55;translate:0 18px}}
+/* Scroll transitions reveal content as each section enters the viewport */
+.motion-ready .motion-reveal{opacity:0;transform:translate3d(0,22px,0);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.motion-ready .motion-reveal.is-visible{opacity:1;transform:translate3d(0,0,0)}
+.motion-ready .status-card.motion-reveal:nth-child(2){transition-delay:.07s}
+.motion-ready .status-card.motion-reveal:nth-child(3){transition-delay:.14s}
+.motion-ready .status-card.motion-reveal:nth-child(4){transition-delay:.07s}
+.motion-ready .status-card.motion-reveal:nth-child(5){transition-delay:.14s}
+.motion-ready .status-card.motion-reveal:nth-child(6){transition-delay:.21s}
+.nav a{position:relative}
+.nav a:after{content:"";position:absolute;left:0;right:100%;bottom:-7px;height:1px;background:linear-gradient(90deg,#75a8f5,#d4e2f5);transition:right .25s ease}
+.nav a:hover:after,.nav a[aria-current="location"]:after{right:0}
+.nav a[aria-current="location"]{color:#e0eaff}
+html{scroll-behavior:smooth;scroll-padding-top:104px}
+section[id]{scroll-margin-top:104px}
+@media(max-width:620px){
+ .ambient-orb{opacity:.26}
+ .orb-a{width:260px;height:260px;left:-175px}
+ .orb-b{width:300px;height:300px;right:-205px}
+ .orb-c{width:280px;height:280px;left:25%}
+ .entry-loader-caption{font-size:11px}
+ .motion-ready .motion-reveal{transform:translate3d(0,14px,0)}
+}
+@media(prefers-reduced-motion:reduce){
+ .orvex-entry-loader,.entry-loader-mark,.entry-loader-glow,.entry-loader-track span,
+ .ambient-orb,.ambient-streak,.motion-ready .motion-reveal,.nav a:after{animation:none!important;transition:none!important}
+ .motion-ready .motion-reveal{opacity:1;transform:none}
+ html{scroll-behavior:auto}
+}
+
 </style>
 </head>
-<body>
+<body class="orvex-booting">
+<div class="orvex-entry-loader" id="orvexEntryLoader" role="status" aria-live="polite" aria-label="Загрузка ORVEX Agent">
+ <div class="entry-loader-glow"></div>
+ <div class="entry-loader-mark"><span></span><i></i></div>
+ <div class="entry-loader-name">ORVEX <b>AGENT</b></div>
+ <div class="entry-loader-caption">Подготавливаем ваше пространство</div>
+ <div class="entry-loader-track"><span></span></div>
+</div>
+<div class="ambient-scene" aria-hidden="true"><span class="ambient-orb orb-a"></span><span class="ambient-orb orb-b"></span><span class="ambient-orb orb-c"></span><span class="ambient-streak streak-a"></span><span class="ambient-streak streak-b"></span></div>
 <header class="header wrap">
 <a class="brand" href="#home" aria-label="ORVEX Agent, на главную"><span class="brand-symbol" aria-hidden="true"></span><span>ORVEX AGENT</span></a>
 <div class="header-right">
@@ -934,5 +1002,49 @@ initMemoryWorkspace();
 initProfileWorkspace();
 })();
 </script>
+
+<script>
+(function(){
+ 'use strict';
+ const loader=document.getElementById('orvexEntryLoader');
+ const finishLoading=()=>{
+  if(!loader||loader.classList.contains('is-hidden'))return;
+  document.body.classList.remove('orvex-booting');
+  loader.classList.add('is-hidden');
+  window.setTimeout(()=>loader.remove(),750);
+ };
+ if(document.readyState==='complete'){
+  window.setTimeout(finishLoading,650);
+ }else{
+  window.addEventListener('load',()=>window.setTimeout(finishLoading,450),{once:true});
+  window.setTimeout(finishLoading,2200);
+ }
+ const revealItems=document.querySelectorAll('.section-head,.status-card,.memory-panel,.roadmap-intro,.roadmap-item,.notice');
+ if('IntersectionObserver' in window){
+  document.documentElement.classList.add('motion-ready');
+  const revealObserver=new IntersectionObserver((entries,observer)=>{
+   entries.forEach(entry=>{
+    if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target)}
+   });
+  },{threshold:.12,rootMargin:'0px 0px -35px 0px'});
+  revealItems.forEach(item=>{item.classList.add('motion-reveal');revealObserver.observe(item)});
+  const sections=[...document.querySelectorAll('main section[id]')];
+  const navLinks=[...document.querySelectorAll('.nav a[href^="#"]')];
+  if(sections.length&&navLinks.length){
+   const activeObserver=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+     if(!entry.isIntersecting)return;
+     navLinks.forEach(link=>{
+      if(link.getAttribute('href')==='#'+entry.target.id)link.setAttribute('aria-current','location');
+      else link.removeAttribute('aria-current');
+     });
+    });
+   },{rootMargin:'-25% 0px -60% 0px',threshold:0});
+   sections.forEach(section=>activeObserver.observe(section));
+  }
+ }
+})();
+</script>
+
 </body>
 </html>
