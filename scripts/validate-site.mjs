@@ -62,6 +62,11 @@ assert(html.includes("localStorage.removeItem('orvex_agent_profile')"), "Invalid
 assert(html.includes("lastFocusedElement.focus()"), "Profile dialog does not restore keyboard focus after closing");
 assert(html.includes("modal.querySelectorAll('button:not([disabled])"), "Profile dialog keyboard focus trap is missing");
 assert(html.includes("form.elements.consent.checked"), "Profile consent is not checked before saving");
+assert(html.includes("const profileStorageNote=$('.local-note')"), "Profile storage status note is not connected to runtime state");
+assert(html.includes("Серверное хранение профиля пока недоступно"), "Telegram profile must not claim server storage before backend setup");
+assert(html.includes("Локальная копия не считается серверным сохранением"), "Local profile cache must not be presented as server persistence");
+assert(html.includes("Профиль синхронизирован с сервером ORVEX Agent."), "Successful server profile state is not described");
+
 assert(html.includes('aria-hidden="true"') && html.includes("setAttribute('aria-hidden','false')"), "Profile dialog accessibility state is missing");
 
 if (failures.length) {
