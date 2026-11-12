@@ -639,6 +639,121 @@ section[id]{scroll-margin-top:104px}
 .delete-proceed{border:1px solid rgba(232,125,125,.4);background:rgba(145,42,52,.25);color:#ffc2c2}
 .delete-proceed:disabled{opacity:.35;cursor:not-allowed}
 @media(max-width:620px){.language-apply-row{grid-template-columns:1fr}.delete-confirm-card{padding:21px}}
+
+/* ORVEX visual refresh: richer contrast, clearer accents and lighter surfaces */
+:root{
+ --bg:#090c17;
+ --surface:#111827;
+ --surface2:#192238;
+ --line:rgba(177,195,229,.15);
+ --text:#f4f6ff;
+ --muted:#a1acc2;
+ --blue:#72d8d0;
+ --silver:#c7b8ff;
+ --green:#73e0b1;
+ --amber:#ffc18c;
+ --radius:22px;
+ --accent-cyan:#72d8d0;
+ --accent-violet:#a996ff;
+ --accent-coral:#ffb58f;
+}
+body{background-color:var(--bg)}
+body:before{
+ background:
+  radial-gradient(ellipse at 12% 8%,rgba(56,211,198,.16),transparent 34%),
+  radial-gradient(ellipse at 88% 19%,rgba(142,112,255,.19),transparent 35%),
+  radial-gradient(ellipse at 52% 94%,rgba(255,151,116,.075),transparent 36%),
+  linear-gradient(145deg,#101528 0%,#090c17 52%,#0d1020 100%);
+}
+body:after{opacity:.10;background-size:68px 68px}
+.brand-symbol{
+ background:linear-gradient(140deg,#72d8d0 0%,#a996ff 68%,#e4c2ff 100%);
+ box-shadow:0 0 34px rgba(114,216,208,.22),0 0 50px rgba(169,150,255,.16);
+}
+.language-option[aria-pressed="true"]{
+ border-color:rgba(114,216,208,.48);
+ background:linear-gradient(130deg,rgba(114,216,208,.17),rgba(169,150,255,.16));
+ color:#f7fbff;
+}
+.profile-btn{
+ border-color:rgba(114,216,208,.32);
+ background:linear-gradient(135deg,rgba(114,216,208,.16),rgba(169,150,255,.13));
+}
+.profile-btn:hover{border-color:rgba(114,216,208,.62);background:linear-gradient(135deg,rgba(114,216,208,.23),rgba(169,150,255,.2))}
+.eyebrow,.kicker,.onboarding-kicker{color:#8ee5dc}
+.eyebrow:before{background:linear-gradient(90deg,var(--accent-cyan),var(--accent-violet))}
+.hero h1 span{
+ background:linear-gradient(100deg,#72d8d0 0%,#a996ff 58%,#ffc09a 100%);
+ -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.primary-link,.primary,.memory-submit,.onboarding-next{
+ background:linear-gradient(110deg,#72d8d0 0%,#a996ff 72%,#cbbdff 100%);
+ color:#101322;
+ box-shadow:0 10px 30px rgba(114,216,208,.13),0 8px 28px rgba(169,150,255,.13);
+}
+.outline-link,.profile-btn{
+ border-color:rgba(169,150,255,.27);
+}
+.visual-glow{background:rgba(114,216,208,.20);box-shadow:0 0 70px rgba(169,150,255,.12)}
+.orbit{border-color:rgba(114,216,208,.30)}
+.orbit:before{border-color:rgba(169,150,255,.27)}
+.orbit:after{background:var(--accent-cyan);box-shadow:0 0 22px var(--accent-cyan)}
+.core{
+ background:linear-gradient(145deg,rgba(47,69,91,.92),rgba(29,27,59,.88));
+ border-color:rgba(114,216,208,.48);
+ box-shadow:0 0 0 13px rgba(114,216,208,.055),0 0 70px rgba(114,216,208,.18),0 0 95px rgba(169,150,255,.16),inset 0 1px rgba(255,255,255,.2);
+}
+.core-mark{border-color:#d8fff7}
+.core-mark:before{border-color:#72d8d0}
+.core-mark:after{border-color:#c7b8ff}
+.float-chip{
+ border-color:rgba(169,150,255,.26);
+ background:linear-gradient(145deg,rgba(31,43,65,.91),rgba(22,23,48,.88));
+}
+.signal{background:var(--accent-cyan);box-shadow:0 0 10px rgba(114,216,208,.65)}
+.status-card,.roadmap-item,.notice,.memory-panel{
+ border-color:rgba(177,195,229,.15);
+ background:linear-gradient(145deg,rgba(27,38,61,.78),rgba(15,19,35,.84));
+ box-shadow:0 16px 42px rgba(0,0,0,.19),inset 0 1px rgba(255,255,255,.055);
+ backdrop-filter:blur(9px) saturate(120%);
+ -webkit-backdrop-filter:blur(9px) saturate(120%);
+}
+.status-card:hover,.roadmap-item:hover{
+ border-color:rgba(114,216,208,.38);
+ background:linear-gradient(145deg,rgba(36,52,78,.88),rgba(18,22,42,.9));
+}
+.status-icon,.roadmap-num{
+ color:#a8f0e7;
+ background:rgba(114,216,208,.10);
+ border-color:rgba(114,216,208,.18);
+}
+.pill.ready{color:#83e7bc;background:rgba(115,224,177,.11)}
+.pill.partial{color:#ffd09f;background:rgba(255,193,140,.12)}
+.pill.pending{color:#c0b7ff;background:rgba(169,150,255,.11)}
+.onboarding-progress span{background:linear-gradient(90deg,#72d8d0,#a996ff,#ffc09a)}
+.onboarding-card,.modal{
+ border-color:rgba(169,150,255,.24);
+ background:linear-gradient(145deg,rgba(31,43,68,.94),rgba(14,17,34,.96));
+ box-shadow:0 28px 90px rgba(0,0,0,.46),0 0 55px rgba(114,216,208,.055),inset 0 1px rgba(255,255,255,.08);
+ backdrop-filter:blur(14px) saturate(125%);
+ -webkit-backdrop-filter:blur(14px) saturate(125%);
+}
+.onboarding-point{border-color:rgba(114,216,208,.14);background:linear-gradient(145deg,rgba(114,216,208,.06),rgba(169,150,255,.035))}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent-cyan);box-shadow:0 0 0 3px rgba(114,216,208,.14)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+ outline:2px solid var(--accent-cyan);outline-offset:3px;
+}
+.status-card,.roadmap-item,.profile-btn,.primary-link,.outline-link{will-change:auto}
+@media(max-width:620px){
+ .status-card,.roadmap-item,.notice,.memory-panel,.onboarding-card,.modal{
+  backdrop-filter:none;-webkit-backdrop-filter:none;
+ }
+ .status-card,.roadmap-item{box-shadow:0 10px 28px rgba(0,0,0,.17),inset 0 1px rgba(255,255,255,.045)}
+}
+@media(prefers-reduced-transparency:reduce){
+ .status-card,.roadmap-item,.notice,.memory-panel,.onboarding-card,.modal{backdrop-filter:none;-webkit-backdrop-filter:none}
+}
+
 </style>
 </head>
 <body class="orvex-booting">
@@ -892,27 +1007,72 @@ Object.assign(translations.de,{
  'Подготавливаем ваше пространство':'Ihr Arbeitsbereich wird vorbereitet','для':'für','нового интеллекта.':'eine neue Art von Intelligenz.','ORVEX Agent объединит интеллектуального помощника, AI-инструменты и автоматизацию в одном рабочем пространстве. Сейчас мы последовательно создаём основу платформы.':'ORVEX Agent wird als Arbeitsbereich für einen KI-Assistenten, Werkzeuge und Automatisierung entwickelt. Wir bauen die Plattform Schritt für Schritt auf.','Текущие возможности и этапы разработки указаны без демонстрационных данных.':'Aktuelle Funktionen und Entwicklungsphasen werden ohne Demodaten angezeigt.','Интерфейс опубликован':'Oberfläche veröffentlicht','Разработка продолжается':'In Entwicklung','Ваше единое пространство':'Ihr zentraler Arbeitsbereich','Состояние разработки':'Entwicklungsstand','Что уже готово':'Was bereits bereit ist','Актуальные статусы без вымышленных показателей и функций.':'Aktuelle Statusangaben ohne erfundene Kennzahlen oder Funktionen.','Опубликован':'Veröffentlicht','Веб-интерфейс':'Weboberfläche','Сайт опубликован и открывается по защищённому HTTPS-адресу.':'Die Website ist veröffentlicht und über HTTPS erreichbar.','Настроено':'Konfiguriert','Запуск в Telegram':'Start in Telegram','Кнопка Mini App настроена через BotFather. Серверная проверка пользователя требует настройки.':'Die Mini-App-Schaltfläche ist in BotFather eingerichtet. Die serverseitige Nutzerprüfung muss noch konfiguriert werden.','Локально':'Lokal','Профиль пользователя':'Benutzerprofil','В браузере доступен локальный профиль. В Telegram профиль будет привязан к вашему Telegram ID после настройки серверного хранилища.':'Im Browser ist ein lokales Profil verfügbar. In Telegram wird das Profil nach Einrichtung des Servers mit Ihrer Telegram-ID verknüpft.','Требует настройки':'Einrichtung erforderlich','Сервер и база данных':'Server und Datenbank','API для Telegram, профилей и персональной памяти подготовлен. Для запуска нужны база Supabase и серверные настройки Vercel.':'Die APIs für Telegram, Profile und persönliche Erinnerungen sind vorbereitet. Für den Betrieb werden Supabase und Vercel-Servereinstellungen benötigt.','В планах':'Geplant','AI-модели и агенты':'KI-Modelle und Agenten','Реальные AI-запросы и запуск агентных задач из интерфейса ещё не реализованы.':'Echte KI-Anfragen und Agentenaufgaben sind in der Oberfläche noch nicht verfügbar.','Тестирование и мониторинг':'Tests und Überwachung','Автоматические проверки, журналы ошибок и уведомления ещё предстоит настроить.':'Automatische Prüfungen, Fehlerprotokolle und Benachrichtigungen müssen noch eingerichtet werden.','Сохраняйте заметки, предпочтения и цели в защищённом хранилище.':'Speichern Sie Notizen, Präferenzen und Ziele in einem geschützten Speicher.','Проверяем доступ к персональной памяти…':'Zugriff auf persönliche Erinnerungen wird geprüft…','Новая запись':'Neuer Eintrag','Категория':'Kategorie','Сохранить запись':'Eintrag speichern','Показать ещё':'Mehr anzeigen','Скачать мои данные':'Meine Daten exportieren','Память доступна только после подтверждения Telegram-сессии и настройки серверной базы. Не сохраняйте пароли, ключи доступа или платёжные данные.':'Erinnerungen sind erst nach Telegram-Sitzungsprüfung und Einrichtung des Servers verfügbar. Speichern Sie keine Passwörter, Zugriffsschlüssel oder Zahlungsdaten.','Развиваем платформу последовательно. Каждый новый модуль появится в интерфейсе после его реальной реализации и проверки.':'Wir entwickeln die Plattform schrittweise. Neue Module erscheinen erst nach Implementierung und Prüfung.','Настроить сервер и базу':'Server und Datenbank einrichten','Создать проект Supabase и добавить серверные переменные в Vercel.':'Erstellen Sie ein Supabase-Projekt und hinterlegen Sie Servervariablen in Vercel.','Ожидает настройки':'Wartet auf Einrichtung','Подключить персональную память':'Persönliche Erinnerungen verbinden','Проверить сохранение, загрузку и удаление личных записей.':'Speichern, Laden und Löschen persönlicher Einträge testen.','После настройки сервера':'Nach Servereinrichtung','AI-чат и выбор модели':'KI-Chat und Modellauswahl','Подключить провайдера, диалоги и работу с контекстом памяти.':'Anbieter, Dialoge und den Erinnerungskontext verbinden.','Следующий этап':'Nächster Schritt','Проверка и диагностика':'Tests und Diagnose','Проверить работу на компьютере, телефоне и внутри Telegram.':'Die Anwendung auf Computer, Smartphone und in Telegram testen.','После интеграции':'Nach der Integration','О профиле.':'Zum Profil.','Сейчас имя и выбранные настройки сохраняются только в этом браузере. Это не полноценная регистрация, данные не отправляются на сервер. Не вводите пароли, платёжные данные или секретные ключи.':'Ihr Name und Ihre Einstellungen werden derzeit nur in diesem Browser gespeichert. Dies ist keine vollständige Registrierung; die Daten werden nicht an einen Server gesendet. Geben Sie keine Passwörter, Zahlungsdaten oder geheimen Schlüssel ein.','Персональное пространство на базе искусственного интеллекта':'Persönlicher KI-Arbeitsbereich','ПРИМЕРЫ СЦЕНАРИЕВ В РАЗРАБОТКЕ':'BEISPIELE IN ENTWICKLUNG','Составить план дня':'Tagesplan erstellen','Будущий сценарий':'Geplanter Ablauf','Подготовить письмо':'E-Mail vorbereiten','Разобрать документ':'Dokument prüfen','Помочь с кодом':'Bei Code helfen','Найти нужную информацию':'Informationen finden','Собрать идеи проекта':'Projektideen sammeln','Напомнить о задаче':'An Aufgabe erinnern','Сравнить варианты':'Optionen vergleichen','Добро пожаловать':'Willkommen','Одно пространство для работы с AI.':'Ein Arbeitsbereich für KI.','ORVEX Agent создаётся как персональное рабочее пространство, в котором будут собраны ИИ-помощник, инструменты и автоматизация. Сейчас мы знакомим вас с уже работающими функциями и тем, что находится в разработке.':'ORVEX Agent wird als persönlicher Arbeitsbereich für einen KI-Assistenten, Werkzeuge und Automatisierung entwickelt. Diese Einführung erklärt verfügbare und geplante Funktionen.','Профиль и персональные настройки, привязанные к вашему Telegram-аккаунту.':'Ein Profil und persönliche Einstellungen, verknüpft mit Ihrem Telegram-Konto.','Развитие по этапам':'Schrittweise Entwicklung','Новые функции будут появляться постепенно, а их статус будет указан прямо в приложении.':'Neue Funktionen werden schrittweise ergänzt und ihr Status wird in der App angezeigt.','Персональные функции':'Persönliche Funktionen','Настройки и память под вашим контролем.':'Einstellungen und Erinnerungen unter Ihrer Kontrolle.','В ORVEX Agent уже подготовлены функции персонального пространства:':'Diese Funktionen des persönlichen Bereichs sind vorbereitet:','Редактирование личных сведений, интересов, языка, длины и формата ответов, а также собственных инструкций.':'Bearbeiten Sie persönliche Angaben, Interessen, Sprache, Antwortlänge und -format sowie eigene Anweisungen.','Добавление, просмотр и удаление заметок, предпочтений, фактов и целей.':'Notizen, Präferenzen, Fakten und Ziele hinzufügen, ansehen und löschen.','Ваши данные':'Ihre Daten','Можно экспортировать данные или удалить профиль вместе с записями памяти. Настройки стиля ответов начнут влиять на ИИ после подключения чата.':'Sie können Ihre Daten exportieren oder Ihr Profil samt Erinnerungen löschen. Antwortstil-Einstellungen wirken sich nach der Chat-Integration auf die KI aus.','Модели искусственного интеллекта':'Modelle künstlicher Intelligenz','Вы сможете выбирать модель под задачу.':'Wählen Sie ein Modell passend zur Aufgabe.','В планах подключить несколько ИИ-моделей с разными сильными сторонами: для повседневных вопросов, анализа, программирования и сложных задач.':'Geplant sind mehrere KI-Modelle mit unterschiedlichen Stärken für Alltagsfragen, Analysen, Programmierung und komplexe Aufgaben.','Сравнение моделей':'Modellvergleich','Будут указаны особенности, ограничения и подходящие сценарии каждой модели.':'Eigenschaften, Grenzen und passende Einsatzbereiche jedes Modells werden beschrieben.','Честный статус':'Ehrlicher Status','На данный момент реальные AI-запросы и выбор моделей в интерфейсе ещё не подключены. Список появится после интеграции и проверки.':'Echte KI-Anfragen und die Modellauswahl sind derzeit noch nicht verbunden. Die Liste folgt nach Integration und Tests.','Что дальше':'Wie geht es weiter?','Начните с персонального профиля.':'Beginnen Sie mit Ihrem Profil.','После знакомства вы сможете создать профиль. По мере развития ORVEX Agent это описание будет обновляться вместе с доступными моделями, инструментами и возможностями.':'Nach der Einführung können Sie ein Profil erstellen. Diese Übersicht wird mit neuen Modellen, Werkzeugen und Funktionen aktualisiert.','Без фиктивных обещаний':'Keine falschen Versprechen','В ознакомлении показываются только подтверждённые функции и явно обозначенные планы.':'Die Einführung zeigt nur bestätigte Funktionen und klar gekennzeichnete Pläne.','Назад':'Zurück','Далее':'Weiter','Ознакомление можно повторно открыть в любой момент из раздела «Мой профиль».':'Sie können diese Einführung jederzeit unter „Mein Profil“ erneut öffnen.','Укажите имя и настройки отображения. В обычном браузере они сохраняются локально, а в Telegram могут синхронизироваться с вашей учётной записью.':'Geben Sie Ihren Namen und Ihre Einstellungen ein. Im Browser werden sie lokal gespeichert, in Telegram können sie mit Ihrem Konto synchronisiert werden.','Фото профиля из Telegram появится здесь, если оно доступно.':'Ihr Telegram-Profilbild wird hier angezeigt, falls verfügbar.','(необязательно)':'(optional)','Личный ИИ-помощник':'Persönlicher KI-Assistent','Мультиагентная система':'Multi-Agenten-System','Автоматизация задач':'Aufgabenautomatisierung','Все возможности':'Alle Funktionen','Я подтверждаю сохранение указанных настроек профиля.':'Ich bestätige das Speichern dieser Profileinstellungen.','Локальное сохранение. Серверной регистрации пока нет.':'Lokale Speicherung. Eine Serverregistrierung ist noch nicht verfügbar.'
 });
 const originalTextNodes=new WeakMap(),originalAttributes=new WeakMap();
-function applyInterfaceLanguage(language){
- const selected=['ru','en','de'].includes(language)?language:'ru',dictionary=translations[selected]||{};
- document.documentElement.lang=selected;
- document.querySelectorAll('.language-option').forEach(button=>{const active=button.dataset.language===selected;button.setAttribute('aria-pressed',active?'true':'false');});
- const languageSelect=document.getElementById('profileLanguage');if(languageSelect)languageSelect.value=selected;
- const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;
- while((node=walker.nextNode())){
-  if(!originalTextNodes.has(node))originalTextNodes.set(node,node.nodeValue);
-  const original=originalTextNodes.get(node),trimmed=original.trim();if(!trimmed)continue;
-  node.nodeValue=dictionary[trimmed]?original.replace(trimmed,dictionary[trimmed]):original;
+let activeInterfaceLanguage='ru';
+function canonicalTranslation(value){
+ const clean=value.trim();
+ for(const language of ['en','de']){
+  for(const [source,translated] of Object.entries(translations[language]||{})){
+   if(translated===clean)return source;
+  }
  }
- document.querySelectorAll('input,button,img,[aria-label]').forEach(element=>{
-  ['placeholder','aria-label','title'].forEach(attribute=>{
-   if(!element.hasAttribute(attribute))return;
-   let saved=originalAttributes.get(element);if(!saved){saved={};originalAttributes.set(element,saved)}
-   if(!(attribute in saved))saved[attribute]=element.getAttribute(attribute);
-   const original=saved[attribute];element.setAttribute(attribute,dictionary[original]||original);
-  });
- });
+ return clean;
 }
-
+function translateTextNode(node,dictionary){
+ const current=node.nodeValue;
+ let state=originalTextNodes.get(node);
+ if(!state){state={original:current,lastApplied:current};originalTextNodes.set(node,state)}
+ else if(current!==state.lastApplied){
+  const trimmed=current.trim();
+  if(trimmed)state.original=current.replace(trimmed,canonicalTranslation(trimmed));
+ }
+ const original=state.original,trimmed=original.trim();
+ if(!trimmed)return;
+ const translated=dictionary[trimmed]||trimmed;
+ const next=original.replace(trimmed,translated);
+ if(current!==next)node.nodeValue=next;
+ state.lastApplied=next;
+}
+function translateAttribute(element,attribute,dictionary){
+ if(!element.hasAttribute(attribute))return;
+ let saved=originalAttributes.get(element);
+ if(!saved){saved={};originalAttributes.set(element,saved)}
+ const current=element.getAttribute(attribute);
+ let state=saved[attribute];
+ if(!state){state={original:current,lastApplied:current};saved[attribute]=state}
+ else if(current!==state.lastApplied)state.original=canonicalTranslation(current);
+ const translated=dictionary[state.original]||state.original;
+ if(current!==translated)element.setAttribute(attribute,translated);
+ state.lastApplied=translated;
+}
+function translateSubtree(root){
+ if(!root)return;
+ const dictionary=translations[activeInterfaceLanguage]||{};
+ if(root.nodeType===Node.TEXT_NODE){translateTextNode(root,dictionary);return}
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+ let node;
+ while((node=walker.nextNode()))translateTextNode(node,dictionary);
+ const elements=[];
+ if(root.nodeType===Node.ELEMENT_NODE)elements.push(root);
+ if(root.querySelectorAll)elements.push(...root.querySelectorAll('[placeholder],[aria-label],[title]'));
+ elements.forEach(element=>['placeholder','aria-label','title'].forEach(attribute=>translateAttribute(element,attribute,dictionary)));
+}
+function applyInterfaceLanguage(language){
+ activeInterfaceLanguage=['ru','en','de'].includes(language)?language:'ru';
+ const dictionary=translations[activeInterfaceLanguage]||{};
+ document.documentElement.lang=activeInterfaceLanguage;
+ document.querySelectorAll('.language-option').forEach(button=>{const active=button.dataset.language===activeInterfaceLanguage;button.setAttribute('aria-pressed',active?'true':'false');});
+ const languageSelect=document.getElementById('profileLanguage');if(languageSelect)languageSelect.value=activeInterfaceLanguage;
+ translateSubtree(document.body);
+}
+const interfaceLanguageObserver=new MutationObserver(records=>{
+ records.forEach(record=>{
+  const dictionary=translations[activeInterfaceLanguage]||{};
+  if(record.type==='characterData')translateTextNode(record.target,dictionary);
+  if(record.type==='childList')record.addedNodes.forEach(translateSubtree);
+  if(record.type==='attributes')translateAttribute(record.target,record.attributeName,dictionary);
+ });
+});
+interfaceLanguageObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','aria-label','title']});
 function updateHeaderAction(){const button=$('#profileOpen');button.textContent=profile?'Мой профиль':'Начать';const remove=$('#openDeleteConfirm');if(remove)remove.disabled=!(telegramMiniApp&&telegramProfileSession);applyInterfaceLanguage((profile&&profile.preferences&&profile.preferences.language)||localStorage.getItem('orvex_agent_language')||'ru')}
 const tg=window.Telegram&&window.Telegram.WebApp;
 const telegramBack=tg&&tg.BackButton;
@@ -927,8 +1087,8 @@ try{
  if(tg){
   tg.ready();
   tg.expand();
-  if(tg.setHeaderColor)tg.setHeaderColor('#080b13');
-  if(tg.setBackgroundColor)tg.setBackgroundColor('#080b13');
+  if(tg.setHeaderColor)tg.setHeaderColor('#090c17');
+  if(tg.setBackgroundColor)tg.setBackgroundColor('#090c17');
   syncTelegramViewport();
   if(tg.onEvent)tg.onEvent('viewportChanged',syncTelegramViewport);
  }
