@@ -59,7 +59,7 @@ module.exports = async function accountHandler(req, res) {
   try {
     if (req.method === "GET") {
       const profileQuery = new URLSearchParams({
-        select: "display_name,email,interest,updated_at",
+        select: "display_name,email,interest,preferences,updated_at",
         telegram_id: "eq." + telegramId,
         limit: "1"
       });
