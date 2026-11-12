@@ -42,10 +42,10 @@ Run:
 
 ```sh
 node scripts/validate-site.mjs
-node --test scripts/backend-auth.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs
+node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/session-api.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs
 ```
 
-The authentication tests use a fake test token and do not require live Telegram or Supabase credentials.
+The automated tests use fake test tokens and mocked storage responses. They do not require live Telegram or Supabase credentials.
 
 ## Current boundary
 
