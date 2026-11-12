@@ -39,7 +39,7 @@ test("returns a minimal identity for a valid signed Telegram session", () => {
     assert.equal(res.statusCode, 200);
     assert.deepEqual(res.payload, {
       authenticated: true,
-      user: { id: "24681012", firstName: "Test", username: "test_user" }
+      user: { id: "24681012", firstName: "Test", username: "test_user", photoUrl: "" }
     });
     assert.equal(res.headers["Cache-Control"], "no-store");
   } finally {
