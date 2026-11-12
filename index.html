@@ -1129,10 +1129,13 @@ async function initMemoryWorkspace(){
      if(!response.ok)throw new Error('account_delete_failed');
      try{localStorage.removeItem('orvex_agent_profile')}catch(storageError){}
      profile=null;
+     updateHeaderAction();
+     setProfileStatus('Профиль не создан','Профиль и персональная память удалены. Вы можете создать новый профиль.',false);
      memoryForm.hidden=true;
      if(accountTools)accountTools.hidden=true;
      list.replaceChildren();
      state.textContent='Профиль и все записи персональной памяти удалены.';
+     openOnboarding();
     }catch(error){
      state.textContent='Не удалось удалить все данные. Ничего не меняйте и попробуйте ещё раз.';
      deleteButton.disabled=false;
