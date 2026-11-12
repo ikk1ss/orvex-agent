@@ -52,6 +52,13 @@ module.exports = async function accountHandler(req, res) {
   const auth = verifyTelegramInitData(authorization.slice(4), config.botToken);
   if (!auth.ok) return reply(res, 401, { error: "invalid_telegram_auth" });
 
+  if (req.method === "DELETE") {
+    const body = req.body && typeof req.body === "object" ? req.body : {};
+    if (body.confirmation !== "DELETE") {
+      return reply(res, 400, { error: "account_deletion_confirmation_required" });
+    }
+  }
+
   const telegramId = String(auth.user.id);
   const root = config.supabaseUrl + "/rest/v1";
   const headers = getSupabaseHeaders(config.serviceKey);
