@@ -603,6 +603,10 @@ section[id]{scroll-margin-top:104px}
  html{scroll-behavior:auto}
 }
 
+.memory-pagination{display:flex;justify-content:center;margin-top:14px}
+.memory-more{border:1px solid rgba(185,207,240,.2);border-radius:11px;background:rgba(255,255,255,.045);color:#dce5f3;padding:11px 18px;font-size:12px;font-weight:700;transition:background .2s,border-color .2s}
+.memory-more:hover{background:rgba(77,141,255,.12);border-color:rgba(77,141,255,.45)}
+.memory-more:disabled{opacity:.5;cursor:wait}
 </style>
 </head>
 <body class="orvex-booting">
@@ -662,6 +666,7 @@ section[id]{scroll-margin-top:104px}
 </div>
 </form>
 <div class="memory-list" id="memoryList" aria-live="polite"></div>
+<div class="memory-pagination"><button class="memory-more" id="memoryLoadMore" type="button" hidden>Показать ещё</button></div>
 <div class="memory-account-tools" id="memoryAccountTools" hidden><button class="memory-export" id="exportAccount" type="button">Скачать мои данные</button><button class="memory-account-delete" id="deleteAccount" type="button">Удалить все данные</button></div>
 <p class="memory-warning">Память доступна только после подтверждения Telegram-сессии и настройки серверной базы. Не сохраняйте пароли, ключи доступа или платёжные данные.</p>
 </div>
@@ -1054,54 +1059,72 @@ async function initProfileWorkspace(){
 
 async function initMemoryWorkspace(){
  const state=$('#memoryState'),memoryForm=$('#memoryForm'),list=$('#memoryList'),submit=$('#memorySubmit');
- const accountTools=$('#memoryAccountTools'),exportButton=$('#exportAccount'),deleteButton=$('#deleteAccount');
+ const accountTools=$('#memoryAccountTools'),exportButton=$('#exportAccount'),deleteButton=$('#deleteAccount'),moreButton=$('#memoryLoadMore');
  if(!state||!memoryForm||!list)return;
  if(!tg||!tg.initData){
   state.textContent='Откройте ORVEX Agent через Telegram, чтобы использовать персональную память.';
   return;
  }
  const headers={Authorization:'tma '+tg.initData,Accept:'application/json'};
+ let memoryOffset=0;
+ let memoryLoading=false;
  try{
   const sessionResponse=await fetch('/api/session',{headers,cache:'no-store'});
   if(!sessionResponse.ok)throw new Error('telegram_auth');
   const session=await sessionResponse.json();
   if(!session.authenticated)throw new Error('telegram_auth');
-  const loadMemories=async()=>{
+  const loadMemories=async({reset=true}={})=>{
+   if(memoryLoading)return;
+   memoryLoading=true;
+   if(reset){memoryOffset=0;list.replaceChildren();if(moreButton)moreButton.hidden=true}
    state.textContent='Загружаем ваши записи…';
-   const response=await fetch('/api/memory',{headers,cache:'no-store'});
-   if(!response.ok)throw new Error(response.status===503?'storage_not_ready':'memory_load_failed');
-   const data=await response.json();
-   list.replaceChildren();
-   if(!Array.isArray(data.memories)||data.memories.length===0){
-    list.innerHTML='<div class="memory-empty">Пока нет сохранённых записей. Добавьте первую заметку выше.</div>';
-   }else{
-    const categoryNames={preference:'Предпочтение',fact:'Факт',goal:'Цель',instruction:'Инструкция',note:'Заметка'};
-    data.memories.forEach(item=>{
-     const article=document.createElement('article');article.className='memory-item';
-     const body=document.createElement('div');
-     const content=document.createElement('div');content.className='memory-content';content.textContent=item.content;
-     const meta=document.createElement('div');meta.className='memory-meta';
-     const date=item.created_at?new Date(item.created_at):null;
-     meta.textContent=(categoryNames[item.category]||'Запись')+(date&&!Number.isNaN(date.getTime())?' · '+date.toLocaleString('ru-RU'):'');
-     body.append(content,meta);
-     const remove=document.createElement('button');remove.type='button';remove.className='memory-delete';remove.textContent='Удалить';
-     remove.setAttribute('aria-label','Удалить запись памяти');
-     remove.addEventListener('click',async()=>{
-      remove.disabled=true;
-      try{
-       const response=await fetch('/api/memory?id='+encodeURIComponent(item.id),{method:'DELETE',headers});
-       if(!response.ok)throw new Error('memory_delete_failed');
-       await loadMemories();
-      }catch(error){remove.disabled=false;state.textContent='Не удалось удалить запись. Попробуйте ещё раз.'}
+   try{
+    const response=await fetch('/api/memory?offset='+memoryOffset,{headers,cache:'no-store'});
+    if(!response.ok)throw new Error(response.status===503?'storage_not_ready':'memory_load_failed');
+    const data=await response.json();
+    if(!Array.isArray(data.memories))throw new Error('invalid_memory_response');
+    if(reset&&data.memories.length===0){
+     list.innerHTML='<div class="memory-empty">Пока нет сохранённых записей. Добавьте первую заметку выше.</div>';
+    }else{
+     const categoryNames={preference:'Предпочтение',fact:'Факт',goal:'Цель',instruction:'Инструкция',note:'Заметка'};
+     data.memories.forEach(item=>{
+      const article=document.createElement('article');article.className='memory-item';
+      const body=document.createElement('div');
+      const content=document.createElement('div');content.className='memory-content';content.textContent=item.content;
+      const meta=document.createElement('div');meta.className='memory-meta';
+      const date=item.created_at?new Date(item.created_at):null;
+      meta.textContent=(categoryNames[item.category]||'Запись')+(date&&!Number.isNaN(date.getTime())?' · '+date.toLocaleString('ru-RU'):'');
+      body.append(content,meta);
+      const remove=document.createElement('button');remove.type='button';remove.className='memory-delete';remove.textContent='Удалить';
+      remove.setAttribute('aria-label','Удалить запись памяти');
+      remove.addEventListener('click',async()=>{
+       remove.disabled=true;
+       try{
+        const response=await fetch('/api/memory?id='+encodeURIComponent(item.id),{method:'DELETE',headers});
+        if(!response.ok)throw new Error('memory_delete_failed');
+        await loadMemories({reset:true});
+       }catch(error){remove.disabled=false;state.textContent='Не удалось удалить запись. Попробуйте ещё раз.'}
+      });
+      article.append(body,remove);list.append(article);
      });
-     article.append(body,remove);list.append(article);
-    });
-   }
-   state.textContent='Память подключена. Записей: '+(data.memories||[]).length+'.';
-   memoryForm.hidden=false;
-   if(accountTools)accountTools.hidden=false;
+    }
+    memoryOffset+=data.memories.length;
+    const hasMore=Boolean(data.pagination&&data.pagination.hasMore);
+    if(moreButton)moreButton.hidden=!hasMore;
+    state.textContent='Память подключена. Показано записей: '+memoryOffset+'.'+(hasMore?' Можно загрузить ещё.':'');
+    memoryForm.hidden=false;
+    if(accountTools)accountTools.hidden=false;
+   }finally{memoryLoading=false}
   };
   await loadMemories();
+  if(moreButton){
+   moreButton.addEventListener('click',async()=>{
+    moreButton.disabled=true;
+    try{await loadMemories({reset:false})}
+    catch(error){state.textContent='Не удалось загрузить следующие записи. Попробуйте ещё раз.'}
+    finally{moreButton.disabled=false}
+   });
+  }
   if(exportButton){
    exportButton.addEventListener('click',async()=>{
     exportButton.disabled=true;state.textContent='Подготавливаем архив ваших данных…';
@@ -1152,7 +1175,7 @@ async function initMemoryWorkspace(){
     const response=await fetch('/api/memory',{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({content,category})});
     if(!response.ok)throw new Error(response.status===503?'storage_not_ready':'memory_save_failed');
     memoryForm.reset();
-    await loadMemories();
+    await loadMemories({reset:true});
    }catch(error){
     state.textContent=error.message==='storage_not_ready'?'Сервер памяти пока не настроен. Добавьте переменные Supabase в Vercel и выполните SQL-схему.':'Не удалось сохранить запись. Проверьте соединение и попробуйте ещё раз.';
    }finally{submit.disabled=false}
