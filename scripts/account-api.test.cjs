@@ -38,7 +38,8 @@ function makeResponse() {
 function makeRequest(method, options = {}) {
   return {
     method,
-    headers: options.headers || { authorization: "tma " + initData }
+    headers: options.headers || { authorization: "tma " + initData },
+    body: options.body
   };
 }
 
@@ -129,6 +130,21 @@ test("refuses to return a silently truncated export above the safety limit", asy
   }
 });
 
+test("requires an explicit confirmation before deleting an account", async () => {
+  const originalFetch = global.fetch;
+  let called = false;
+  global.fetch = async () => { called = true; throw new Error("must not delete"); };
+  try {
+    const res = makeResponse();
+    await handler(makeRequest("DELETE"), res);
+    assert.equal(res.statusCode, 400);
+    assert.equal(res.payload.error, "account_deletion_confirmation_required");
+    assert.equal(called, false);
+  } finally {
+    global.fetch = originalFetch;
+  }
+});
+
 test("deletes the authenticated user's account through the atomic database function", async () => {
   const originalFetch = global.fetch;
   let requestUrl = "";
@@ -140,7 +156,7 @@ test("deletes the authenticated user's account through the atomic database funct
   };
   try {
     const res = makeResponse();
-    await handler(makeRequest("DELETE"), res);
+    await handler(makeRequest("DELETE", { body: { confirmation: "DELETE" } }), res);
     assert.equal(res.statusCode, 200);
     assert.equal(res.payload.deleted, true);
     assert.equal(requestUrl, "https://example.supabase.co/rest/v1/rpc/delete_orvex_account");
