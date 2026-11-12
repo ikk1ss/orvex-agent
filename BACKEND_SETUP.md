@@ -9,7 +9,7 @@ The repository now contains a Vercel Node.js API layer for Telegram-authenticate
 3. Run the contents of `supabase/schema.sql`.
 4. In Project Settings, copy the project URL and the service-role key.
 
-The table has Row Level Security enabled and no public policies. Only the server-side API uses the service-role key.
+The tables have Row Level Security enabled and no public policies. Only the server-side API uses the service-role key. The SQL setup also creates an atomic account deletion function and grants its execution only to the Supabase service role.
 
 ## 2. Configure Vercel
 
@@ -31,6 +31,8 @@ Keep all three values server-side. Never add them to `index.html`, commit them t
 - `GET /api/memory`: returns up to 50 memories belonging to the authenticated Telegram user.
 - `POST /api/memory`: stores a validated memory (maximum 1,000 characters) under that Telegram user.
 - `DELETE /api/memory?id=<uuid>`: deletes only the specified memory owned by the authenticated Telegram user.
+- `GET /api/account`: exports the authenticated user's profile and all memory records as JSON.
+- `DELETE /api/account`: deletes the authenticated user's profile and memories in one database transaction using a restricted SQL function.
 
 The profile API accepts the `Authorization: tma <initData>` header. It validates the Telegram HMAC signature and rejects data older than 24 hours or dated more than 60 seconds in the future.
 
@@ -40,7 +42,7 @@ Run:
 
 ```sh
 node scripts/validate-site.mjs
-node --test scripts/backend-auth.test.cjs scripts/memory-api.test.cjs
+node --test scripts/backend-auth.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs
 ```
 
 The authentication tests use a fake test token and do not require live Telegram or Supabase credentials.
