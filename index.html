@@ -1095,6 +1095,15 @@ function translateSubtree(root){
  if(root.querySelectorAll)elements.push(...root.querySelectorAll('[placeholder],[aria-label],[title]'));
  elements.forEach(element=>['placeholder','aria-label','title'].forEach(attribute=>translateAttribute(element,attribute,dictionary)));
 }
+function renderHeroHeading(){
+ const heading=document.querySelector('.hero h1');
+ if(!heading)return;
+ const copy={ru:['Ваше пространство','для','нового интеллекта.'],en:['Your workspace','for','a new kind of intelligence.'],de:['Ihr Arbeitsbereich','für','eine neue Art von Intelligenz.']}[activeInterfaceLanguage];
+ heading.replaceChildren(document.createTextNode(copy[0]),document.createElement('br'),document.createTextNode(copy[1]+' '));
+ const emphasis=document.createElement('span');
+ emphasis.textContent=copy[2];
+ heading.appendChild(emphasis);
+}
 function applyInterfaceLanguage(language){
  activeInterfaceLanguage=['ru','en','de'].includes(language)?language:'ru';
  const dictionary=translations[activeInterfaceLanguage]||{};
@@ -1102,6 +1111,7 @@ function applyInterfaceLanguage(language){
  document.querySelectorAll('.language-option').forEach(button=>{const active=button.dataset.language===activeInterfaceLanguage;button.setAttribute('aria-pressed',active?'true':'false');});
  const languageSelect=document.getElementById('profileLanguage');if(languageSelect)languageSelect.value=activeInterfaceLanguage;
  translateSubtree(document.body);
+ renderHeroHeading();
 }
 const interfaceLanguageObserver=new MutationObserver(records=>{
  records.forEach(record=>{
