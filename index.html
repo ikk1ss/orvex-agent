@@ -23,9 +23,9 @@ a{color:inherit;text-decoration:none}
 .header{height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);position:relative;z-index:5}
 .brand{display:flex;align-items:center;gap:12px;font:800 15px Manrope,sans-serif;letter-spacing:.13em}
 .brand-symbol{width:36px;height:36px;border-radius:12px;position:relative;background:linear-gradient(145deg,#78aaff,#c0cee2);box-shadow:0 0 32px #4d8dff35}
-.brand-symbol:before,.brand-symbol:after{content:"";position:absolute;border:2px solid #111a27;border-radius:50%;transform:rotate(-35deg)}
-.brand-symbol:before{width:19px;height:10px;left:7px;top:11px}
-.brand-symbol:after{width:10px;height:19px;left:12px;top:7px}
+.brand-symbol:before,.brand-symbol:after{content:"";position:absolute;border:2px solid #111a27;border-radius:50%}
+.brand-symbol:before{width:19px;height:10px;left:7px;top:11px;transform:rotate(35deg)}
+.brand-symbol:after{width:10px;height:19px;left:12px;top:7px;transform:rotate(-35deg)}
 .header-right{display:flex;align-items:center;gap:18px}
 .nav{display:flex;gap:25px;color:#aab5c7;font-size:12px}
 .nav a{transition:color .2s}.nav a:hover{color:var(--silver)}
