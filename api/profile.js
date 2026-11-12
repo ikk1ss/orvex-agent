@@ -8,6 +8,13 @@ const ALLOWED_INTERESTS = new Set([
   "Автоматизация задач",
   "Все возможности"
 ]);
+const DEFAULT_PREFERENCES = { about: "", occupation: "", topics: "", language: "ru", responseLength: "balanced", tone: "neutral", format: "prose", instructions: "" };
+const ALLOWED_PREFERENCES = { language: new Set(["ru", "en", "de"]), responseLength: new Set(["short", "balanced", "detailed"]), tone: new Set(["neutral", "friendly", "formal"]), format: new Set(["prose", "steps", "bullets"]) };
+function normalizePreferences(value) {
+  const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  const text = (key, max) => typeof source[key] === "string" ? source[key].trim().slice(0, max) : DEFAULT_PREFERENCES[key];
+  return { about: text("about", 500), occupation: text("occupation", 100), topics: text("topics", 500), language: ALLOWED_PREFERENCES.language.has(source.language) ? source.language : DEFAULT_PREFERENCES.language, responseLength: ALLOWED_PREFERENCES.responseLength.has(source.responseLength) ? source.responseLength : DEFAULT_PREFERENCES.responseLength, tone: ALLOWED_PREFERENCES.tone.has(source.tone) ? source.tone : DEFAULT_PREFERENCES.tone, format: ALLOWED_PREFERENCES.format.has(source.format) ? source.format : DEFAULT_PREFERENCES.format, instructions: text("instructions", 1000) };
+}
 
 function reply(res, status, payload) {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -93,7 +100,7 @@ module.exports = async function profileHandler(req, res) {
   try {
     if (req.method === "GET") {
       const query = new URLSearchParams({
-        select: "display_name,email,interest",
+        select: "display_name,email,interest,preferences,updated_at",
         telegram_id: "eq." + telegramId,
         limit: "1"
       });
@@ -118,6 +125,7 @@ module.exports = async function profileHandler(req, res) {
     const displayName = typeof body.name === "string" ? body.name.trim() : "";
     const email = typeof body.email === "string" ? body.email.trim() : "";
     const interest = typeof body.interest === "string" ? body.interest : "";
+    const preferences = normalizePreferences(body.preferences);
 
     if (!displayName || displayName.length > 60 || email.length > 120 ||
         (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ||
@@ -134,6 +142,7 @@ module.exports = async function profileHandler(req, res) {
         display_name: displayName,
         email,
         interest,
+        preferences,
         updated_at: new Date().toISOString()
       })
     });
@@ -141,8 +150,8 @@ module.exports = async function profileHandler(req, res) {
     const rows = await response.json();
     const row = rows[0];
     return reply(res, 200, {
-      profile: row ? { name: row.display_name, email: row.email, interest: row.interest } : {
-        name: displayName, email, interest
+      profile: row ? { name: row.display_name, email: row.email, interest: row.interest, preferences: normalizePreferences(row.preferences) } : {
+        name: displayName, email, interest, preferences
       }
     });
   } catch (error) {
