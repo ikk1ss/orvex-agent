@@ -918,6 +918,35 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .language-menu{z-index:21}
 .language-options{z-index:22;pointer-events:auto}
 .language-options .language-option{position:relative;z-index:1;pointer-events:auto;cursor:pointer}
+
+/* Restore the original ORVEX brand mark and prevent mobile header collisions. */
+.brand{grid-column:2;justify-self:center;display:inline-flex;align-items:center;gap:11px;white-space:nowrap;position:relative;transform:none;animation:none;flex:0 0 auto}
+.brand>span{font:800 15px/1 Manrope,sans-serif;letter-spacing:.17em;color:#F2F5FF}
+.brand>span b{font-weight:600;color:#9EAFF0;letter-spacing:.13em}
+.brand-symbol{display:block;position:relative;width:36px;height:36px;flex:0 0 36px;border-radius:12px;background:linear-gradient(145deg,#78aaff,#c0cee2)!important;box-shadow:0 0 32px #4d8dff35!important;overflow:visible}
+.brand-symbol:before,.brand-symbol:after{content:"";display:block;position:absolute;border:2px solid #111a27;border-radius:50%;transform:rotate(-35deg)}
+.brand-symbol:before{width:19px;height:10px;left:7.5px;top:11.5px}
+.brand-symbol:after{width:10px;height:19px;left:11.5px;top:7.5px}
+@media(max-width:820px){
+ .header{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;justify-content:stretch;gap:10px;padding-top:12px;padding-bottom:12px;min-height:0}
+ .brand{grid-column:1;grid-row:1;justify-self:center;gap:9px}
+ .brand>span{font-size:14px;letter-spacing:.14em}
+ .brand-symbol{width:34px;height:34px;flex-basis:34px}
+ .header-right{grid-column:1;grid-row:2;justify-self:center;width:100%;display:flex;justify-content:center;align-items:center;gap:10px}
+ .header-right .nav{display:none}
+ .language-menu{flex:0 0 auto}
+ .language-current{min-height:40px;padding:9px 13px}
+ .profile-btn{min-height:40px;padding:9px 15px}
+}
+@media(max-width:370px){
+ .header-right{gap:7px}
+ .brand{gap:7px}
+ .brand>span{font-size:13px;letter-spacing:.12em}
+ .brand-symbol{width:32px;height:32px;flex-basis:32px}
+ .language-current{padding:8px 10px;font-size:11px}
+ .profile-btn{padding:8px 11px;font-size:11px}
+}
+
 </style>
 </head>
 <body class="orvex-booting">
@@ -931,19 +960,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="ambient-scene" aria-hidden="true"><span class="ambient-orb orb-a"></span><span class="ambient-orb orb-b"></span><span class="ambient-orb orb-c"></span><span class="ambient-streak streak-a"></span><span class="ambient-streak streak-b"></span></div>
 <header class="header wrap">
 <a class="brand" href="#home" aria-label="ORVEX Agent, на главную">
-<svg class="brand-symbol" viewBox="0 0 48 48" role="img" aria-hidden="true" focusable="false">
- <defs>
-  <linearGradient id="orvexMarkStroke" x1="7" y1="5" x2="41" y2="44" gradientUnits="userSpaceOnUse"><stop stop-color="#8CF4E7"/><stop offset=".48" stop-color="#9AA8FF"/><stop offset="1" stop-color="#E1B9FF"/></linearGradient>
-  <linearGradient id="orvexMarkFill" x1="9" y1="7" x2="39" y2="42" gradientUnits="userSpaceOnUse"><stop stop-color="#172C3C"/><stop offset="1" stop-color="#201B3D"/></linearGradient>
-  <filter id="orvexMarkGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
-  <linearGradient id="orvexMarkCore" x1="15" y1="15" x2="34" y2="35" gradientUnits="userSpaceOnUse"><stop stop-color="#A4FFF0"/><stop offset=".55" stop-color="#A9B7FF"/><stop offset="1" stop-color="#E8C8FF"/></linearGradient>
- </defs>
- <path d="M24 3.8 40.2 13v18.1L24 44.2 7.8 35V16.9L24 3.8Z" fill="url(#orvexMarkFill)" stroke="url(#orvexMarkStroke)" stroke-width="1.55"/>
- <path d="M14.5 16.5 23.9 33.2 33.5 16.5" fill="none" stroke="url(#orvexMarkCore)" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round" filter="url(#orvexMarkGlow)"/>
- <path d="M18.2 23.2h11.6" stroke="#DDFBFF" stroke-opacity=".82" stroke-width="1.35" stroke-linecap="round"/>
- <path d="M24 8.4v3.2M22.4 10h3.2" stroke="#E6FFFB" stroke-width="1.15" stroke-linecap="round"/>
- <circle cx="24" cy="38.2" r="1.25" fill="#C9C9FF"/>
-</svg>
+<span class="brand-symbol" aria-hidden="true"></span>
 <span>ORVEX <b>AGENT</b></span></a>
 <div class="header-right">
 <nav class="nav" aria-label="Основная навигация"><a href="#status">Статус</a><a href="#memory">Память</a><a href="#roadmap">Планы</a></nav>
