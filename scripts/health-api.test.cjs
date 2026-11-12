@@ -15,18 +15,19 @@ function response() {
   };
 }
 
-test("reports setup required without exposing environment values", () => {
+test("reports setup required without exposing environment values", async () => {
   const names = ["TELEGRAM_BOT_TOKEN", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
   const previous = Object.fromEntries(names.map(name => [name, process.env[name]]));
   names.forEach(name => delete process.env[name]);
   try {
     const res = response();
-    handler({ method: "GET" }, res);
+    await handler({ method: "GET" }, res);
     assert.equal(res.statusCode, 200);
     assert.deepEqual(res.payload, {
       status: "ok",
       telegramAuth: "setup_required",
-      profileService: "setup_required"
+      profileService: "setup_required",
+      profileStorageAccess: "setup_required"
     });
     assert.equal(JSON.stringify(res.payload).includes("SERVICE_ROLE"), false);
     assert.equal(res.headers["Cache-Control"], "no-store");
@@ -38,7 +39,7 @@ test("reports setup required without exposing environment values", () => {
   }
 });
 
-test("reports configured services only when all server settings are present", () => {
+test("reports configured services only when all server settings are present", async () => {
   const names = ["TELEGRAM_BOT_TOKEN", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
   const previous = Object.fromEntries(names.map(name => [name, process.env[name]]));
   process.env.TELEGRAM_BOT_TOKEN = "test-token";
@@ -46,12 +47,16 @@ test("reports configured services only when all server settings are present", ()
   process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role";
   try {
     const res = response();
-    handler({ method: "GET" }, res);
+    const originalFetch = global.fetch;
+    global.fetch = async () => ({ ok: true, status: 200 });
+    await handler({ method: "GET" }, res);
     assert.deepEqual(res.payload, {
       status: "ok",
       telegramAuth: "configured",
-      profileService: "configured"
+      profileService: "configured",
+      profileStorageAccess: "elevated"
     });
+    global.fetch = originalFetch;
   } finally {
     names.forEach(name => {
       if (previous[name] === undefined) delete process.env[name];
@@ -60,7 +65,7 @@ test("reports configured services only when all server settings are present", ()
   }
 });
 
-test("rejects non-HTTPS Supabase URLs as unconfigured", () => {
+test("rejects non-HTTPS Supabase URLs as unconfigured", async () => {
   const names = ["TELEGRAM_BOT_TOKEN", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
   const previous = Object.fromEntries(names.map(name => [name, process.env[name]]));
   process.env.TELEGRAM_BOT_TOKEN = "test-token";
@@ -68,7 +73,7 @@ test("rejects non-HTTPS Supabase URLs as unconfigured", () => {
   process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role";
   try {
     const res = response();
-    handler({ method: "GET" }, res);
+    await handler({ method: "GET" }, res);
     assert.equal(res.payload.profileService, "setup_required");
   } finally {
     names.forEach(name => {
@@ -78,9 +83,9 @@ test("rejects non-HTTPS Supabase URLs as unconfigured", () => {
   }
 });
 
-test("rejects unsupported methods", () => {
+test("rejects unsupported methods", async () => {
   const res = response();
-  handler({ method: "POST" }, res);
+  await handler({ method: "POST" }, res);
   assert.equal(res.statusCode, 405);
   assert.equal(res.headers.Allow, "GET");
 });
