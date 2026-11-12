@@ -22,6 +22,11 @@ assert(html.includes('id="logoutAccount"') && html.includes('id="openDeleteConfi
 assert(html.includes('id="applyLanguage"') && html.includes('id="profileLanguage"') && html.includes("document.documentElement.lang=selected"), "Persistent interface language controls are missing");
 assert(html.includes('class="language-switcher"') && html.includes('data-language="ru"') && html.includes('data-language="en"') && html.includes('data-language="de"'), "Visible header language switcher with all three languages is missing");
 assert(html.includes("button.dataset.language===selected") && html.includes("button.addEventListener('click',async()=>"), "Header language buttons are not connected to language selection");
+assert(html.includes("function canonicalTranslation(value)") && html.includes("state.lastApplied"), "Language switching must preserve canonical text when dynamic content changes");
+assert(html.includes("new MutationObserver(records=>") && html.includes("record.addedNodes.forEach(translateSubtree)") && html.includes("record.type==='characterData'"), "Dynamically inserted or updated interface text is not translated");
+assert(html.includes("'Добро пожаловать':'Welcome'") && html.includes("'Добро пожаловать':'Willkommen'"), "The onboarding greeting must be translated in English and German");
+assert(html.includes("--accent-cyan:#72d8d0") && html.includes("--accent-violet:#a996ff"), "The refreshed cyan and violet design palette is missing");
+assert(html.includes("backdrop-filter:none;-webkit-backdrop-filter:none"), "Mobile transparency effects must be reduced for performance");
 assert(html.includes('id="deleteConfirmModal"') && html.includes("deleteConfirmStep===1") && html.includes("deletePhrase.value.trim().toLocaleUpperCase('ru')!=='УДАЛИТЬ'"), "Two-step account deletion confirmation is missing");
 assert(html.includes("fetch('/api/account',{method:'DELETE'") && html.includes("tg.close()"), "Account deletion or app exit action is not wired");
 assert(!html.includes('id="deleteAccount"') && !html.includes("window.confirm('Удалить профиль"), "Old combined memory deletion control or one-step confirmation remains");
