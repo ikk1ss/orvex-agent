@@ -23,3 +23,11 @@ jobs:
         run: node scripts/validate-site.mjs
       - name: Test Telegram authentication
         run: node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/session-api.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test Python Telegram bot
+        run: |
+          python -m py_compile telegram_bot/config.py telegram_bot/messages.py telegram_bot/bot.py
+          python -m unittest discover -s telegram_bot/tests -v
