@@ -429,15 +429,27 @@ const profileStatus=$('#profileStatus');
 const profileStatusText=$('#profileStatusText');
 const profileModalIntro=$('#profileModalIntro');
 const profileConsentText=$('#profileConsentText');
+const profileStorageNote=$('.local-note');
 function setProfileStatus(label,message,ready){
  if(profileStatus){profileStatus.textContent=label;profileStatus.classList.toggle('ready',Boolean(ready));profileStatus.classList.toggle('partial',!ready)}
  if(profileStatusText)profileStatusText.textContent=message;
- if(profileModalIntro)profileModalIntro.textContent=telegramMiniApp
-  ?'Ваш профиль привязывается к Telegram ID и хранится на сервере ORVEX Agent.'
-  :'В обычном браузере профиль сохраняется только на этом устройстве. Для единого профиля откройте ORVEX Agent через Telegram.';
- if(profileConsentText)profileConsentText.textContent=telegramMiniApp
-  ?'Я подтверждаю сохранение указанных настроек в профиле ORVEX Agent, привязанном к моему Telegram-аккаунту.'
-  :'Я понимаю, что профиль сохраняется только в этом браузере и не отправляется на сервер.';
+ if(telegramMiniApp){
+  if(profileModalIntro)profileModalIntro.textContent=ready
+   ?'Профиль привязан к вашему Telegram ID и синхронизирован с сервером ORVEX Agent.'
+   :'Серверное хранение профиля пока недоступно. Данные не будут сохранены, пока серверная настройка не завершена.';
+  if(profileConsentText)profileConsentText.textContent=ready
+   ?'Я подтверждаю сохранение указанных настроек в профиле ORVEX Agent, привязанном к моему Telegram-аккаунту.'
+   :'Я понимаю, что серверное хранение пока недоступно и профиль не будет сохранён на сервере.';
+  if(profileStorageNote)profileStorageNote.textContent=ready
+   ?'Профиль синхронизирован с сервером ORVEX Agent.'
+   :label==='Проверка…'
+    ?'Проверяем доступность серверного профиля…'
+    :'Серверный профиль недоступен. Локальная копия не считается серверным сохранением.';
+ }else{
+  if(profileModalIntro)profileModalIntro.textContent='В обычном браузере профиль сохраняется только на этом устройстве. Для единого профиля откройте ORVEX Agent через Telegram.';
+  if(profileConsentText)profileConsentText.textContent='Я понимаю, что профиль сохраняется только в этом браузере и не отправляется на сервер.';
+  if(profileStorageNote)profileStorageNote.textContent='Локальное сохранение. Серверной регистрации пока нет.';
+ }
 }
 try{
  const savedProfile=JSON.parse(localStorage.getItem('orvex_agent_profile')||'null');
@@ -481,7 +493,7 @@ form.addEventListener('submit',async e=>{
    localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
    setProfileStatus('Синхронизирован','Профиль привязан к Telegram ID и хранится в серверной базе ORVEX Agent.',true);
    closeModal();toast('Профиль синхронизирован с сервером');
-  }catch(error){toast('Не удалось сохранить профиль на сервере. Проверьте соединение и попробуйте ещё раз.')}
+  }catch(error){setProfileStatus('Ошибка синхронизации','Не удалось сохранить профиль на сервере. Проверьте соединение и попробуйте ещё раз.',false);toast('Не удалось сохранить профиль на сервере. Проверьте соединение и попробуйте ещё раз.')}
   finally{submitButton.disabled=false}
   return;
  }
