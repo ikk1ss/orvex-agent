@@ -890,11 +890,28 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 }
 
 
-/* Keep the brand anchored in the upper-left corner while scrolling and resizing. */
-.header{position:sticky;top:0;isolation:isolate;animation:none}
-.brand{flex:0 0 auto;align-self:center;position:relative;transform:none;animation:none;white-space:nowrap}
-.brand-symbol{flex:0 0 36px}
-@media(max-width:620px){.brand-symbol{flex-basis:32px}}
+/* Centered ORVEX identity and custom geometric monogram. */
+.header{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);justify-content:initial}
+.brand{grid-column:2;justify-self:center;display:inline-flex;align-items:center;gap:11px;white-space:nowrap;position:relative;transform:none;animation:none;flex:0 0 auto}
+.brand>span{font:800 15px/1 Manrope,sans-serif;letter-spacing:.17em;color:#F2F5FF}
+.brand>span b{font-weight:600;color:#9EAFF0;letter-spacing:.13em}
+.brand-symbol{display:block;width:46px;height:46px;flex:0 0 46px;border-radius:0;background:none!important;box-shadow:none!important;overflow:visible}
+.brand-symbol:before,.brand-symbol:after{content:none!important;display:none!important}
+.header-right{grid-column:3;justify-self:end;min-width:0}
+@media(max-width:620px){
+ .header{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);min-height:70px}
+ .brand{gap:7px}
+ .brand>span{font-size:11px;letter-spacing:.13em}
+ .brand>span b{letter-spacing:.09em}
+ .brand-symbol{width:36px;height:36px;flex-basis:36px}
+ .header-right{gap:7px}
+}
+@media(max-width:370px){
+ .brand{gap:5px}
+ .brand>span{font-size:10px;letter-spacing:.09em}
+ .brand-symbol{width:32px;height:32px;flex-basis:32px}
+ .header-right{gap:5px}
+}
 
 /* Keep the language dropdown above the page content and fully clickable. */
 .header{z-index:20}
@@ -913,7 +930,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 </div>
 <div class="ambient-scene" aria-hidden="true"><span class="ambient-orb orb-a"></span><span class="ambient-orb orb-b"></span><span class="ambient-orb orb-c"></span><span class="ambient-streak streak-a"></span><span class="ambient-streak streak-b"></span></div>
 <header class="header wrap">
-<a class="brand" href="#home" aria-label="ORVEX Agent, на главную"><span class="brand-symbol" aria-hidden="true"></span><span>ORVEX AGENT</span></a>
+<a class="brand" href="#home" aria-label="ORVEX Agent, на главную">
+<svg class="brand-symbol" viewBox="0 0 48 48" role="img" aria-hidden="true" focusable="false">
+ <defs>
+  <linearGradient id="orvexMarkStroke" x1="7" y1="5" x2="41" y2="44" gradientUnits="userSpaceOnUse"><stop stop-color="#8CF4E7"/><stop offset=".48" stop-color="#9AA8FF"/><stop offset="1" stop-color="#E1B9FF"/></linearGradient>
+  <linearGradient id="orvexMarkFill" x1="9" y1="7" x2="39" y2="42" gradientUnits="userSpaceOnUse"><stop stop-color="#172C3C"/><stop offset="1" stop-color="#201B3D"/></linearGradient>
+  <filter id="orvexMarkGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
+  <linearGradient id="orvexMarkCore" x1="15" y1="15" x2="34" y2="35" gradientUnits="userSpaceOnUse"><stop stop-color="#A4FFF0"/><stop offset=".55" stop-color="#A9B7FF"/><stop offset="1" stop-color="#E8C8FF"/></linearGradient>
+ </defs>
+ <path d="M24 3.8 40.2 13v18.1L24 44.2 7.8 35V16.9L24 3.8Z" fill="url(#orvexMarkFill)" stroke="url(#orvexMarkStroke)" stroke-width="1.55"/>
+ <path d="M14.5 16.5 23.9 33.2 33.5 16.5" fill="none" stroke="url(#orvexMarkCore)" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round" filter="url(#orvexMarkGlow)"/>
+ <path d="M18.2 23.2h11.6" stroke="#DDFBFF" stroke-opacity=".82" stroke-width="1.35" stroke-linecap="round"/>
+ <path d="M24 8.4v3.2M22.4 10h3.2" stroke="#E6FFFB" stroke-width="1.15" stroke-linecap="round"/>
+ <circle cx="24" cy="38.2" r="1.25" fill="#C9C9FF"/>
+</svg>
+<span>ORVEX <b>AGENT</b></span></a>
 <div class="header-right">
 <nav class="nav" aria-label="Основная навигация"><a href="#status">Статус</a><a href="#memory">Память</a><a href="#roadmap">Планы</a></nav>
 <div class="language-menu" id="languageMenu"><button class="language-current" id="languageCurrent" type="button" aria-expanded="false" aria-controls="languageOptions">Русский <span aria-hidden="true">⌄</span></button><div class="language-options" id="languageOptions" role="group" aria-label="Язык интерфейса" hidden><button class="language-option" type="button" data-language="ru" aria-label="Русский" aria-pressed="false" title="Русский">Русский</button><button class="language-option" type="button" data-language="en" aria-label="English" aria-pressed="false" title="English">English</button><button class="language-option" type="button" data-language="de" aria-label="Deutsch" aria-pressed="false" title="Deutsch">Deutsch</button></div></div>
