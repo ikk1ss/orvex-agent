@@ -4,8 +4,14 @@ create table if not exists public.orvex_profiles (
   display_name text not null check (char_length(display_name) between 1 and 60),
   email text not null default '' check (char_length(email) <= 120),
   interest text not null,
+  preferences jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
 );
+
+-- Keep this migration safe for projects where the profile table already exists.
+-- Existing profiles receive empty preferences without losing any profile data.
+alter table public.orvex_profiles
+  add column if not exists preferences jsonb not null default '{}'::jsonb;
 
 alter table public.orvex_profiles enable row level security;
 
