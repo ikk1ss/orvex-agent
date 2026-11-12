@@ -599,12 +599,11 @@ async function initProfileWorkspace(){
   if(remote&&typeof remote.display_name==='string'){
    profile={name:remote.display_name,email:remote.email||'',interest:remote.interest||'Личный ИИ-помощник'};
    localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
-  }else if(profile){
-   const saveResponse=await fetch('/api/profile',{method:'PUT',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(profile)});
-   if(!saveResponse.ok)throw new Error('profile_migration_failed');
-   const saved=await saveResponse.json();
-   profile=saved.profile||profile;
-   localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
+  }else{
+   // Telegram identity is authoritative. Do not migrate an unowned browser cache
+   // into a new Telegram account, because it may belong to another user.
+   profile=null;
+   try{localStorage.removeItem('orvex_agent_profile')}catch(storageError){}
   }
   setProfileStatus('Синхронизирован','Профиль привязан к Telegram ID и синхронизируется через серверную базу ORVEX Agent.',true);
   updateHeaderAction();
