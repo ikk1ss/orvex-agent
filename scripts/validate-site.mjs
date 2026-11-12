@@ -19,9 +19,9 @@ assert(html.includes("encodeURIComponent(item.id)"), "Memory deletion ID is not 
 assert(html.includes('id="memoryLoadMore"') && html.includes("memoryOffset+=data.memories.length") && html.includes("pagination&&data.pagination.hasMore"), "Personal memory pagination is missing");
 assert(html.includes('id="memoryAccountTools"') && html.includes('id="exportAccount"'), "Account export controls are missing");
 assert(html.includes('id="logoutAccount"') && html.includes('id="openDeleteConfirm"'), "Separate logout and account deletion controls are missing");
-assert(html.includes('id="applyLanguage"') && html.includes('id="profileLanguage"') && html.includes("document.documentElement.lang=selected"), "Persistent interface language controls are missing");
+assert(html.includes('id="applyLanguage"') && html.includes('id="profileLanguage"') && html.includes("document.documentElement.lang=activeInterfaceLanguage"), "Persistent interface language controls are missing");
 assert(html.includes('class="language-switcher"') && html.includes('data-language="ru"') && html.includes('data-language="en"') && html.includes('data-language="de"'), "Visible header language switcher with all three languages is missing");
-assert(html.includes("button.dataset.language===selected") && html.includes("button.addEventListener('click',async()=>"), "Header language buttons are not connected to language selection");
+assert(html.includes("button.dataset.language===activeInterfaceLanguage") && html.includes("button.addEventListener('click',async()=>"), "Header language buttons are not connected to language selection");
 assert(html.includes("function canonicalTranslation(value)") && html.includes("state.lastApplied"), "Language switching must preserve canonical text when dynamic content changes");
 assert(html.includes("new MutationObserver(records=>") && html.includes("record.addedNodes.forEach(translateSubtree)") && html.includes("record.type==='characterData'"), "Dynamically inserted or updated interface text is not translated");
 assert(html.includes("'Добро пожаловать':'Welcome'") && html.includes("'Добро пожаловать':'Willkommen'"), "The onboarding greeting must be translated in English and German");
