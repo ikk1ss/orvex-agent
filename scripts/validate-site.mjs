@@ -17,8 +17,13 @@ assert(html.includes("initMemoryWorkspace") && html.includes("fetch('/api/memory
 assert(html.includes("textContent=item.content"), "Memory content must be rendered as text, not HTML");
 assert(html.includes("encodeURIComponent(item.id)"), "Memory deletion ID is not URL-encoded");
 assert(html.includes('id="memoryLoadMore"') && html.includes("memoryOffset+=data.memories.length") && html.includes("pagination&&data.pagination.hasMore"), "Personal memory pagination is missing");
-assert(html.includes("id=\"memoryAccountTools\"") && html.includes("id=\"exportAccount\"") && html.includes("id=\"deleteAccount\""), "Account data controls are missing");
-assert(html.includes("fetch('/api/account") && html.includes("window.confirm("), "Account export/deletion actions are not wired or deletion confirmation is missing");
+assert(html.includes('id="memoryAccountTools"') && html.includes('id="exportAccount"'), "Account export controls are missing");
+assert(html.includes('id="logoutAccount"') && html.includes('id="openDeleteConfirm"'), "Separate logout and account deletion controls are missing");
+assert(html.includes('id="applyLanguage"') && html.includes('id="profileLanguage"') && html.includes("document.documentElement.lang=selected"), "Persistent interface language controls are missing");
+assert(html.includes('id="deleteConfirmModal"') && html.includes("deleteConfirmStep===1") && html.includes("deletePhrase.value.trim().toLocaleUpperCase('ru')!=='УДАЛИТЬ'"), "Two-step account deletion confirmation is missing");
+assert(html.includes("fetch('/api/account',{method:'DELETE'") && html.includes("tg.close()"), "Account deletion or app exit action is not wired");
+assert(!html.includes('id="deleteAccount"') && !html.includes("window.confirm('Удалить профиль"), "Old combined memory deletion control or one-step confirmation remains");
+
 assert(html.includes("localStorage.removeItem('orvex_agent_profile')"), "Account deletion does not clear local profile data");
 assert(html.includes("setProfileStatus('Профиль не создан'") && html.includes("updateHeaderAction();") && html.includes("openOnboarding();"), "Account deletion must reset profile UI and return the user to onboarding");
 
@@ -72,6 +77,9 @@ assert(html.includes("Профиль синхронизирован с серв�
 assert(html.includes('aria-hidden="true"') && html.includes("setAttribute('aria-hidden','false')"), "Profile dialog accessibility state is missing");
 
 assert(html.includes('id="profileAvatarImage"') && html.includes('id="replayOnboarding"'), "Profile avatar and onboarding replay controls are missing");
+assert(html.includes('class="profile-account-section"') && html.includes('class="profile-account-section danger"'), "Logout and deletion actions must be visually separated");
+assert(html.includes("localStorage.setItem('orvex_agent_language',language)") && html.includes("applyInterfaceLanguage(language)"), "Selected interface language is not saved and applied");
+assert(html.includes("Type УДАЛИТЬ to confirm") && html.includes("Geben Sie УДАЛИТЬ zur Bestätigung ein"), "Deletion phrase must remain consistent across supported languages");
 assert(html.includes("renderProfileAvatar") && html.includes("telegramAvatarUrl"), "Telegram avatar rendering is not wired");
 
 if (failures.length) {
