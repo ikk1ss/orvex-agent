@@ -302,6 +302,137 @@ body{font-size:16px}
 .onboarding-note{font-size:11px;color:#7f8da2;margin-top:15px;line-height:1.6}
 @media(max-width:620px){#onboarding{padding:15px}.onboarding-top{margin-bottom:18px}.onboarding-card{min-height:0;padding:25px 20px}.onboarding-card p{font-size:14px}.onboarding-point{padding:12px}.onboarding-point b{font-size:13px}.onboarding-point span{font-size:12px}.onboarding-actions button{padding:12px 15px}}
 
+
+/* ORVEX glass visual layer: translucent surfaces, soft highlights and depth */
+:root{
+ --glass-bg:rgba(19,29,46,.58);
+ --glass-bg-strong:rgba(17,27,44,.78);
+ --glass-border:rgba(190,211,245,.17);
+ --glass-shine:rgba(255,255,255,.075);
+ --glass-shadow:0 18px 55px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.07);
+}
+body:before{
+ background:
+  radial-gradient(ellipse at 13% 8%,rgba(67,126,220,.25),transparent 36%),
+  radial-gradient(ellipse at 88% 28%,rgba(156,184,225,.14),transparent 32%),
+  radial-gradient(ellipse at 50% 92%,rgba(48,89,151,.13),transparent 38%),
+  linear-gradient(180deg,#0b101b 0%,#080b13 65%);
+}
+.header{
+ background:linear-gradient(180deg,rgba(13,20,33,.72),rgba(13,20,33,.34));
+ border:1px solid rgba(190,211,245,.10);
+ border-top:0;
+ border-radius:0 0 18px 18px;
+ padding:0 18px;
+ backdrop-filter:blur(22px) saturate(145%);
+ -webkit-backdrop-filter:blur(22px) saturate(145%);
+ box-shadow:0 12px 35px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.profile-btn,.outline-link{
+ background:linear-gradient(145deg,rgba(110,157,230,.17),rgba(255,255,255,.035));
+ border-color:rgba(174,201,242,.24);
+ backdrop-filter:blur(14px);
+ -webkit-backdrop-filter:blur(14px);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.12);
+}
+.status-card,.roadmap-item,.notice{
+ position:relative;
+ overflow:hidden;
+ background:linear-gradient(145deg,rgba(35,50,73,.58),rgba(13,21,34,.58));
+ border-color:var(--glass-border);
+ backdrop-filter:blur(20px) saturate(135%);
+ -webkit-backdrop-filter:blur(20px) saturate(135%);
+ box-shadow:var(--glass-shadow);
+}
+.status-card:before,.roadmap-item:before,.notice:before{
+ content:"";
+ position:absolute;
+ inset:0 0 auto;
+ height:1px;
+ background:linear-gradient(90deg,transparent,rgba(226,238,255,.28),transparent);
+ pointer-events:none;
+}
+.status-card:hover{
+ transform:translateY(-4px);
+ border-color:rgba(151,190,250,.36);
+ background:linear-gradient(145deg,rgba(45,65,96,.67),rgba(15,24,39,.68));
+ box-shadow:0 22px 60px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.11);
+}
+.roadmap-item{
+ transition:transform .2s,border-color .2s,background .2s;
+}
+.roadmap-item:hover{
+ transform:translateX(3px);
+ border-color:rgba(151,190,250,.30);
+ background:linear-gradient(145deg,rgba(39,56,83,.66),rgba(14,23,38,.68));
+}
+.visual-glow{background:rgba(77,141,255,.25);filter:blur(58px)}
+.core{
+ background:linear-gradient(145deg,rgba(91,121,174,.42),rgba(18,29,49,.72));
+ border-color:rgba(166,199,255,.48);
+ backdrop-filter:blur(18px);
+ -webkit-backdrop-filter:blur(18px);
+ box-shadow:0 0 0 13px rgba(77,141,255,.07),0 0 85px rgba(77,141,255,.30),inset 0 1px 0 rgba(255,255,255,.24),inset 0 -18px 35px rgba(4,10,20,.3);
+}
+.float-chip{
+ background:linear-gradient(145deg,rgba(35,51,77,.78),rgba(13,21,35,.68));
+ border-color:rgba(196,216,248,.22);
+ backdrop-filter:blur(22px) saturate(150%);
+ -webkit-backdrop-filter:blur(22px) saturate(150%);
+ box-shadow:0 16px 38px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.12);
+}
+#profileModal{
+ background:rgba(3,7,14,.62);
+ backdrop-filter:blur(22px) saturate(125%);
+ -webkit-backdrop-filter:blur(22px) saturate(125%);
+}
+.modal{
+ background:linear-gradient(145deg,rgba(35,50,75,.88),rgba(10,17,29,.91));
+ border-color:rgba(180,207,248,.25);
+ box-shadow:0 35px 110px rgba(0,0,0,.56),inset 0 1px 0 rgba(255,255,255,.13);
+ backdrop-filter:blur(28px) saturate(145%);
+ -webkit-backdrop-filter:blur(28px) saturate(145%);
+}
+.field input,.field select{
+ background:rgba(5,12,23,.48);
+ border-color:rgba(185,207,240,.18);
+}
+#onboarding{
+ background:
+  radial-gradient(ellipse at 15% 0%,rgba(37,71,121,.34),transparent 48%),
+  rgba(5,9,17,.88);
+ backdrop-filter:blur(24px) saturate(130%);
+ -webkit-backdrop-filter:blur(24px) saturate(130%);
+}
+.onboarding-card{
+ background:linear-gradient(145deg,rgba(29,44,68,.78),rgba(10,17,29,.78));
+ border-color:rgba(190,211,245,.20);
+ box-shadow:0 30px 100px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.10);
+ backdrop-filter:blur(28px) saturate(140%);
+ -webkit-backdrop-filter:blur(28px) saturate(140%);
+}
+.onboarding-point{
+ background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018));
+ border-color:rgba(190,211,245,.13);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.045);
+}
+.toast{
+ background:rgba(22,34,54,.88);
+ border-color:rgba(190,211,245,.20);
+ backdrop-filter:blur(18px);
+ -webkit-backdrop-filter:blur(18px);
+}
+@media(max-width:620px){
+ .header{padding:0 10px;border-radius:0 0 14px 14px}
+ .status-card,.roadmap-item{backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
+}
+@media(prefers-reduced-transparency:reduce){
+ .header,.status-card,.roadmap-item,.notice,.float-chip,.modal,.onboarding-card,.toast{
+  backdrop-filter:none;-webkit-backdrop-filter:none;
+ }
+ .status-card,.roadmap-item,.notice{background:rgba(18,28,44,.96)}
+}
+
 </style>
 </head>
 <body>
