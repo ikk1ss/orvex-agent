@@ -157,3 +157,24 @@ test("rejects unsupported account methods", async () => {
   assert.equal(res.statusCode, 405);
   assert.equal(res.headers.Allow, "GET, DELETE");
 });
+
+test("uses sb_secret API keys only in the apikey header", async () => {
+  const originalFetch = global.fetch;
+  const originalKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  let requestOptions;
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "sb_secret_test-key";
+  global.fetch = async (_url, options) => {
+    requestOptions = options;
+    return { ok: true, json: async () => [] };
+  };
+  try {
+    const res = makeResponse();
+    await handler(makeRequest("GET"), res);
+    assert.equal(res.statusCode, 200);
+    assert.equal(requestOptions.headers.apikey, "sb_secret_test-key");
+    assert.equal("Authorization" in requestOptions.headers, false);
+  } finally {
+    process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey;
+    global.fetch = originalFetch;
+  }
+});
