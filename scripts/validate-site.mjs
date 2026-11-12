@@ -23,6 +23,8 @@ assert(html.includes('id="applyLanguage"') && html.includes('id="profileLanguage
 assert(html.includes('class="language-switcher"') && html.includes('data-language="ru"') && html.includes('data-language="en"') && html.includes('data-language="de"'), "Visible header language switcher with all three languages is missing");
 assert(html.includes("button.dataset.language===activeInterfaceLanguage") && html.includes("button.addEventListener('click',async()=>"), "Header language buttons are not connected to language selection");
 assert(html.includes("function canonicalTranslation(value)") && html.includes("state.lastApplied"), "Language switching must preserve canonical text when dynamic content changes");
+assert(html.includes("function renderHeroHeading()") && html.includes("heading.replaceChildren") && html.includes("renderHeroHeading();"), "Hero heading must be rendered as one complete translation for each interface language");
+assert(html.includes("['Your workspace','for','a new kind of intelligence.']") && html.includes("['Ihr Arbeitsbereich','für','eine neue Art von Intelligenz.']"), "Hero heading must have complete English and German translations");
 assert(html.includes("new MutationObserver(records=>") && html.includes("record.addedNodes.forEach(translateSubtree)") && html.includes("record.type==='characterData'"), "Dynamically inserted or updated interface text is not translated");
 assert(html.includes("'Добро пожаловать':'Welcome'") && html.includes("'Добро пожаловать':'Willkommen'"), "The onboarding greeting must be translated in English and German");
 assert(html.includes("--accent-cyan:#72d8d0") && html.includes("--accent-violet:#a996ff"), "The refreshed cyan and violet design palette is missing");
