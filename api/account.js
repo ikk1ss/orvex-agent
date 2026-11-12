@@ -8,6 +8,19 @@ function reply(res, status, payload) {
   return res.status(status).json(payload);
 }
 
+function getSupabaseHeaders(serviceKey) {
+  const headers = {
+    apikey: serviceKey,
+    "Content-Type": "application/json"
+  };
+  // Supabase sb_secret keys are opaque API keys, not JWTs. Do not send
+  // them as Bearer tokens; the Supabase API gateway handles them via apikey.
+  if (!serviceKey.startsWith("sb_secret_")) {
+    headers.Authorization = "Bearer " + serviceKey;
+  }
+  return headers;
+}
+
 function getConfig() {
   const supabaseUrl = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -41,11 +54,7 @@ module.exports = async function accountHandler(req, res) {
 
   const telegramId = String(auth.user.id);
   const root = config.supabaseUrl + "/rest/v1";
-  const headers = {
-    apikey: config.serviceKey,
-    Authorization: "Bearer " + config.serviceKey,
-    "Content-Type": "application/json"
-  };
+  const headers = getSupabaseHeaders(config.serviceKey);
 
   try {
     if (req.method === "GET") {
