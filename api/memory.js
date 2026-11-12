@@ -3,6 +3,8 @@
 const { verifyTelegramInitData } = require("../lib/telegram-auth");
 
 const ALLOWED_CATEGORIES = new Set(["preference", "fact", "goal", "instruction", "note"]);
+const PAGE_SIZE = 50;
+const MAX_OFFSET = 1000000;
 
 function reply(res, status, payload) {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -60,15 +62,37 @@ module.exports = async function memoryHandler(req, res) {
 
   try {
     if (req.method === "GET") {
+      const rawOffset = req.query?.offset;
+      let offset = 0;
+      if (rawOffset !== undefined) {
+        if (typeof rawOffset !== "string" || !/^(0|[1-9]\d{0,6})$/.test(rawOffset)) {
+          return reply(res, 400, { error: "invalid_memory_offset" });
+        }
+        offset = Number(rawOffset);
+        if (!Number.isSafeInteger(offset) || offset > MAX_OFFSET) {
+          return reply(res, 400, { error: "invalid_memory_offset" });
+        }
+      }
+
       const query = new URLSearchParams({
         select: "id,content,category,created_at",
         telegram_id: "eq." + telegramId,
-        order: "created_at.desc",
-        limit: "50"
+        order: "created_at.desc,id.desc",
+        limit: String(PAGE_SIZE + 1),
+        offset: String(offset)
       });
       const response = await fetch(endpoint + "?" + query.toString(), { headers });
       if (!response.ok) return reply(res, 502, { error: "memory_storage_unavailable" });
-      return reply(res, 200, { memories: await response.json() });
+      const rows = await response.json();
+      if (!Array.isArray(rows)) return reply(res, 502, { error: "memory_storage_unavailable" });
+      return reply(res, 200, {
+        memories: rows.slice(0, PAGE_SIZE),
+        pagination: {
+          limit: PAGE_SIZE,
+          offset,
+          hasMore: rows.length > PAGE_SIZE
+        }
+      });
     }
 
     if (req.method === "POST") {
@@ -103,7 +127,7 @@ module.exports = async function memoryHandler(req, res) {
     });
     if (!response.ok) return reply(res, 502, { error: "memory_storage_unavailable" });
     const rows = await response.json();
-    return reply(res, 200, { deleted: rows.length > 0 });
+    return reply(res, 200, { deleted: Array.isArray(rows) && rows.length > 0 });
   } catch {
     return reply(res, 502, { error: "memory_storage_unavailable" });
   }
