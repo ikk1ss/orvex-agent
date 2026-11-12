@@ -77,6 +77,58 @@ test("exports only the authenticated Telegram user's profile and memories", asyn
   }
 });
 
+test("paginates account memory export beyond the PostgREST default row limit", async () => {
+  const originalFetch = global.fetch;
+  const ranges = [];
+  const exported = [];
+  global.fetch = async (url, options = {}) => {
+    const value = String(url);
+    if (value.includes("orvex_profiles")) {
+      return { ok: true, json: async () => [] };
+    }
+    const range = options.headers && options.headers.Range;
+    ranges.push(range);
+    const start = Number(range.split("-")[0]);
+    const page = Array.from({ length: start === 1000 ? 17 : 500 }, (_, index) => ({
+      id: "memory-" + (start + index),
+      content: "Memory " + (start + index)
+    }));
+    exported.push(...page);
+    return { ok: true, json: async () => page };
+  };
+
+  try {
+    const res = makeResponse();
+    await handler(makeRequest("GET"), res);
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.payload.memories.length, 1017);
+    assert.deepEqual(ranges, ["0-499", "500-999", "1000-1499"]);
+    assert.equal(exported.length, res.payload.memories.length);
+  } finally {
+    global.fetch = originalFetch;
+  }
+});
+
+test("refuses to return a silently truncated export above the safety limit", async () => {
+  const originalFetch = global.fetch;
+  global.fetch = async (url) => ({
+    ok: true,
+    json: async () => String(url).includes("orvex_profiles")
+      ? []
+      : Array.from({ length: 500 }, (_, index) => ({ id: "memory-" + index }))
+  });
+
+  try {
+    const res = makeResponse();
+    await handler(makeRequest("GET"), res);
+    assert.equal(res.statusCode, 413);
+    assert.equal(res.payload.error, "account_export_too_large");
+    assert.equal(res.payload.maxMemories, 10000);
+  } finally {
+    global.fetch = originalFetch;
+  }
+});
+
 test("deletes the authenticated user's account through the atomic database function", async () => {
   const originalFetch = global.fetch;
   let requestUrl = "";

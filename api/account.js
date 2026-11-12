@@ -54,22 +54,48 @@ module.exports = async function accountHandler(req, res) {
         telegram_id: "eq." + telegramId,
         limit: "1"
       });
-      const memoryQuery = new URLSearchParams({
-        select: "id,content,category,created_at",
-        telegram_id: "eq." + telegramId,
-        order: "created_at.desc"
-      });
-      const [profileResponse, memoryResponse] = await Promise.all([
-        fetch(root + "/orvex_profiles?" + profileQuery.toString(), { headers }),
-        fetch(root + "/orvex_memories?" + memoryQuery.toString(), { headers })
+      const [profileResponse] = await Promise.all([
+        fetch(root + "/orvex_profiles?" + profileQuery.toString(), { headers })
       ]);
-      if (!profileResponse.ok || !memoryResponse.ok) {
+      if (!profileResponse.ok) {
         return reply(res, 502, { error: "account_export_unavailable" });
       }
-      const [profiles, memories] = await Promise.all([
-        profileResponse.json(),
-        memoryResponse.json()
-      ]);
+
+      const profiles = await profileResponse.json();
+      const memories = [];
+      const pageSize = 500;
+      const maxMemories = 10000;
+
+      // PostgREST may apply a default row limit. Fetch deterministic pages so
+      // an export never silently omits older memory records.
+      for (let offset = 0; offset <= maxMemories; offset += pageSize) {
+        const memoryQuery = new URLSearchParams({
+          select: "id,content,category,created_at",
+          telegram_id: "eq." + telegramId,
+          order: "created_at.desc,id.desc"
+        });
+        const memoryResponse = await fetch(root + "/orvex_memories?" + memoryQuery.toString(), {
+          headers: {
+            ...headers,
+            "Range-Unit": "items",
+            Range: offset + "-" + (offset + pageSize - 1)
+          }
+        });
+        if (!memoryResponse.ok) {
+          return reply(res, 502, { error: "account_export_unavailable" });
+        }
+
+        const page = await memoryResponse.json();
+        if (!Array.isArray(page)) {
+          return reply(res, 502, { error: "account_export_unavailable" });
+        }
+        if (offset === maxMemories && page.length > 0) {
+          return reply(res, 413, { error: "account_export_too_large", maxMemories });
+        }
+
+        memories.push(...page);
+        if (page.length < pageSize) break;
+      }
       return reply(res, 200, {
         schemaVersion: 1,
         exportedAt: new Date().toISOString(),
