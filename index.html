@@ -83,6 +83,7 @@ a{color:inherit;text-decoration:none}
 .notice b{color:#e8bd78;font-weight:700}
 .footer{border-top:1px solid var(--line);padding:22px 0 30px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#66758c;font-size:10px}
 .footer-brand{color:#aab5c7;letter-spacing:.1em;font:700 10px Manrope}
+.profile-avatar-row{display:flex;align-items:center;gap:14px;margin:4px 0 20px;padding:13px;border:1px solid var(--line);border-radius:14px;background:#ffffff05}.profile-avatar{width:64px;height:64px;flex:0 0 64px;border-radius:50%;display:grid;place-items:center;overflow:hidden;border:1px solid #8db6ff55;background:linear-gradient(145deg,#263b5c,#111a2a);color:#dce6f5;font:700 17px Manrope,sans-serif}.profile-avatar img{width:100%;height:100%;object-fit:cover}.profile-avatar-copy{display:grid;gap:4px;min-width:0}.profile-avatar-copy b{font-size:14px;color:var(--text)}.profile-avatar-copy span{font-size:11px;color:var(--muted);line-height:1.45}.profile-onboarding-replay{width:100%;margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:11px;background:#ffffff08;color:#dce5f3;font-size:13px;font-weight:700}.profile-onboarding-replay:hover{border-color:#4d8dff66;background:#4d8dff12}
 #profileModal{position:fixed;inset:0;z-index:20;display:none;place-items:center;padding:18px;background:#03060dcc;backdrop-filter:blur(14px)}
 #profileModal.open{display:grid}
 .modal{width:min(460px,100%);max-height:92vh;overflow:auto;padding:27px;border:1px solid #4d8dff40;border-radius:22px;background:linear-gradient(145deg,#19243a,#0d1422);box-shadow:0 30px 100px #0009}
@@ -732,7 +733,7 @@ section[id]{scroll-margin-top:104px}
     <div class="onboarding-points"><div class="onboarding-point"><b>Без фиктивных обещаний</b><span>В ознакомлении показываются только подтверждённые функции и явно обозначенные планы.</span></div></div>
    </div>
    <div class="onboarding-actions"><button class="onboarding-back" id="onboardingBack" type="button" disabled>Назад</button><button class="onboarding-next" id="onboardingNext" type="button">Далее</button></div>
-   <p class="onboarding-note">Ознакомление показывается, пока у вас нет созданного профиля. После создания профиля оно больше не появляется при обычном запуске.</p>
+   <p class="onboarding-note">Ознакомление можно повторно открыть в любой момент из раздела «Мой профиль».</p>
   </section>
  </div>
 </div>
@@ -741,6 +742,7 @@ section[id]{scroll-margin-top:104px}
 <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 <div class="modal-head"><h2 id="modalTitle">Ваш профиль</h2><button class="close" id="profileClose" type="button" aria-label="Закрыть">×</button></div>
 <p class="modal-intro" id="profileModalIntro">Укажите имя и настройки отображения. В обычном браузере они сохраняются локально, а в Telegram могут синхронизироваться с вашей учётной записью.</p>
+<div class="profile-avatar-row"><div class="profile-avatar" id="profileAvatar" aria-label="Аватар профиля"><span id="profileAvatarInitials">OR</span><img id="profileAvatarImage" alt="" hidden></div><div class="profile-avatar-copy"><b id="profileDisplayName">Ваш профиль</b><span id="profileAvatarHint">Фото профиля из Telegram появится здесь, если оно доступно.</span></div></div>
 <form id="profileForm">
 <label class="field">Как к вам обращаться?<input name="name" type="text" maxlength="60" autocomplete="name" placeholder="Ваше имя" required></label>
 <label class="field">Электронная почта <span>(необязательно)</span><input name="email" type="email" maxlength="120" autocomplete="email" placeholder="name@example.com"></label>
@@ -757,6 +759,7 @@ section[id]{scroll-margin-top:104px}
 <label class="field">Дополнительные инструкции ИИ<textarea name="instructions" maxlength="1000" rows="3" placeholder="Например: сначала объясняй простыми словами, затем приводи пример"></textarea></label>
 <label class="consent"><input name="consent" type="checkbox" required><span id="profileConsentText">Я подтверждаю сохранение указанных настроек профиля.</span></label>
 <button class="primary" type="submit">Сохранить профиль</button>
+<button class="profile-onboarding-replay" id="replayOnboarding" type="button">Посмотреть ознакомление ещё раз</button>
 </form>
 <p class="local-note">Локальное сохранение. Серверной регистрации пока нет.</p>
 </section>
@@ -882,6 +885,7 @@ if(telegramAuthNote){
 let profile=null;
 let lastFocusedElement=null;
 let telegramProfileSession=false;
+let telegramAvatarUrl=null;
 const telegramMiniApp=Boolean(tg&&tg.initData);
 const profileStatus=$('#profileStatus');
 const profileStatusText=$('#profileStatusText');
@@ -915,8 +919,18 @@ try{
   profile={name:savedProfile.name.trim(),email:typeof savedProfile.email==='string'?savedProfile.email:'',interest:typeof savedProfile.interest==='string'?savedProfile.interest:'Личный ИИ-помощник',preferences:savedProfile.preferences&&typeof savedProfile.preferences==='object'?savedProfile.preferences:{}};
  }else if(savedProfile!==null){localStorage.removeItem('orvex_agent_profile')}
 }catch(e){profile=null;try{localStorage.removeItem('orvex_agent_profile')}catch(storageError){}}
+function renderProfileAvatar(){
+ const image=$("#profileAvatarImage"),initials=$("#profileAvatarInitials"),name=$("#profileDisplayName");
+ const displayName=profile&&profile.name||"Ваш профиль";
+ if(name)name.textContent=displayName;
+ if(initials)initials.textContent=displayName.trim().split(/\\s+/).slice(0,2).map(part=>part[0]).join("").toUpperCase()||"OR";
+ if(image&&telegramAvatarUrl){try{const url=new URL(telegramAvatarUrl);if(url.protocol==="https:"){image.src=url.href;image.hidden=false;if(initials)initials.hidden=true;return}}catch(error){}}
+ if(image){image.removeAttribute("src");image.hidden=true}
+ if(initials)initials.hidden=false;
+}
 function fillForm(){
  const p=profile&&profile.preferences||{};
+ renderProfileAvatar();
  form.elements.name.value=profile&&profile.name||'';
  form.elements.email.value=profile&&profile.email||'';
  form.elements.interest.value=profile&&profile.interest||'Личный ИИ-помощник';
@@ -937,7 +951,8 @@ onboardingBackButton.addEventListener('click',()=>changeOnboardingStep(onboardin
 onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)return;if(onboardingStep<onboardingSlides.length-1)changeOnboardingStep(onboardingStep+1,'forward');else{closeOnboarding();openModal()}});
 $('#heroProfile').addEventListener('click',openModal);
 $('#profileClose').addEventListener('click',closeModal);
-if(telegramBack&&telegramBack.onClick)telegramBack.onClick(closeModal);
+if(telegramBack&&telegramBack.onClick)telegramBack.onClick(()=>onboarding.classList.contains('open')?closeOnboarding():closeModal());
+$('#replayOnboarding').addEventListener('click',()=>{closeModal();openOnboarding()});
 modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
 document.addEventListener('keydown',e=>{
  if(!modal.classList.contains('open'))return;
@@ -1006,6 +1021,7 @@ async function initProfileWorkspace(){
   const sessionResponse=await fetch('/api/session',{headers,cache:'no-store'});
   if(!sessionResponse.ok)throw new Error('telegram_session_unavailable');
   const session=await sessionResponse.json();
+  telegramAvatarUrl=session.user&&typeof session.user.photoUrl==='string'?session.user.photoUrl:null;
   if(!session.authenticated)throw new Error('telegram_session_unavailable');
   telegramProfileSession=true;
   const response=await fetch('/api/profile',{headers,cache:'no-store'});
@@ -1023,6 +1039,7 @@ async function initProfileWorkspace(){
   }
   setProfileStatus('Синхронизирован','Профиль привязан к Telegram ID и синхронизируется через серверную базу ORVEX Agent.',true);
   updateHeaderAction();
+  renderProfileAvatar();
   if(!profile)openOnboarding();
  }catch(error){
   telegramProfileSession=false;
