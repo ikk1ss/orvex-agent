@@ -904,7 +904,7 @@ function applyInterfaceLanguage(language){
  });
 }
 
-function updateHeaderAction(){const button=$('#profileOpen');button.textContent=profile?'Мой профиль':'Начать';const remove=$('#openDeleteConfirm');if(remove)remove.disabled=!(telegramMiniApp&&telegramProfileSession&&profile);applyInterfaceLanguage((profile&&profile.preferences&&profile.preferences.language)||localStorage.getItem('orvex_agent_language')||'ru')}
+function updateHeaderAction(){const button=$('#profileOpen');button.textContent=profile?'Мой профиль':'Начать';const remove=$('#openDeleteConfirm');if(remove)remove.disabled=!(telegramMiniApp&&telegramProfileSession);applyInterfaceLanguage((profile&&profile.preferences&&profile.preferences.language)||localStorage.getItem('orvex_agent_language')||'ru')}
 const tg=window.Telegram&&window.Telegram.WebApp;
 const telegramBack=tg&&tg.BackButton;
 function syncTelegramViewport(){
