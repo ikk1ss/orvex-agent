@@ -40,11 +40,11 @@ Run:
 
 ```sh
 node scripts/validate-site.mjs
-node --test scripts/backend-auth.test.cjs
+node --test scripts/backend-auth.test.cjs scripts/memory-api.test.cjs
 ```
 
 The authentication tests use a fake test token and do not require live Telegram or Supabase credentials.
 
 ## Current boundary
 
-The API and database schema are prepared, but live profile persistence is not active until the Supabase table exists and the three Vercel environment variables are configured. Real-device and in-Telegram checks still need to be performed. AI-provider integration remains intentionally separate and is not enabled by this backend setup.
+The profile and memory APIs and database schema are prepared, but live profile persistence and memory access are not active until the Supabase tables exist and the three Vercel environment variables are configured. The website exposes the memory manager only after the Telegram session is verified. Real-device and in-Telegram checks still need to be performed. AI-provider integration remains intentionally separate and is not enabled by this backend setup.
