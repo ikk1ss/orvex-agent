@@ -889,6 +889,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  #profileModal .profile-account-section{padding:14px}
 }
 
+
+/* Keep the language dropdown above the page content and fully clickable. */
+.header{z-index:20}
+.language-menu{z-index:21}
+.language-options{z-index:22;pointer-events:auto}
+.language-options .language-option{position:relative;z-index:1;pointer-events:auto;cursor:pointer}
 </style>
 </head>
 <body class="orvex-booting">
