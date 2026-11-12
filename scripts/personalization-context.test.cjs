@@ -171,3 +171,23 @@ test("does not mutate supplied profile or memory records", () => {
   assert.deepEqual(profile, profileBefore);
   assert.deepEqual(memories, memoriesBefore);
 });
+
+test("keeps the context within a small character budget when profile fields are long", () => {
+  const result = buildPersonalizationContext({
+    profile: {
+      display_name: "Test User",
+      preferences: {
+        about: "A".repeat(500),
+        topics: "B".repeat(500),
+        instructions: "C".repeat(1000)
+      }
+    },
+    memories: [{ id: "1", category: "fact", content: "A short memory" }],
+    maxChars: 1000
+  });
+  assert.ok(result.contextText.length <= 1000);
+  assert.ok(result.stats.omittedProfileFields > 0);
+  if (result.memories.length) {
+    assert.ok(result.contextText.includes(JSON.stringify(result.memories[0].content)));
+  }
+});
