@@ -280,10 +280,26 @@ body{font-size:16px}
 
 
 /* First-entry onboarding. Copy and feature status are maintained here. */
-#onboarding{position:fixed;inset:0;z-index:40;display:none;overflow:hidden auto;padding:22px;background:radial-gradient(ellipse at 15% 0%,#25477955,transparent 45%),#080b13;isolation:isolate}
+#onboarding{position:fixed;inset:0;z-index:40;display:none;overflow:hidden auto;padding:22px;background:radial-gradient(ellipse at 15% 0%,rgba(65,112,190,.24),transparent 42%),radial-gradient(ellipse at 88% 88%,rgba(120,150,198,.13),transparent 38%),linear-gradient(145deg,#0a1220 0%,#080b13 58%,#0b1321 100%);isolation:isolate}
 #onboarding.open{display:grid;place-items:center}
 .onboarding-shell{position:relative;z-index:2;width:min(760px,100%);margin:auto}
 .onboarding-ambient{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.onboarding-ambient:before{content:"";position:absolute;inset:0;opacity:.25;background-image:linear-gradient(rgba(190,211,245,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(190,211,245,.045) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse at center,black,transparent 78%)}
+.onboarding-ambient:after{content:"";position:absolute;inset:-40%;opacity:.28;background:conic-gradient(from 25deg at 50% 50%,transparent 0deg,rgba(77,141,255,.12) 45deg,transparent 100deg,rgba(197,211,232,.09) 170deg,transparent 230deg);filter:blur(48px);animation:orvex-ambient-turn 42s linear infinite}
+@keyframes orvex-ambient-turn{to{transform:rotate(360deg)}}
+.ambient-orb{position:absolute;border-radius:50%;filter:blur(58px);will-change:transform;opacity:.48}
+.ambient-orb-a{width:260px;height:260px;left:-70px;top:12%;background:rgba(52,113,215,.38);animation:orvex-orb-drift-a 19s ease-in-out infinite alternate}
+.ambient-orb-b{width:300px;height:300px;right:-90px;top:28%;background:rgba(123,151,195,.2);animation:orvex-orb-drift-b 23s ease-in-out infinite alternate}
+.ambient-orb-c{width:220px;height:220px;left:34%;bottom:-110px;background:rgba(50,92,164,.24);animation:orvex-orb-drift-c 21s ease-in-out infinite alternate}
+@keyframes orvex-orb-drift-a{to{transform:translate3d(95px,55px,0) scale(1.18)}}
+@keyframes orvex-orb-drift-b{to{transform:translate3d(-105px,65px,0) scale(.86)}}
+@keyframes orvex-orb-drift-c{to{transform:translate3d(75px,-70px,0) scale(1.12)}}
+.ambient-orbit{position:absolute;left:50%;top:50%;border:1px solid rgba(173,201,242,.1);border-radius:50%;transform:translate(-50%,-50%) rotate(-22deg);box-shadow:0 0 50px rgba(77,141,255,.035),inset 0 0 35px rgba(77,141,255,.025)}
+.ambient-orbit-a{width:min(86vw,900px);height:min(86vw,900px);animation:orvex-orbit-breathe 12s ease-in-out infinite alternate}
+.ambient-orbit-b{width:min(68vw,700px);height:min(68vw,700px);transform:translate(-50%,-50%) rotate(38deg);border-style:dashed;opacity:.5;animation:orvex-orbit-breathe 16s ease-in-out infinite alternate-reverse}
+@keyframes orvex-orbit-breathe{to{opacity:.22;scale:1.045}}
+.ambient-beam{position:absolute;width:70vw;height:1px;left:-15%;top:50%;background:linear-gradient(90deg,transparent,rgba(118,166,238,.32),transparent);filter:blur(1px);transform:rotate(-24deg);animation:orvex-beam-drift 14s ease-in-out infinite alternate}
+@keyframes orvex-beam-drift{to{transform:translate3d(28vw,90px,0) rotate(-24deg);opacity:.3}}
 .onboarding-ambient-label{position:absolute;top:8%;right:5%;color:#8fa9d0;font-size:10px;letter-spacing:.18em;font-weight:700;opacity:.72}
 .task-lane{position:absolute;left:0;display:flex;gap:12px;width:max-content;opacity:.62;will-change:transform}
 .task-lane-one{top:17%;animation:orvex-task-pass 48s linear infinite}
@@ -297,7 +313,10 @@ body{font-size:16px}
 .onboarding-brand{font:800 13px Manrope,sans-serif;letter-spacing:.13em;color:#e4ebf7}
 .onboarding-progress{height:3px;background:#ffffff14;border-radius:9px;overflow:hidden;margin-bottom:30px}
 .onboarding-progress span{display:block;height:100%;width:25%;background:linear-gradient(90deg,#4d8dff,#c5d3e8);transition:width .45s cubic-bezier(.2,.7,.2,1)}
-.onboarding-card{min-height:340px;padding:clamp(24px,5vw,48px);border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,#151f31ed,#0d1421f2);box-shadow:0 30px 100px #0005}
+.onboarding-card{position:relative;min-height:340px;padding:clamp(24px,5vw,48px);border:1px solid rgba(190,211,245,.19);border-radius:24px;background:linear-gradient(145deg,rgba(21,32,52,.88),rgba(9,16,29,.91));box-shadow:0 35px 110px rgba(0,0,0,.48),0 0 65px rgba(77,141,255,.09),inset 0 1px 0 rgba(255,255,255,.09);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);overflow:hidden}
+.onboarding-card:before{content:"";position:absolute;inset:0 12% auto;height:1px;background:linear-gradient(90deg,transparent,rgba(205,222,248,.4),transparent);pointer-events:none}
+.onboarding-slide{position:relative;z-index:1}
+.onboarding-slide.is-leaving{position:absolute;inset:0;padding:clamp(24px,5vw,48px);pointer-events:none;z-index:2}
 .onboarding-kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9bb9ed;font-weight:700}
 .onboarding-card h1{font:800 clamp(30px,5vw,48px)/1.12 Manrope,sans-serif;letter-spacing:-.05em;margin:18px 0}
 .onboarding-card p{font-size:15px;line-height:1.8;color:#aab6c9;max-width:620px}
@@ -310,7 +329,7 @@ body{font-size:16px}
 .onboarding-next{border:0;color:#09111c;background:linear-gradient(110deg,#4d8dff,#c5d3e8)}
 .onboarding-back:disabled{opacity:.25;cursor:default}
 .onboarding-note{font-size:11px;color:#7f8da2;margin-top:15px;line-height:1.6}
-@media(max-width:620px){#onboarding{padding:15px}.onboarding-top{margin-bottom:18px}.onboarding-card{min-height:0;padding:25px 20px}.onboarding-card p{font-size:14px}.onboarding-point{padding:12px}.onboarding-point b{font-size:13px}.onboarding-point span{font-size:12px}.onboarding-actions button{padding:12px 15px}.onboarding-ambient-label{top:5%;right:16px;font-size:8px}.task-lane{opacity:.35}.task-lane-one{top:11%}.task-lane-two{bottom:8%}.task-card{width:160px;min-height:58px;padding:8px 10px}.task-card strong{font-size:10px}.task-card span{font-size:8px}}
+@media(max-width:620px){#onboarding{padding:15px}.onboarding-top{margin-bottom:18px}.onboarding-card{min-height:0;padding:25px 20px}.onboarding-slide.is-leaving{padding:25px 20px}.onboarding-card p{font-size:14px}.onboarding-point{padding:12px}.onboarding-point b{font-size:13px}.onboarding-point span{font-size:12px}.onboarding-actions button{padding:12px 15px}.onboarding-ambient-label{top:5%;right:16px;font-size:8px}.task-lane{opacity:.28}.task-lane-one{top:11%}.task-lane-two{bottom:8%}.task-card{width:160px;min-height:58px;padding:8px 10px}.task-card strong{font-size:10px}.task-card span{font-size:8px}.ambient-orb{filter:blur(48px);opacity:.35}.ambient-orbit-b{width:92vw;height:92vw}.ambient-beam{opacity:.35}}
 
 
 /* ORVEX glass visual layer: translucent surfaces, soft highlights and depth */
@@ -509,10 +528,7 @@ body:before{
 @media(hover:none){
  .status-card:hover,.roadmap-item:hover,.profile-btn:hover,.primary-link:hover,.outline-link:hover{transform:none}
 }
-@keyframes onboarding-slide-forward{from{opacity:0;transform:translate3d(28px,0,0);filter:blur(4px)}to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}}
-@keyframes onboarding-slide-back{from{opacity:0;transform:translate3d(-28px,0,0);filter:blur(4px)}to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}}
-.onboarding-card.slide-forward .onboarding-slide:not([hidden]){animation:onboarding-slide-forward .42s cubic-bezier(.2,.7,.2,1) both}
-.onboarding-card.slide-back .onboarding-slide:not([hidden]){animation:onboarding-slide-back .42s cubic-bezier(.2,.7,.2,1) both}
+/* Onboarding slide motion is coordinated with the Web Animations API. */
 @media(prefers-reduced-motion:reduce){
  .header,.hero .eyebrow,.hero h1,.hero-copy,.hero-actions,.hero-footnote,
  .visual-glow,.orbit,.core,.float-chip,.status-card,.roadmap-item,.onboarding-card,
@@ -663,6 +679,8 @@ section[id]{scroll-margin-top:104px}
 
 <div id="onboarding" aria-hidden="true">
  <div class="onboarding-ambient" aria-hidden="true">
+ <div class="ambient-orb ambient-orb-a"></div><div class="ambient-orb ambient-orb-b"></div><div class="ambient-orb ambient-orb-c"></div>
+ <div class="ambient-orbit ambient-orbit-a"></div><div class="ambient-orbit ambient-orbit-b"></div><div class="ambient-beam"></div>
  <div class="onboarding-ambient-label">ПРИМЕРЫ СЦЕНАРИЕВ В РАЗРАБОТКЕ</div>
  <div class="task-lane task-lane-one">
   <div class="task-card"><strong>Составить план дня</strong><span>Будущий сценарий</span></div>
@@ -738,17 +756,59 @@ const modal=$('#profileModal'),form=$('#profileForm');
 const onboarding=$('#onboarding');
 const onboardingSlides=[...document.querySelectorAll('[data-onboarding-step]')];
 let onboardingStep=0;
-function renderOnboarding(direction='forward'){
- const card=$('.onboarding-card');
- card.classList.remove('slide-forward','slide-back');
- card.classList.add(direction==='back'?'slide-back':'slide-forward');
- onboardingSlides.forEach((slide,index)=>{slide.hidden=index!==onboardingStep});
+let onboardingTransitioning=false;
+const onboardingBackButton=$('#onboardingBack');
+const onboardingNextButton=$('#onboardingNext');
+const onboardingCard=$('.onboarding-card');
+const onboardingMotionReduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function syncOnboardingControls(){
  $('#onboardingCounter').textContent=String(onboardingStep+1).padStart(2,'0')+' / '+String(onboardingSlides.length).padStart(2,'0');
  $('#onboardingProgress').style.width=((onboardingStep+1)/onboardingSlides.length*100)+'%';
- $('#onboardingBack').disabled=onboardingStep===0;
- $('#onboardingNext').textContent=onboardingStep===onboardingSlides.length-1?'Начать':'Далее';
+ onboardingBackButton.disabled=onboardingStep===0||onboardingTransitioning;
+ onboardingNextButton.disabled=onboardingTransitioning;
+ onboardingNextButton.textContent=onboardingStep===onboardingSlides.length-1?'Начать':'Далее';
 }
-function openOnboarding(){onboardingStep=0;renderOnboarding();onboarding.classList.add('open');onboarding.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack()}
+function renderOnboarding(){
+ onboardingSlides.forEach((slide,index)=>{slide.hidden=index!==onboardingStep;slide.classList.remove('is-leaving')});
+ syncOnboardingControls();
+}
+async function changeOnboardingStep(nextStep,direction){
+ if(onboardingTransitioning||nextStep<0||nextStep>=onboardingSlides.length||nextStep===onboardingStep)return;
+ const outgoing=onboardingSlides[onboardingStep];
+ const incoming=onboardingSlides[nextStep];
+ if(onboardingMotionReduced||!outgoing||!incoming||typeof outgoing.animate!=='function'){
+  onboardingStep=nextStep;renderOnboarding();return;
+ }
+ onboardingTransitioning=true;
+ syncOnboardingControls();
+ const oldHeight=onboardingCard.getBoundingClientRect().height;
+ incoming.hidden=false;
+ outgoing.classList.add('is-leaving');
+ outgoing.style.padding='';
+ onboardingCard.style.height=oldHeight+'px';
+ onboardingCard.style.minHeight='0';
+ const newHeight=onboardingCard.scrollHeight;
+ const forward=direction!=='back';
+ const x=forward?24:-24;
+ const easing='cubic-bezier(.22,1,.36,1)';
+ const animations=[
+  outgoing.animate([{opacity:1,transform:'translate3d(0,0,0) scale(1)',filter:'blur(0)'},{opacity:0,transform:'translate3d('+(-x)+'px,0,0) scale(.985)',filter:'blur(5px)'}],{duration:520,easing,fill:'forwards'}),
+  incoming.animate([{opacity:0,transform:'translate3d('+x+'px,0,0) scale(.985)',filter:'blur(5px)'},{opacity:1,transform:'translate3d(0,0,0) scale(1)',filter:'blur(0)'}],{duration:680,easing,fill:'forwards'}),
+  onboardingCard.animate([{height:oldHeight+'px'},{height:newHeight+'px'}],{duration:620,easing,fill:'forwards'})
+ ];
+ try{await Promise.all(animations.map(animation=>animation.finished))}catch(error){}
+ outgoing.hidden=true;
+ outgoing.classList.remove('is-leaving');
+ outgoing.removeAttribute('style');
+ incoming.removeAttribute('style');
+ animations.forEach(animation=>animation.cancel());
+ onboardingCard.style.height='';
+ onboardingCard.style.minHeight='';
+ onboardingStep=nextStep;
+ onboardingTransitioning=false;
+ syncOnboardingControls();
+}
+function openOnboarding(){onboardingStep=0;onboardingTransitioning=false;renderOnboarding();onboarding.classList.add('open');onboarding.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack()}
 function closeOnboarding(){onboarding.classList.remove('open');onboarding.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack()}
 function updateHeaderAction(){const button=$('#profileOpen');button.textContent=profile?'Мой профиль':'Начать'}
 const tg=window.Telegram&&window.Telegram.WebApp;
@@ -847,8 +907,8 @@ function openModal(){lastFocusedElement=document.activeElement;fillForm();modal.
 function closeModal(){if(!profile)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();if(lastFocusedElement&&typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();lastFocusedElement=null}
 function toast(message){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=message;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 $('#profileOpen').addEventListener('click',()=>profile?openModal():openOnboarding());
-$('#onboardingBack').addEventListener('click',()=>{if(onboardingStep>0){onboardingStep--;renderOnboarding('back')}});
-$('#onboardingNext').addEventListener('click',()=>{if(onboardingStep<onboardingSlides.length-1){onboardingStep++;renderOnboarding('forward')}else{closeOnboarding();openModal()}});
+onboardingBackButton.addEventListener('click',()=>changeOnboardingStep(onboardingStep-1,'back'));
+onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)return;if(onboardingStep<onboardingSlides.length-1)changeOnboardingStep(onboardingStep+1,'forward');else{closeOnboarding();openModal()}});
 $('#heroProfile').addEventListener('click',openModal);
 $('#profileClose').addEventListener('click',closeModal);
 if(telegramBack&&telegramBack.onClick)telegramBack.onClick(closeModal);
