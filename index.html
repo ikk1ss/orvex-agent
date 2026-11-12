@@ -280,13 +280,23 @@ body{font-size:16px}
 
 
 /* First-entry onboarding. Copy and feature status are maintained here. */
-#onboarding{position:fixed;inset:0;z-index:40;display:none;overflow-y:auto;padding:22px;background:radial-gradient(ellipse at 15% 0%,#25477955,transparent 45%),#080b13}
+#onboarding{position:fixed;inset:0;z-index:40;display:none;overflow:hidden auto;padding:22px;background:radial-gradient(ellipse at 15% 0%,#25477955,transparent 45%),#080b13;isolation:isolate}
 #onboarding.open{display:grid;place-items:center}
-.onboarding-shell{width:min(760px,100%);margin:auto}
+.onboarding-shell{position:relative;z-index:2;width:min(760px,100%);margin:auto}
+.onboarding-ambient{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.onboarding-ambient-label{position:absolute;top:8%;right:5%;color:#8fa9d0;font-size:10px;letter-spacing:.18em;font-weight:700;opacity:.72}
+.task-lane{position:absolute;left:0;display:flex;gap:12px;width:max-content;opacity:.62;will-change:transform}
+.task-lane-one{top:17%;animation:orvex-task-pass 48s linear infinite}
+.task-lane-two{bottom:15%;animation:orvex-task-pass-reverse 56s linear infinite}
+.task-card{width:190px;min-height:66px;padding:10px 13px;border:1px solid rgba(185,210,248,.17);border-radius:13px;background:linear-gradient(145deg,rgba(34,52,80,.58),rgba(13,23,39,.48));box-shadow:0 12px 35px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.07);backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px)}
+.task-card strong{display:block;color:#dce8fb;font-size:12px;font-weight:600}
+.task-card span{display:block;margin-top:3px;color:#8fa8ce;font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+@keyframes orvex-task-pass{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+@keyframes orvex-task-pass-reverse{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}
 .onboarding-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;color:#9aa8bc;font-size:12px}
 .onboarding-brand{font:800 13px Manrope,sans-serif;letter-spacing:.13em;color:#e4ebf7}
 .onboarding-progress{height:3px;background:#ffffff14;border-radius:9px;overflow:hidden;margin-bottom:30px}
-.onboarding-progress span{display:block;height:100%;width:25%;background:linear-gradient(90deg,#4d8dff,#c5d3e8);transition:width .2s}
+.onboarding-progress span{display:block;height:100%;width:25%;background:linear-gradient(90deg,#4d8dff,#c5d3e8);transition:width .45s cubic-bezier(.2,.7,.2,1)}
 .onboarding-card{min-height:340px;padding:clamp(24px,5vw,48px);border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,#151f31ed,#0d1421f2);box-shadow:0 30px 100px #0005}
 .onboarding-kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9bb9ed;font-weight:700}
 .onboarding-card h1{font:800 clamp(30px,5vw,48px)/1.12 Manrope,sans-serif;letter-spacing:-.05em;margin:18px 0}
@@ -300,7 +310,7 @@ body{font-size:16px}
 .onboarding-next{border:0;color:#09111c;background:linear-gradient(110deg,#4d8dff,#c5d3e8)}
 .onboarding-back:disabled{opacity:.25;cursor:default}
 .onboarding-note{font-size:11px;color:#7f8da2;margin-top:15px;line-height:1.6}
-@media(max-width:620px){#onboarding{padding:15px}.onboarding-top{margin-bottom:18px}.onboarding-card{min-height:0;padding:25px 20px}.onboarding-card p{font-size:14px}.onboarding-point{padding:12px}.onboarding-point b{font-size:13px}.onboarding-point span{font-size:12px}.onboarding-actions button{padding:12px 15px}}
+@media(max-width:620px){#onboarding{padding:15px}.onboarding-top{margin-bottom:18px}.onboarding-card{min-height:0;padding:25px 20px}.onboarding-card p{font-size:14px}.onboarding-point{padding:12px}.onboarding-point b{font-size:13px}.onboarding-point span{font-size:12px}.onboarding-actions button{padding:12px 15px}.onboarding-ambient-label{top:5%;right:16px;font-size:8px}.task-lane{opacity:.35}.task-lane-one{top:11%}.task-lane-two{bottom:8%}.task-card{width:160px;min-height:58px;padding:8px 10px}.task-card strong{font-size:10px}.task-card span{font-size:8px}}
 
 
 /* ORVEX glass visual layer: translucent surfaces, soft highlights and depth */
@@ -499,9 +509,14 @@ body:before{
 @media(hover:none){
  .status-card:hover,.roadmap-item:hover,.profile-btn:hover,.primary-link:hover,.outline-link:hover{transform:none}
 }
+@keyframes onboarding-slide-forward{from{opacity:0;transform:translate3d(28px,0,0);filter:blur(4px)}to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}}
+@keyframes onboarding-slide-back{from{opacity:0;transform:translate3d(-28px,0,0);filter:blur(4px)}to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}}
+.onboarding-card.slide-forward .onboarding-slide:not([hidden]){animation:onboarding-slide-forward .42s cubic-bezier(.2,.7,.2,1) both}
+.onboarding-card.slide-back .onboarding-slide:not([hidden]){animation:onboarding-slide-back .42s cubic-bezier(.2,.7,.2,1) both}
 @media(prefers-reduced-motion:reduce){
  .header,.hero .eyebrow,.hero h1,.hero-copy,.hero-actions,.hero-footnote,
- .visual-glow,.orbit,.core,.float-chip,.status-card,.roadmap-item,.onboarding-card{
+ .visual-glow,.orbit,.core,.float-chip,.status-card,.roadmap-item,.onboarding-card,
+ .task-lane,.onboarding-card.slide-forward .onboarding-slide:not([hidden]),.onboarding-card.slide-back .onboarding-slide:not([hidden]){
   animation:none!important;
  }
  .status-card,.roadmap-item,.profile-btn,.primary-link,.outline-link{will-change:auto}
@@ -647,7 +662,30 @@ section[id]{scroll-margin-top:104px}
 <footer class="footer wrap"><span class="footer-brand">ORVEX AGENT</span><span>Персональное пространство на базе искусственного интеллекта</span><span>© 2026 ORVEX Agent</span></footer>
 
 <div id="onboarding" aria-hidden="true">
- <div class="onboarding-shell">
+ <div class="onboarding-ambient" aria-hidden="true">
+ <div class="onboarding-ambient-label">ПРИМЕРЫ СЦЕНАРИЕВ В РАЗРАБОТКЕ</div>
+ <div class="task-lane task-lane-one">
+  <div class="task-card"><strong>Составить план дня</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Подготовить письмо</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Разобрать документ</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Помочь с кодом</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Составить план дня</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Подготовить письмо</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Разобрать документ</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Помочь с кодом</strong><span>Будущий сценарий</span></div>
+ </div>
+ <div class="task-lane task-lane-two">
+  <div class="task-card"><strong>Найти нужную информацию</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Собрать идеи проекта</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Напомнить о задаче</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Сравнить варианты</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Найти нужную информацию</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Собрать идеи проекта</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Напомнить о задаче</strong><span>Будущий сценарий</span></div>
+  <div class="task-card"><strong>Сравнить варианты</strong><span>Будущий сценарий</span></div>
+ </div>
+</div>
+<div class="onboarding-shell">
   <div class="onboarding-top"><span class="onboarding-brand">ORVEX AGENT</span><span id="onboardingCounter">01 / 04</span></div>
   <div class="onboarding-progress" aria-hidden="true"><span id="onboardingProgress"></span></div>
   <section class="onboarding-card" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
@@ -700,7 +738,10 @@ const modal=$('#profileModal'),form=$('#profileForm');
 const onboarding=$('#onboarding');
 const onboardingSlides=[...document.querySelectorAll('[data-onboarding-step]')];
 let onboardingStep=0;
-function renderOnboarding(){
+function renderOnboarding(direction='forward'){
+ const card=$('.onboarding-card');
+ card.classList.remove('slide-forward','slide-back');
+ card.classList.add(direction==='back'?'slide-back':'slide-forward');
  onboardingSlides.forEach((slide,index)=>{slide.hidden=index!==onboardingStep});
  $('#onboardingCounter').textContent=String(onboardingStep+1).padStart(2,'0')+' / '+String(onboardingSlides.length).padStart(2,'0');
  $('#onboardingProgress').style.width=((onboardingStep+1)/onboardingSlides.length*100)+'%';
@@ -806,8 +847,8 @@ function openModal(){lastFocusedElement=document.activeElement;fillForm();modal.
 function closeModal(){if(!profile)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();if(lastFocusedElement&&typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();lastFocusedElement=null}
 function toast(message){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=message;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 $('#profileOpen').addEventListener('click',()=>profile?openModal():openOnboarding());
-$('#onboardingBack').addEventListener('click',()=>{if(onboardingStep>0){onboardingStep--;renderOnboarding()}});
-$('#onboardingNext').addEventListener('click',()=>{if(onboardingStep<onboardingSlides.length-1){onboardingStep++;renderOnboarding()}else{closeOnboarding();openModal()}});
+$('#onboardingBack').addEventListener('click',()=>{if(onboardingStep>0){onboardingStep--;renderOnboarding('back')}});
+$('#onboardingNext').addEventListener('click',()=>{if(onboardingStep<onboardingSlides.length-1){onboardingStep++;renderOnboarding('forward')}else{closeOnboarding();openModal()}});
 $('#heroProfile').addEventListener('click',openModal);
 $('#profileClose').addEventListener('click',closeModal);
 if(telegramBack&&telegramBack.onClick)telegramBack.onClick(closeModal);
