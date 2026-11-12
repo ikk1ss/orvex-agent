@@ -607,6 +607,32 @@ section[id]{scroll-margin-top:104px}
 .memory-more{border:1px solid rgba(185,207,240,.2);border-radius:11px;background:rgba(255,255,255,.045);color:#dce5f3;padding:11px 18px;font-size:12px;font-weight:700;transition:background .2s,border-color .2s}
 .memory-more:hover{background:rgba(77,141,255,.12);border-color:rgba(77,141,255,.45)}
 .memory-more:disabled{opacity:.5;cursor:wait}
+
+.profile-account-actions{display:grid;gap:14px;margin-top:20px}
+.profile-account-section{padding:16px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025)}
+.profile-account-section h3{margin:0 0 6px;font:700 13px Manrope,sans-serif;color:#dce6f5}
+.profile-account-section p{margin:0 0 12px;color:#91a0b5;font-size:12px;line-height:1.6}
+.profile-account-button{width:100%;padding:12px 14px;border:1px solid rgba(185,207,240,.22);border-radius:11px;background:rgba(255,255,255,.055);color:#e4ebf7;font-size:13px;font-weight:700}
+.profile-account-button:hover{background:rgba(77,141,255,.12);border-color:rgba(77,141,255,.42)}
+.profile-account-section.danger{border-color:rgba(232,125,125,.28);background:rgba(120,34,42,.08)}
+.profile-account-section.danger h3{color:#f0b2b2}
+.profile-account-section.danger .profile-account-button{border-color:rgba(232,125,125,.38);color:#ffc2c2;background:rgba(120,34,42,.13)}
+.profile-account-button:disabled{opacity:.4;cursor:not-allowed}
+.language-apply-row{display:grid;grid-template-columns:1fr auto;gap:9px;align-items:end}
+.language-apply-row .field{margin:0}
+.language-apply-row button{min-height:44px;padding:10px 13px}
+#deleteConfirmModal{position:fixed;inset:0;z-index:40;display:none;place-items:center;padding:18px;background:rgba(3,6,13,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+#deleteConfirmModal.open{display:grid}
+.delete-confirm-card{width:min(420px,100%);padding:25px;border:1px solid rgba(232,125,125,.35);border-radius:20px;background:linear-gradient(145deg,#30202b,#111521);box-shadow:0 30px 100px rgba(0,0,0,.6)}
+.delete-confirm-card h2{margin:0;font:700 21px Manrope,sans-serif;color:#f4e8ec}
+.delete-confirm-card p{font-size:13px;line-height:1.65;color:#b8aab4}
+.delete-confirm-card .field{margin:14px 0}
+.delete-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.delete-confirm-actions button{min-height:44px;border-radius:11px;font-size:12px;font-weight:800}
+.delete-cancel{border:1px solid var(--line);background:#ffffff08;color:#e4ebf7}
+.delete-proceed{border:1px solid rgba(232,125,125,.4);background:rgba(145,42,52,.25);color:#ffc2c2}
+.delete-proceed:disabled{opacity:.35;cursor:not-allowed}
+@media(max-width:620px){.language-apply-row{grid-template-columns:1fr}.delete-confirm-card{padding:21px}}
 </style>
 </head>
 <body class="orvex-booting">
@@ -667,7 +693,7 @@ section[id]{scroll-margin-top:104px}
 </form>
 <div class="memory-list" id="memoryList" aria-live="polite"></div>
 <div class="memory-pagination"><button class="memory-more" id="memoryLoadMore" type="button" hidden>Показать ещё</button></div>
-<div class="memory-account-tools" id="memoryAccountTools" hidden><button class="memory-export" id="exportAccount" type="button">Скачать мои данные</button><button class="memory-account-delete" id="deleteAccount" type="button">Удалить все данные</button></div>
+<div class="memory-account-tools" id="memoryAccountTools" hidden><button class="memory-export" id="exportAccount" type="button">Скачать мои данные</button></div>
 <p class="memory-warning">Память доступна только после подтверждения Telegram-сессии и настройки серверной базы. Не сохраняйте пароли, ключи доступа или платёжные данные.</p>
 </div>
 </section>
@@ -757,7 +783,7 @@ section[id]{scroll-margin-top:104px}
 <label class="field">Кратко о себе<textarea name="about" maxlength="500" rows="3" placeholder="Что ORVEX Agent должен учитывать о вас?"></textarea></label>
 <label class="field">Ваши интересы и темы<textarea name="topics" maxlength="500" rows="3" placeholder="Например: игры, технологии, обучение, дизайн"></textarea></label>
 <div class="profile-divider"><span>Как должен отвечать ИИ</span></div>
-<label class="field">Язык ответов<select name="language"><option value="ru">Русский</option><option value="en">English</option><option value="de">Deutsch</option></select></label>
+<div class="profile-divider"><span>Язык интерфейса</span></div><div class="language-apply-row"><label class="field">Выберите язык<select name="language" id="profileLanguage"><option value="ru">Русский</option><option value="en">English</option><option value="de">Deutsch</option></select></label><button class="profile-account-button" id="applyLanguage" type="button">Сменить язык</button></div>
 <label class="field">Длина ответов<select name="responseLength"><option value="short">Кратко</option><option value="balanced">Сбалансированно</option><option value="detailed">Подробно</option></select></label>
 <label class="field">Тон общения<select name="tone"><option value="neutral">Нейтральный</option><option value="friendly">Дружелюбный</option><option value="formal">Формальный</option></select></label>
 <label class="field">Формат ответов<select name="format"><option value="prose">Обычный текст</option><option value="steps">Пошаговые инструкции</option><option value="bullets">Списки и пункты</option></select></label>
@@ -766,8 +792,20 @@ section[id]{scroll-margin-top:104px}
 <button class="primary" type="submit">Сохранить профиль</button>
 <button class="profile-onboarding-replay" id="replayOnboarding" type="button">Посмотреть ознакомление ещё раз</button>
 </form>
+<div class="profile-account-actions">
+ <section class="profile-account-section"><h3>Сеанс приложения</h3><p>Завершить работу с ORVEX Agent на этом устройстве.</p><button class="profile-account-button" id="logoutAccount" type="button">Выйти</button></section>
+ <section class="profile-account-section danger"><h3>Удаление аккаунта</h3><p>Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.</p><button class="profile-account-button" id="openDeleteConfirm" type="button">Удалить аккаунт</button></section>
+</div>
 <p class="local-note">Локальное сохранение. Серверной регистрации пока нет.</p>
 </section>
+</div>
+<div id="deleteConfirmModal" aria-hidden="true">
+ <section class="delete-confirm-card" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
+  <h2 id="deleteConfirmTitle">Вы действительно хотите удалить аккаунт?</h2>
+  <p id="deleteConfirmText">Будут безвозвратно удалены ваш профиль и все записи персональной памяти. Экспортируйте данные заранее, если хотите сохранить копию.</p>
+  <label class="field" id="deletePhraseField" hidden>Для подтверждения введите слово УДАЛИТЬ<input id="deletePhrase" type="text" autocomplete="off" maxlength="20" placeholder="УДАЛИТЬ"></label>
+  <div class="delete-confirm-actions"><button class="delete-cancel" id="cancelDelete" type="button">Отмена</button><button class="delete-proceed" id="proceedDelete" type="button">Продолжить</button></div>
+ </section>
 </div>
 <script>
 (function(){
@@ -831,7 +869,35 @@ async function changeOnboardingStep(nextStep,direction){
 }
 function openOnboarding(){onboardingStep=0;onboardingTransitioning=false;renderOnboarding();onboarding.classList.add('open');onboarding.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack()}
 function closeOnboarding(){onboarding.classList.remove('open');onboarding.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack()}
-function updateHeaderAction(){const button=$('#profileOpen');button.textContent=profile?'Мой профиль':'Начать'}
+
+const translations={
+ en:{
+ 'Статус':'Status','Память':'Memory','Планы':'Roadmap','Начать':'Get started','Мой профиль':'My profile','Настроить профиль':'Set up profile','Состояние проекта':'Project status','Персональная AI-платформа':'Personal AI platform','Что уже готово':'What is ready','Состояние разработки':'Development status','Персональная память':'Personal memory','Личное пространство':'Personal workspace','Дорожная карта':'Roadmap','Следующие шаги':'Next steps','Ваш профиль':'Your profile','Как к вам обращаться?':'What should we call you?','Электронная почта':'Email address','Что вам интересно?':'What are you interested in?','О вас':'About you','Чем вы занимаетесь?':'What do you do?','Кратко о себе':'A little about you','Ваши интересы и темы':'Your interests and topics','Как должен отвечать ИИ':'How AI should respond','Язык интерфейса':'Interface language','Выберите язык':'Choose a language','Сменить язык':'Change language','Длина ответов':'Response length','Тон общения':'Communication tone','Формат ответов':'Response format','Дополнительные инструкции ИИ':'Additional AI instructions','Сохранить профиль':'Save profile','Посмотреть ознакомление ещё раз':'View introduction again','Сеанс приложения':'App session','Завершить работу с ORVEX Agent на этом устройстве.':'End your ORVEX Agent session on this device.','Выйти':'Log out','Удаление аккаунта':'Account deletion','Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.':'Delete your profile and all personal memory entries. This action cannot be undone.','Удалить аккаунт':'Delete account','Вы действительно хотите удалить аккаунт?':'Do you really want to delete your account?','Будут безвозвратно удалены ваш профиль и все записи персональной памяти. Экспортируйте данные заранее, если хотите сохранить копию.':'Your profile and all personal memory entries will be permanently deleted. Export your data first if you want to keep a copy.','Для подтверждения введите слово УДАЛИТЬ':'Type DELETE to confirm','Отмена':'Cancel','Продолжить':'Continue','Подтвердите окончательное удаление':'Confirm permanent deletion','Последняя проверка: действие необратимо. Профиль и вся персональная память будут удалены.':'Final check: this action cannot be undone. Your profile and all personal memory will be deleted.','Да, удалить аккаунт':'Yes, delete account','Русский':'Russian','English':'English','Deutsch':'German','Кратко':'Short','Сбалансированно':'Balanced','Подробно':'Detailed','Нейтральный':'Neutral','Дружелюбный':'Friendly','Формальный':'Formal','Обычный текст':'Plain text','Пошаговые инструкции':'Step-by-step instructions','Списки и пункты':'Bullets and lists','Скачать мои данные':'Export my data','Сохранить запись':'Save memory','Показать ещё':'Show more','Заметка':'Note','Предпочтение':'Preference','Факт':'Fact','Цель':'Goal','Инструкция':'Instruction'
+ },
+ de:{
+ 'Статус':'Status','Память':'Erinnerungen','Планы':'Roadmap','Начать':'Starten','Мой профиль':'Mein Profil','Настроить профиль':'Profil einrichten','Состояние проекта':'Projektstatus','Персональная AI-платформа':'Persönliche KI-Plattform','Что уже готово':'Was bereits bereit ist','Состояние разработки':'Entwicklungsstand','Персональная память':'Persönliche Erinnerung','Личное пространство':'Persönlicher Bereich','Дорожная карта':'Roadmap','Следующие шаги':'Nächste Schritte','Ваш профиль':'Ihr Profil','Как к вам обращаться?':'Wie dürfen wir Sie nennen?','Электронная почта':'E-Mail-Adresse','Что вам интересно?':'Wofür interessieren Sie sich?','О вас':'Über Sie','Чем вы занимаетесь?':'Was machen Sie beruflich?','Кратко о себе':'Kurz über Sie','Ваши интересы и темы':'Ihre Interessen und Themen','Как должен отвечать ИИ':'Wie die KI antworten soll','Язык интерфейса':'Oberflächensprache','Выберите язык':'Sprache auswählen','Сменить язык':'Sprache ändern','Длина ответов':'Antwortlänge','Тон общения':'Gesprächston','Формат ответов':'Antwortformat','Дополнительные инструкции ИИ':'Zusätzliche KI-Anweisungen','Сохранить профиль':'Profil speichern','Посмотреть ознакомление ещё раз':'Einführung erneut ansehen','Сеанс приложения':'App-Sitzung','Завершить работу с ORVEX Agent на этом устройстве.':'ORVEX Agent auf diesem Gerät beenden.','Выйти':'Abmelden','Удаление аккаунта':'Konto löschen','Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.':'Ihr Profil und alle persönlichen Erinnerungen werden gelöscht. Dies kann nicht rückgängig gemacht werden.','Удалить аккаунт':'Konto löschen','Вы действительно хотите удалить аккаунт?':'Möchten Sie Ihr Konto wirklich löschen?','Будут безвозвратно удалены ваш профиль и все записи персональной памяти. Экспортируйте данные заранее, если хотите сохранить копию.':'Ihr Profil und alle persönlichen Erinnerungen werden endgültig gelöscht. Exportieren Sie Ihre Daten vorher, wenn Sie eine Kopie behalten möchten.','Для подтверждения введите слово УДАЛИТЬ':'Geben Sie LÖSCHEN zur Bestätigung ein','Отмена':'Abbrechen','Продолжить':'Weiter','Подтвердите окончательное удаление':'Endgültige Löschung bestätigen','Последняя проверка: действие необратимо. Профиль и вся персональная память будут удалены.':'Letzte Prüfung: Diese Aktion ist endgültig. Ihr Profil und alle persönlichen Erinnerungen werden gelöscht.','Да, удалить аккаунт':'Ja, Konto löschen','Русский':'Russisch','English':'Englisch','Deutsch':'Deutsch','Кратко':'Kurz','Сбалансированно':'Ausgewogen','Подробно':'Ausführlich','Нейтральный':'Neutral','Дружелюбный':'Freundlich','Формальный':'Formell','Обычный текст':'Fließtext','Пошаговые инструкции':'Schritt-für-Schritt-Anleitung','Списки и пункты':'Aufzählungen','Скачать мои данные':'Meine Daten exportieren','Сохранить запись':'Eintrag speichern','Показать ещё':'Mehr anzeigen','Заметка':'Notiz','Предпочтение':'Präferenz','Факт':'Fakt','Цель':'Ziel','Инструкция':'Anweisung'
+ }};
+const originalTextNodes=new WeakMap(),originalAttributes=new WeakMap();
+function applyInterfaceLanguage(language){
+ const selected=['ru','en','de'].includes(language)?language:'ru',dictionary=translations[selected]||{};
+ document.documentElement.lang=selected;
+ const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;
+ while((node=walker.nextNode())){
+  if(!originalTextNodes.has(node))originalTextNodes.set(node,node.nodeValue);
+  const original=originalTextNodes.get(node),trimmed=original.trim();if(!trimmed)continue;
+  node.nodeValue=dictionary[trimmed]?original.replace(trimmed,dictionary[trimmed]):original;
+ }
+ document.querySelectorAll('input,button,img,[aria-label]').forEach(element=>{
+  ['placeholder','aria-label','title'].forEach(attribute=>{
+   if(!element.hasAttribute(attribute))return;
+   let saved=originalAttributes.get(element);if(!saved){saved={};originalAttributes.set(element,saved)}
+   if(!(attribute in saved))saved[attribute]=element.getAttribute(attribute);
+   const original=saved[attribute];element.setAttribute(attribute,dictionary[original]||original);
+  });
+ });
+}
+
+function updateHeaderAction(){const button=$('#profileOpen');button.textContent=profile?'Мой профиль':'Начать';const remove=$('#openDeleteConfirm');if(remove)remove.disabled=!(telegramMiniApp&&telegramProfileSession&&profile);applyInterfaceLanguage((profile&&profile.preferences&&profile.preferences.language)||localStorage.getItem('orvex_agent_language')||'ru')}
 const tg=window.Telegram&&window.Telegram.WebApp;
 const telegramBack=tg&&tg.BackButton;
 function syncTelegramViewport(){
@@ -942,7 +1008,7 @@ function fillForm(){
  form.elements.occupation.value=p.occupation||'';
  form.elements.about.value=p.about||'';
  form.elements.topics.value=p.topics||'';
- form.elements.language.value=p.language||'ru';
+ form.elements.language.value=p.language||localStorage.getItem('orvex_agent_language')||'ru';
  form.elements.responseLength.value=p.responseLength||'balanced';
  form.elements.tone.value=p.tone||'neutral';
  form.elements.format.value=p.format||'prose';
@@ -951,11 +1017,70 @@ function fillForm(){
 function openModal(){lastFocusedElement=document.activeElement;fillForm();modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack();setTimeout(()=>form.elements.name.focus(),80)}
 function closeModal(){if(!profile)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();if(lastFocusedElement&&typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();lastFocusedElement=null}
 function toast(message){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=message;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+
+const deleteModal=$('#deleteConfirmModal'),deletePhrase=$('#deletePhrase'),deletePhraseField=$('#deletePhraseField'),deleteProceed=$('#proceedDelete');
+let deleteConfirmStep=1;
+function closeDeleteConfirmation(){deleteModal.classList.remove('open');deleteModal.setAttribute('aria-hidden','true')}
+function openDeleteConfirmation(){
+ deleteConfirmStep=1;$('#deleteConfirmTitle').textContent='Вы действительно хотите удалить аккаунт?';
+ $('#deleteConfirmText').textContent='Будут безвозвратно удалены ваш профиль и все записи персональной памяти. Экспортируйте данные заранее, если хотите сохранить копию.';
+ deletePhraseField.hidden=true;deletePhrase.value='';deleteProceed.textContent='Продолжить';deleteProceed.disabled=false;
+ deleteModal.classList.add('open');deleteModal.setAttribute('aria-hidden','false');$('#cancelDelete').focus();
+}
+$('#openDeleteConfirm').addEventListener('click',openDeleteConfirmation);
+$('#cancelDelete').addEventListener('click',closeDeleteConfirmation);
+deleteModal.addEventListener('click',event=>{if(event.target===deleteModal)closeDeleteConfirmation()});
+deletePhrase.addEventListener('input',()=>{deleteProceed.disabled=deletePhrase.value.trim().toLocaleUpperCase('ru')!=='УДАЛИТЬ'});
+deleteProceed.addEventListener('click',async()=>{
+ if(deleteConfirmStep===1){
+  deleteConfirmStep=2;$('#deleteConfirmTitle').textContent='Подтвердите окончательное удаление';
+  $('#deleteConfirmText').textContent='Последняя проверка: действие необратимо. Профиль и вся персональная память будут удалены.';
+  deletePhraseField.hidden=false;deleteProceed.textContent='Да, удалить аккаунт';deleteProceed.disabled=true;deletePhrase.focus();return;
+ }
+ if(deletePhrase.value.trim().toLocaleUpperCase('ru')!=='УДАЛИТЬ'||!telegramMiniApp||!tg||!tg.initData)return;
+ const state=$('#memoryState'),memoryForm=$('#memoryForm'),list=$('#memoryList'),accountTools=$('#memoryAccountTools');
+ deleteProceed.disabled=true;$('#cancelDelete').disabled=true;if(state)state.textContent='Удаляем аккаунт и персональные данные…';
+ try{
+  const response=await fetch('/api/account',{method:'DELETE',headers:{Authorization:'tma '+tg.initData,Accept:'application/json'}});
+  if(!response.ok)throw new Error('account_delete_failed');
+  try{localStorage.removeItem('orvex_agent_profile');localStorage.removeItem('orvex_agent_language')}catch(error){}
+  profile=null;telegramProfileSession=false;updateHeaderAction();
+  setProfileStatus('Профиль не создан','Профиль и персональная память удалены. Вы можете создать новый профиль.',false);
+  if(memoryForm)memoryForm.hidden=true;if(accountTools)accountTools.hidden=true;if(list)list.replaceChildren();
+  if(state)state.textContent='Аккаунт и все записи персональной памяти удалены.';
+  closeDeleteConfirmation();closeModal();openOnboarding();toast('Аккаунт и персональные данные удалены');
+ }catch(error){
+  if(state)state.textContent='Не удалось удалить аккаунт. Данные не были подтверждённо удалены. Попробуйте ещё раз.';
+  deleteProceed.disabled=false;$('#cancelDelete').disabled=false;
+ }
+});
+$('#logoutAccount').addEventListener('click',()=>{
+ try{localStorage.removeItem('orvex_agent_profile')}catch(error){}
+ profile=null;updateHeaderAction();closeModal();
+ if(telegramMiniApp&&tg&&typeof tg.close==='function'){tg.close();return}
+ openOnboarding();toast('Вы вышли из локального профиля');
+});
+
 $('#profileOpen').addEventListener('click',()=>profile?openModal():openOnboarding());
 onboardingBackButton.addEventListener('click',()=>changeOnboardingStep(onboardingStep-1,'back'));
 onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)return;if(onboardingStep<onboardingSlides.length-1)changeOnboardingStep(onboardingStep+1,'forward');else{closeOnboarding();openModal()}});
 $('#heroProfile').addEventListener('click',openModal);
 $('#profileClose').addEventListener('click',closeModal);
+
+$('#applyLanguage').addEventListener('click',async()=>{
+ const language=form.elements.language.value;
+ try{localStorage.setItem('orvex_agent_language',language)}catch(error){}
+ if(profile){profile={...profile,preferences:{...(profile.preferences||{}),language}};try{localStorage.setItem('orvex_agent_profile',JSON.stringify(profile))}catch(error){}}
+ applyInterfaceLanguage(language);
+ if(telegramMiniApp&&telegramProfileSession&&profile&&profile.name){
+  try{
+   const response=await fetch('/api/profile',{method:'PUT',headers:{Authorization:'tma '+tg.initData,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({name:profile.name,email:profile.email||'',interest:profile.interest||'Личный ИИ-помощник',preferences:profile.preferences||{}})});
+   if(!response.ok)throw new Error('language_sync_failed');
+   const result=await response.json();profile=result.profile||profile;localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));toast('Язык интерфейса сохранён в профиле');
+  }catch(error){toast('Язык изменён на устройстве, но не синхронизирован с сервером')}
+ }else toast('Язык интерфейса изменён');
+});
+
 if(telegramBack&&telegramBack.onClick)telegramBack.onClick(()=>onboarding.classList.contains('open')?closeOnboarding():closeModal());
 $('#replayOnboarding').addEventListener('click',()=>{closeModal();openOnboarding()});
 modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
@@ -998,6 +1123,7 @@ form.addEventListener('submit',async e=>{
    if(!response.ok)throw new Error('profile_save_failed');
    const result=await response.json();
    profile=result.profile||data;
+   try{localStorage.setItem('orvex_agent_language',profile.preferences&&profile.preferences.language||'ru')}catch(error){}
    updateHeaderAction();
    localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
    setProfileStatus('Синхронизирован','Профиль привязан к Telegram ID и хранится в серверной базе ORVEX Agent.',true);
@@ -1035,6 +1161,7 @@ async function initProfileWorkspace(){
   const remote=result.profile;
   if(remote&&typeof remote.display_name==='string'){
    profile={name:remote.display_name,email:remote.email||'',interest:remote.interest||'Личный ИИ-помощник',preferences:remote.preferences&&typeof remote.preferences==='object'?remote.preferences:{}};
+   try{localStorage.setItem('orvex_agent_language',profile.preferences.language||'ru')}catch(error){}
    localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
   }else{
    // Telegram identity is authoritative. Do not migrate an unowned browser cache
@@ -1046,6 +1173,7 @@ async function initProfileWorkspace(){
   updateHeaderAction();
   renderProfileAvatar();
   if(!profile)openOnboarding();
+  else applyInterfaceLanguage(profile.preferences&&profile.preferences.language||localStorage.getItem('orvex_agent_language')||'ru');
  }catch(error){
   telegramProfileSession=false;
   const message=error.message==='profile_service_not_configured'
@@ -1143,28 +1271,6 @@ async function initMemoryWorkspace(){
     finally{exportButton.disabled=false}
    });
   }
-  if(deleteButton){
-   deleteButton.addEventListener('click',async()=>{
-    if(!window.confirm('Удалить профиль и все записи персональной памяти? Это действие нельзя отменить.'))return;
-    deleteButton.disabled=true;state.textContent='Удаляем ваши данные…';
-    try{
-     const response=await fetch('/api/account',{method:'DELETE',headers});
-     if(!response.ok)throw new Error('account_delete_failed');
-     try{localStorage.removeItem('orvex_agent_profile')}catch(storageError){}
-     profile=null;
-     updateHeaderAction();
-     setProfileStatus('Профиль не создан','Профиль и персональная память удалены. Вы можете создать новый профиль.',false);
-     memoryForm.hidden=true;
-     if(accountTools)accountTools.hidden=true;
-     list.replaceChildren();
-     state.textContent='Профиль и все записи персональной памяти удалены.';
-     openOnboarding();
-    }catch(error){
-     state.textContent='Не удалось удалить все данные. Ничего не меняйте и попробуйте ещё раз.';
-     deleteButton.disabled=false;
-    }
-   });
-  }
   memoryForm.addEventListener('submit',async event=>{
    event.preventDefault();
    const content=memoryForm.elements.content.value.trim();
@@ -1184,6 +1290,7 @@ async function initMemoryWorkspace(){
   state.textContent=error.message==='storage_not_ready'?'Сервер памяти пока не настроен.':'Не удалось подтвердить Telegram-сессию или загрузить память. Откройте Mini App в Telegram после настройки сервера.';
  }
 }
+applyInterfaceLanguage(localStorage.getItem('orvex_agent_language')||'ru');
 initMemoryWorkspace();
 initProfileWorkspace();
 })();
