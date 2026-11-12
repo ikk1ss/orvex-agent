@@ -5,7 +5,7 @@
 Every push to `main` and every pull request runs:
 
 - `node scripts/validate-site.mjs` for the document shell, Russian language and viewport metadata, Telegram WebApp SDK inclusion, duplicate IDs, in-page links, profile controls, personal memory UI/API wiring, safe text rendering, local profile handling, accessibility hooks, and inline JavaScript syntax.
-- `node --test scripts/backend-auth.test.cjs scripts/memory-api.test.cjs` for Telegram `initData` signature validation, tamper detection, timestamp expiry, malformed input, memory validation, and per-user data scoping.
+- `node --test scripts/backend-auth.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs` for Telegram `initData` signature validation, tamper detection, timestamp expiry, malformed input, memory validation, per-user data scoping, account export, and atomic account deletion.
 
 These are source-level and unit checks. They do not prove that Supabase credentials, live Telegram authentication, profile persistence, or the visual layout work in a real browser.
 
@@ -20,6 +20,8 @@ These are source-level and unit checks. They do not prove that Supabase credenti
 - Test `GET /api/profile`, `PUT /api/profile`, and `DELETE /api/profile` only from an authenticated Telegram Mini App session.
 - Confirm `DELETE /api/profile` removes only the authenticated user's record.
 - Test `GET/POST/DELETE /api/memory` and confirm each operation is scoped to the authenticated Telegram ID.
+- Export account data and confirm the JSON contains only the signed-in Telegram user's profile and memories.
+- Delete account data and confirm both profile and memories are removed together; confirm a different Telegram user cannot delete this account.
 - Confirm unauthenticated requests receive HTTP 401.
 - Confirm unsupported methods receive HTTP 405.
 - Confirm profile data is scoped to the authenticated Telegram user.
