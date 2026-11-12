@@ -29,3 +29,26 @@ alter table public.orvex_memories enable row level security;
 
 -- Memory rows are available only through the authenticated server API.
 -- No anon/authenticated client policies are created.
+
+
+-- Account deletion is performed in one database transaction.
+-- The function is callable only by the server-side service_role.
+create or replace function public.delete_orvex_account(p_telegram_id text)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  delete from public.orvex_memories
+  where telegram_id = p_telegram_id;
+
+  delete from public.orvex_profiles
+  where telegram_id = p_telegram_id;
+end;
+$$;
+
+revoke all on function public.delete_orvex_account(text) from public;
+revoke all on function public.delete_orvex_account(text) from anon;
+revoke all on function public.delete_orvex_account(text) from authenticated;
+grant execute on function public.delete_orvex_account(text) to service_role;
