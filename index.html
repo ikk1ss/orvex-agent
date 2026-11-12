@@ -27,7 +27,13 @@ a{color:inherit;text-decoration:none}
 .brand-symbol:before{width:19px;height:10px;left:7.5px;top:11.5px}
 .brand-symbol:after{width:10px;height:19px;left:11.5px;top:7.5px}
 .header-right{display:flex;align-items:center;gap:18px}
-.language-switcher{display:flex;align-items:center;gap:5px;padding:5px;border:1px solid var(--line);border-radius:13px;background:#ffffff08}
+.language-menu{position:relative;display:flex;align-items:center}
+.language-current{display:inline-flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:11px;background:#ffffff08;color:var(--text);font-size:12px;font-weight:700;cursor:pointer}
+.language-current:hover{background:#ffffff12;border-color:rgba(114,216,208,.4)}
+.language-options{position:absolute;z-index:30;top:calc(100% + 9px);left:0;min-width:136px;padding:5px;display:grid;gap:3px;border:1px solid var(--line);border-radius:12px;background:#11182a;box-shadow:0 14px 35px #0008}
+.language-options[hidden]{display:none}
+.language-options .language-option{justify-content:flex-start;width:100%;padding:9px 10px;text-align:left;font-size:12px}
+.language-options .language-option[aria-pressed="true"]{background:rgba(114,216,208,.14);border-color:rgba(114,216,208,.35)}
 .language-switcher-label{padding:0 5px;color:#9aa8bc;font-size:11px;font-weight:700}
 .language-option{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:48px;padding:7px 8px;border:1px solid transparent;border-radius:9px;background:transparent;color:#aab5c7;font-size:11px;font-weight:800;transition:background .2s,border-color .2s,color .2s}
 .language-option:hover{background:#ffffff0c;color:var(--text)}
@@ -806,7 +812,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <a class="brand" href="#home" aria-label="ORVEX Agent, на главную"><span class="brand-symbol" aria-hidden="true"></span><span>ORVEX AGENT</span></a>
 <div class="header-right">
 <nav class="nav" aria-label="Основная навигация"><a href="#status">Статус</a><a href="#memory">Память</a><a href="#roadmap">Планы</a></nav>
-<div class="language-switcher" role="group" aria-label="Язык интерфейса"><span class="language-switcher-label">Язык</span><button class="language-option" type="button" data-language="ru" aria-label="Русский" aria-pressed="false" title="Русский"><span class="language-flag" aria-hidden="true">🇷🇺</span><span>RU</span></button><button class="language-option" type="button" data-language="en" aria-label="English" aria-pressed="false" title="English"><span class="language-flag" aria-hidden="true">🇬🇧</span><span>EN</span></button><button class="language-option" type="button" data-language="de" aria-label="Deutsch" aria-pressed="false" title="Deutsch"><span class="language-flag" aria-hidden="true">🇩🇪</span><span>DE</span></button></div>
+<div class="language-menu" id="languageMenu"><button class="language-current" id="languageCurrent" type="button" aria-expanded="false" aria-controls="languageOptions">Русский <span aria-hidden="true">⌄</span></button><div class="language-options" id="languageOptions" role="group" aria-label="Язык интерфейса" hidden><button class="language-option" type="button" data-language="ru" aria-label="Русский" aria-pressed="false" title="Русский">Русский</button><button class="language-option" type="button" data-language="en" aria-label="English" aria-pressed="false" title="English">English</button><button class="language-option" type="button" data-language="de" aria-label="Deutsch" aria-pressed="false" title="Deutsch">Deutsch</button></div></div>
 <button class="profile-btn" id="profileOpen" type="button">Начать</button>
 </div>
 </header>
@@ -942,7 +948,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <label class="field">Кратко о себе<textarea name="about" maxlength="500" rows="3" placeholder="Что ORVEX Agent должен учитывать о вас?"></textarea></label>
 <label class="field">Ваши интересы и темы<textarea name="topics" maxlength="500" rows="3" placeholder="Например: игры, технологии, обучение, дизайн"></textarea></label>
 <div class="profile-divider"><span>Как должен отвечать ИИ</span></div>
-<div class="profile-divider"><span>Язык интерфейса</span></div><div class="language-apply-row"><label class="field">Выберите язык<select name="language" id="profileLanguage"><option value="ru">Русский</option><option value="en">English</option><option value="de">Deutsch</option></select></label><button class="profile-account-button" id="applyLanguage" type="button">Сменить язык</button></div>
+<input type="hidden" name="language" id="profileLanguage" value="ru">
 <label class="field">Длина ответов<select name="responseLength"><option value="short">Кратко</option><option value="balanced">Сбалансированно</option><option value="detailed">Подробно</option></select></label>
 <label class="field">Тон общения<select name="tone"><option value="neutral">Нейтральный</option><option value="friendly">Дружелюбный</option><option value="formal">Формальный</option></select></label>
 <label class="field">Формат ответов<select name="format"><option value="prose">Обычный текст</option><option value="steps">Пошаговые инструкции</option><option value="bullets">Списки и пункты</option></select></label>
@@ -1110,6 +1116,7 @@ function applyInterfaceLanguage(language){
  document.documentElement.lang=activeInterfaceLanguage;
  document.querySelectorAll('.language-option').forEach(button=>{const active=button.dataset.language===activeInterfaceLanguage;button.setAttribute('aria-pressed',active?'true':'false');});
  const languageSelect=document.getElementById('profileLanguage');if(languageSelect)languageSelect.value=activeInterfaceLanguage;
+ const current=document.getElementById('languageCurrent');if(current)current.innerHTML=({ru:'Русский',en:'English',de:'Deutsch'}[activeInterfaceLanguage])+' <span aria-hidden="true">⌄</span>';
  translateSubtree(document.body);
  renderHeroHeading();
 }
@@ -1292,6 +1299,10 @@ onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)re
 $('#heroProfile').addEventListener('click',openModal);
 $('#profileClose').addEventListener('click',closeModal);
 
+const languageMenu=$('#languageMenu'),languageCurrent=$('#languageCurrent'),languageOptions=$('#languageOptions');
+languageCurrent.addEventListener('click',()=>{const expanded=languageCurrent.getAttribute('aria-expanded')==='true';languageCurrent.setAttribute('aria-expanded',String(!expanded));languageOptions.hidden=expanded;});
+document.addEventListener('click',event=>{if(languageMenu&&!languageMenu.contains(event.target)){languageOptions.hidden=true;languageCurrent.setAttribute('aria-expanded','false')}});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!languageOptions.hidden){languageOptions.hidden=true;languageCurrent.setAttribute('aria-expanded','false');languageCurrent.focus()}});
 document.querySelectorAll('.language-option').forEach(button=>button.addEventListener('click',async()=>{
  const language=button.dataset.language;
  if(!['ru','en','de'].includes(language))return;
@@ -1306,22 +1317,8 @@ document.querySelectorAll('.language-option').forEach(button=>button.addEventLis
    toast(language==='ru'?'Язык интерфейса сохранён в профиле':language==='en'?'Interface language saved to your profile':'Spracheinstellung im Profil gespeichert');
   }catch(error){toast(language==='ru'?'Язык изменён на устройстве, но не синхронизирован с сервером':language==='en'?'Language changed on this device but not synced to the server':'Sprache auf diesem Gerät geändert, aber nicht mit dem Server synchronisiert')}
  }else toast(language==='ru'?'Язык интерфейса изменён':language==='en'?'Interface language changed':'Oberflächensprache geändert');
+ languageOptions.hidden=true;languageCurrent.setAttribute('aria-expanded','false');
 }));
-$('#applyLanguage').addEventListener('click',async()=>{
- const language=form.elements.language.value;
- try{localStorage.setItem('orvex_agent_language',language)}catch(error){}
- if(profile){profile={...profile,preferences:{...(profile.preferences||{}),language}};try{localStorage.setItem('orvex_agent_profile',JSON.stringify(profile))}catch(error){}}
- applyInterfaceLanguage(language);
- if(telegramMiniApp&&telegramProfileSession&&profile&&profile.name){
-  try{
-   const response=await fetch('/api/profile',{method:'PUT',headers:{Authorization:'tma '+tg.initData,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({name:profile.name,email:profile.email||'',interest:profile.interest||'Личный ИИ-помощник',preferences:profile.preferences||{}})});
-   if(!response.ok)throw new Error('language_sync_failed');
-   const result=await response.json();profile=result.profile||profile;localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));toast('Язык интерфейса сохранён в профиле');
-  }catch(error){toast('Язык изменён на устройстве, но не синхронизирован с сервером')}
- }else toast('Язык интерфейса изменён');
-});
-
-if(telegramBack&&telegramBack.onClick)telegramBack.onClick(()=>onboarding.classList.contains('open')?closeOnboarding():closeModal());
 $('#replayOnboarding').addEventListener('click',()=>{closeModal();openOnboarding()});
 modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
 document.addEventListener('keydown',e=>{
