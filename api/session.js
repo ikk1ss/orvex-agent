@@ -28,7 +28,8 @@ module.exports = function sessionHandler(req, res) {
   const user = {
     id: String(auth.user.id),
     firstName: typeof auth.user.first_name === "string" ? auth.user.first_name.slice(0, 64) : "",
-    username: typeof auth.user.username === "string" ? auth.user.username.slice(0, 32) : ""
+    username: typeof auth.user.username === "string" ? auth.user.username.slice(0, 32) : "",
+    photoUrl: typeof auth.user.photo_url === "string" && auth.user.photo_url.startsWith("https://") ? auth.user.photo_url.slice(0, 2048) : ""
   };
   return reply(res, 200, { authenticated: true, user });
 };
