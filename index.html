@@ -890,6 +890,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 }
 
 
+/* Keep the brand anchored in the upper-left corner while scrolling and resizing. */
+.header{position:sticky;top:0;isolation:isolate;animation:none}
+.brand{flex:0 0 auto;align-self:center;position:relative;transform:none;animation:none;white-space:nowrap}
+.brand-symbol{flex:0 0 36px}
+@media(max-width:620px){.brand-symbol{flex-basis:32px}}
+
 /* Keep the language dropdown above the page content and fully clickable. */
 .header{z-index:20}
 .language-menu{z-index:21}
