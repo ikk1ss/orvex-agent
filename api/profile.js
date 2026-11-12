@@ -15,6 +15,31 @@ function reply(res, status, payload) {
   return res.status(status).json(payload);
 }
 
+async function storageFailure(res, response, stage) {
+  let storageCode = null;
+  try {
+    const payload = await response.json();
+    if (payload && typeof payload.code === "string") {
+      storageCode = payload.code.slice(0, 40);
+    }
+  } catch {}
+
+  // Log only the failing stage, HTTP status and database error code.
+  // Never log credentials, Telegram IDs, profile fields or response bodies.
+  console.error("[ORVEX profile] Supabase request failed", {
+    stage,
+    status: response.status,
+    code: storageCode
+  });
+
+  return reply(res, 502, {
+    error: "profile_storage_unavailable",
+    stage,
+    storageStatus: response.status,
+    storageCode
+  });
+}
+
 function getSupabaseHeaders(serviceKey) {
   const headers = {
     apikey: serviceKey,
@@ -63,6 +88,7 @@ module.exports = async function profileHandler(req, res) {
   const telegramId = String(auth.user.id);
   const endpoint = config.supabaseUrl + "/rest/v1/orvex_profiles";
   const headers = getSupabaseHeaders(config.serviceKey);
+  let stage = "profile_read";
 
   try {
     if (req.method === "GET") {
@@ -72,18 +98,19 @@ module.exports = async function profileHandler(req, res) {
         limit: "1"
       });
       const response = await fetch(endpoint + "?" + query.toString(), { headers });
-      if (!response.ok) return reply(res, 502, { error: "profile_storage_unavailable" });
+      if (!response.ok) return await storageFailure(res, response, stage);
       const rows = await response.json();
       return reply(res, 200, { profile: rows[0] || null });
     }
 
     if (req.method === "DELETE") {
+      stage = "profile_delete";
       const query = new URLSearchParams({ telegram_id: "eq." + telegramId });
       const response = await fetch(endpoint + "?" + query.toString(), {
         method: "DELETE",
         headers: { ...headers, Prefer: "return=minimal" }
       });
-      if (!response.ok) return reply(res, 502, { error: "profile_storage_unavailable" });
+      if (!response.ok) return await storageFailure(res, response, stage);
       return reply(res, 200, { deleted: true });
     }
 
@@ -98,6 +125,7 @@ module.exports = async function profileHandler(req, res) {
       return reply(res, 400, { error: "invalid_profile" });
     }
 
+    stage = "profile_upsert";
     const response = await fetch(endpoint + "?on_conflict=telegram_id", {
       method: "POST",
       headers: { ...headers, Prefer: "resolution=merge-duplicates,return=representation" },
@@ -109,7 +137,7 @@ module.exports = async function profileHandler(req, res) {
         updated_at: new Date().toISOString()
       })
     });
-    if (!response.ok) return reply(res, 502, { error: "profile_storage_unavailable" });
+    if (!response.ok) return await storageFailure(res, response, stage);
     const rows = await response.json();
     const row = rows[0];
     return reply(res, 200, {
@@ -117,7 +145,11 @@ module.exports = async function profileHandler(req, res) {
         name: displayName, email, interest
       }
     });
-  } catch {
-    return reply(res, 502, { error: "profile_storage_unavailable" });
+  } catch (error) {
+    console.error("[ORVEX profile] Request failed", {
+      stage,
+      errorName: error && typeof error.name === "string" ? error.name : "UnknownError"
+    });
+    return reply(res, 502, { error: "profile_storage_unavailable", stage });
   }
 };
