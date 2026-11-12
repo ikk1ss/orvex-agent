@@ -278,6 +278,30 @@ body{font-size:16px}
 [hidden]{display:none!important}
 @media(max-width:620px){.memory-export,.memory-account-delete{font-size:12px;width:100%}}
 
+
+/* First-entry onboarding. Copy and feature status are maintained here. */
+#onboarding{position:fixed;inset:0;z-index:40;display:none;overflow-y:auto;padding:22px;background:radial-gradient(ellipse at 15% 0%,#25477955,transparent 45%),#080b13}
+#onboarding.open{display:grid;place-items:center}
+.onboarding-shell{width:min(760px,100%);margin:auto}
+.onboarding-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;color:#9aa8bc;font-size:12px}
+.onboarding-brand{font:800 13px Manrope,sans-serif;letter-spacing:.13em;color:#e4ebf7}
+.onboarding-progress{height:3px;background:#ffffff14;border-radius:9px;overflow:hidden;margin-bottom:30px}
+.onboarding-progress span{display:block;height:100%;width:25%;background:linear-gradient(90deg,#4d8dff,#c5d3e8);transition:width .2s}
+.onboarding-card{min-height:340px;padding:clamp(24px,5vw,48px);border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,#151f31ed,#0d1421f2);box-shadow:0 30px 100px #0005}
+.onboarding-kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9bb9ed;font-weight:700}
+.onboarding-card h1{font:800 clamp(30px,5vw,48px)/1.12 Manrope,sans-serif;letter-spacing:-.05em;margin:18px 0}
+.onboarding-card p{font-size:15px;line-height:1.8;color:#aab6c9;max-width:620px}
+.onboarding-points{display:grid;gap:12px;margin-top:24px}
+.onboarding-point{padding:14px 16px;border:1px solid var(--line);border-radius:13px;background:#ffffff05}
+.onboarding-point b{display:block;font-size:14px;color:#e6edf8;margin-bottom:4px}
+.onboarding-point span{font-size:13px;line-height:1.65;color:#91a0b5}
+.onboarding-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px}
+.onboarding-back,.onboarding-next{border:1px solid var(--line);border-radius:12px;padding:12px 18px;background:#ffffff08;color:#e5edf9;font-size:13px;font-weight:700}
+.onboarding-next{border:0;color:#09111c;background:linear-gradient(110deg,#4d8dff,#c5d3e8)}
+.onboarding-back:disabled{opacity:.25;cursor:default}
+.onboarding-note{font-size:11px;color:#7f8da2;margin-top:15px;line-height:1.6}
+@media(max-width:620px){#onboarding{padding:15px}.onboarding-top{margin-bottom:18px}.onboarding-card{min-height:0;padding:25px 20px}.onboarding-card p{font-size:14px}.onboarding-point{padding:12px}.onboarding-point b{font-size:13px}.onboarding-point span{font-size:12px}.onboarding-actions button{padding:12px 15px}}
+
 </style>
 </head>
 <body>
@@ -285,7 +309,7 @@ body{font-size:16px}
 <a class="brand" href="#home" aria-label="ORVEX Agent, на главную"><span class="brand-symbol" aria-hidden="true"></span><span>ORVEX AGENT</span></a>
 <div class="header-right">
 <nav class="nav" aria-label="Основная навигация"><a href="#status">Статус</a><a href="#memory">Память</a><a href="#roadmap">Планы</a></nav>
-<button class="profile-btn" id="profileOpen" type="button">Мой профиль</button>
+<button class="profile-btn" id="profileOpen" type="button">Начать</button>
 </div>
 </header>
 <main class="wrap" id="home">
@@ -347,6 +371,39 @@ body{font-size:16px}
 <div class="notice"><b>О профиле.</b> Сейчас имя и выбранные настройки сохраняются только в этом браузере. Это не полноценная регистрация, данные не отправляются на сервер. Не вводите пароли, платёжные данные или секретные ключи.</div>
 </main>
 <footer class="footer wrap"><span class="footer-brand">ORVEX AGENT</span><span>Персональное пространство на базе искусственного интеллекта</span><span>© 2026 ORVEX Agent</span></footer>
+
+<div id="onboarding" aria-hidden="true">
+ <div class="onboarding-shell">
+  <div class="onboarding-top"><span class="onboarding-brand">ORVEX AGENT</span><span id="onboardingCounter">01 / 04</span></div>
+  <div class="onboarding-progress" aria-hidden="true"><span id="onboardingProgress"></span></div>
+  <section class="onboarding-card" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+   <div class="onboarding-slide" data-onboarding-step="0">
+    <div class="onboarding-kicker">Добро пожаловать</div>
+    <h1 id="onboardingTitle">Одно пространство для работы с AI.</h1>
+    <p>ORVEX Agent создаётся как персональное рабочее пространство, в котором будут собраны ИИ-помощник, инструменты и автоматизация. Сейчас мы знакомим вас с уже работающими функциями и тем, что находится в разработке.</p>
+    <div class="onboarding-points"><div class="onboarding-point"><b>Ваше пространство</b><span>Профиль и персональные настройки, привязанные к вашему Telegram-аккаунту.</span></div><div class="onboarding-point"><b>Развитие по этапам</b><span>Новые функции будут появляться постепенно, а их статус будет указан прямо в приложении.</span></div></div>
+   </div>
+   <div class="onboarding-slide" data-onboarding-step="1" hidden>
+    <div class="onboarding-kicker">Персональные функции</div><h1>Настройки и память под вашим контролем.</h1>
+    <p>В ORVEX Agent уже подготовлены функции персонального пространства:</p>
+    <div class="onboarding-points"><div class="onboarding-point"><b>Профиль</b><span>Сохранение имени, электронной почты и выбранного интереса в серверном профиле.</span></div><div class="onboarding-point"><b>Персональная память</b><span>Добавление и удаление заметок, предпочтений, фактов и целей.</span></div><div class="onboarding-point"><b>Ваши данные</b><span>Можно запросить экспорт данных или удалить профиль вместе с записями памяти.</span></div></div>
+   </div>
+   <div class="onboarding-slide" data-onboarding-step="2" hidden>
+    <div class="onboarding-kicker">Модели искусственного интеллекта</div><h1>Вы сможете выбирать модель под задачу.</h1>
+    <p>В планах подключить несколько ИИ-моделей с разными сильными сторонами: для повседневных вопросов, анализа, программирования и сложных задач.</p>
+    <div class="onboarding-points"><div class="onboarding-point"><b>Сравнение моделей</b><span>Будут указаны особенности, ограничения и подходящие сценарии каждой модели.</span></div><div class="onboarding-point"><b>Честный статус</b><span>На данный момент реальные AI-запросы и выбор моделей в интерфейсе ещё не подключены. Список появится после интеграции и проверки.</span></div></div>
+   </div>
+   <div class="onboarding-slide" data-onboarding-step="3" hidden>
+    <div class="onboarding-kicker">Что дальше</div><h1>Начните с персонального профиля.</h1>
+    <p>После знакомства вы сможете создать профиль. По мере развития ORVEX Agent это описание будет обновляться вместе с доступными моделями, инструментами и возможностями.</p>
+    <div class="onboarding-points"><div class="onboarding-point"><b>Без фиктивных обещаний</b><span>В ознакомлении показываются только подтверждённые функции и явно обозначенные планы.</span></div></div>
+   </div>
+   <div class="onboarding-actions"><button class="onboarding-back" id="onboardingBack" type="button" disabled>Назад</button><button class="onboarding-next" id="onboardingNext" type="button">Далее</button></div>
+   <p class="onboarding-note">Ознакомление показывается, пока у вас нет созданного профиля. После создания профиля оно больше не появляется при обычном запуске.</p>
+  </section>
+ </div>
+</div>
+
 <div id="profileModal" aria-hidden="true">
 <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 <div class="modal-head"><h2 id="modalTitle">Ваш профиль</h2><button class="close" id="profileClose" type="button" aria-label="Закрыть">×</button></div>
@@ -366,6 +423,19 @@ body{font-size:16px}
 'use strict';
 const $=s=>document.querySelector(s);
 const modal=$('#profileModal'),form=$('#profileForm');
+const onboarding=$('#onboarding');
+const onboardingSlides=[...document.querySelectorAll('[data-onboarding-step]')];
+let onboardingStep=0;
+function renderOnboarding(){
+ onboardingSlides.forEach((slide,index)=>{slide.hidden=index!==onboardingStep});
+ $('#onboardingCounter').textContent=String(onboardingStep+1).padStart(2,'0')+' / '+String(onboardingSlides.length).padStart(2,'0');
+ $('#onboardingProgress').style.width=((onboardingStep+1)/onboardingSlides.length*100)+'%';
+ $('#onboardingBack').disabled=onboardingStep===0;
+ $('#onboardingNext').textContent=onboardingStep===onboardingSlides.length-1?'Начать':'Далее';
+}
+function openOnboarding(){onboardingStep=0;renderOnboarding();onboarding.classList.add('open');onboarding.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack()}
+function closeOnboarding(){onboarding.classList.remove('open');onboarding.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack()}
+function updateHeaderAction(){const button=$('#profileOpen');button.textContent=profile?'Мой профиль':'Начать'}
 const tg=window.Telegram&&window.Telegram.WebApp;
 const telegramBack=tg&&tg.BackButton;
 function syncTelegramViewport(){
@@ -461,7 +531,9 @@ function fillForm(){form.elements.name.value=profile&&profile.name||'';form.elem
 function openModal(){lastFocusedElement=document.activeElement;fillForm();modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack();setTimeout(()=>form.elements.name.focus(),80)}
 function closeModal(){if(!profile)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();if(lastFocusedElement&&typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();lastFocusedElement=null}
 function toast(message){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=message;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
-$('#profileOpen').addEventListener('click',openModal);
+$('#profileOpen').addEventListener('click',()=>profile?openModal():openOnboarding());
+$('#onboardingBack').addEventListener('click',()=>{if(onboardingStep>0){onboardingStep--;renderOnboarding()}});
+$('#onboardingNext').addEventListener('click',()=>{if(onboardingStep<onboardingSlides.length-1){onboardingStep++;renderOnboarding()}else{closeOnboarding();openModal()}});
 $('#heroProfile').addEventListener('click',openModal);
 $('#profileClose').addEventListener('click',closeModal);
 if(telegramBack&&telegramBack.onClick)telegramBack.onClick(closeModal);
@@ -490,6 +562,7 @@ form.addEventListener('submit',async e=>{
    if(!response.ok)throw new Error('profile_save_failed');
    const result=await response.json();
    profile=result.profile||data;
+   updateHeaderAction();
    localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
    setProfileStatus('Синхронизирован','Профиль привязан к Telegram ID и хранится в серверной базе ORVEX Agent.',true);
    closeModal();toast('Профиль синхронизирован с сервером');
@@ -498,7 +571,7 @@ form.addEventListener('submit',async e=>{
   return;
  }
  try{
-  localStorage.setItem('orvex_agent_profile',JSON.stringify(data));profile=data;
+  localStorage.setItem('orvex_agent_profile',JSON.stringify(data));profile=data;updateHeaderAction();
   setProfileStatus('Локально','Профиль сохранён в этом браузере. Для синхронизации откройте Mini App через Telegram после настройки сервера.',false);
   closeModal();toast('Профиль сохранён на этом устройстве');
  }catch(err){toast('Не удалось сохранить профиль. Проверьте настройки браузера.')}
@@ -507,7 +580,8 @@ form.addEventListener('submit',async e=>{
 async function initProfileWorkspace(){
  if(!telegramMiniApp){
   setProfileStatus('Локально','Профиль хранится в этом браузере. Откройте Mini App через Telegram, чтобы использовать единый профиль.',false);
-  if(!profile)openModal();
+  if(!profile)openOnboarding();
+  updateHeaderAction();
   return;
  }
  setProfileStatus('Проверка…','Проверяем Telegram-сессию и загружаем профиль.',false);
@@ -533,13 +607,15 @@ async function initProfileWorkspace(){
    localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
   }
   setProfileStatus('Синхронизирован','Профиль привязан к Telegram ID и синхронизируется через серверную базу ORVEX Agent.',true);
-  if(!profile)openModal();
+  updateHeaderAction();
+  if(!profile)openOnboarding();
  }catch(error){
   telegramProfileSession=false;
   const message=error.message==='profile_service_not_configured'
    ?'Telegram подтверждён, но серверный профиль ещё не подключён. Нужны Supabase и переменные Vercel.'
    :'Не удалось загрузить серверный профиль. Локальные данные не будут выданы за синхронизированные.';
   setProfileStatus('Требует настройки',message,false);
+  updateHeaderAction();
   if(!profile)openModal();
  }
 }
