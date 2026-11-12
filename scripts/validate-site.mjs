@@ -25,7 +25,7 @@ assert(html.includes("setProfileStatus('Профиль не создан'") && h
 
 assert(html.includes("viewportChanged"), "Telegram viewport change handling is missing");
 assert(html.includes("viewportStableHeight"), "Telegram stable viewport height is not used");
-assert(html.includes("telegramBack.onClick(closeModal)"), "Telegram BackButton is not connected to the profile dialog");
+assert(html.includes("telegramBack.onClick(()=>onboarding.classList.contains('open')?closeOnboarding():closeModal())"), "Telegram BackButton must close the onboarding or profile dialog");
 assert(html.includes("telegramBack.show()") && html.includes("telegramBack.hide()"), "Telegram BackButton visibility is not managed");
 
 const ids = [...html.matchAll(/\bid=["']([^"']+)["']/g)].map((match) => match[1]);
