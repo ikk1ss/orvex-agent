@@ -16,6 +16,7 @@ assert(html.includes('id="memory"') && html.includes('id="memoryForm"') && html.
 assert(html.includes("initMemoryWorkspace") && html.includes("fetch('/api/memory"), "Personal memory API integration is missing");
 assert(html.includes("textContent=item.content"), "Memory content must be rendered as text, not HTML");
 assert(html.includes("encodeURIComponent(item.id)"), "Memory deletion ID is not URL-encoded");
+assert(html.includes('id="memoryLoadMore"') && html.includes("memoryOffset+=data.memories.length") && html.includes("pagination&&data.pagination.hasMore"), "Personal memory pagination is missing");
 assert(html.includes("id=\"memoryAccountTools\"") && html.includes("id=\"exportAccount\"") && html.includes("id=\"deleteAccount\""), "Account data controls are missing");
 assert(html.includes("fetch('/api/account") && html.includes("window.confirm("), "Account export/deletion actions are not wired or deletion confirmation is missing");
 assert(html.includes("localStorage.removeItem('orvex_agent_profile')"), "Account deletion does not clear local profile data");
