@@ -99,6 +99,45 @@ test("saves a validated profile under the authenticated Telegram ID", async () =
   }
 });
 
+test("normalizes and persists supported personalization preferences", async () => {
+  const originalFetch = global.fetch;
+  let savedBody;
+  global.fetch = async (_url, options) => {
+    savedBody = JSON.parse(options.body);
+    return { ok: true, json: async () => [{ display_name: "Test User", email: "", interest: "Все возможности", preferences: savedBody.preferences }] };
+  };
+  try {
+    const res = makeResponse();
+    await handler(makeRequest("PUT", { body: {
+      name: "Test User", email: "", interest: "Все возможности",
+      preferences: { occupation: "Student", about: "Interested in AI", topics: "Games, technology", language: "ru", responseLength: "short", tone: "friendly", format: "steps", instructions: "Use clear steps", ignoredField: "must not persist" }
+    } }), res);
+    assert.equal(res.statusCode, 200);
+    assert.equal(savedBody.preferences.occupation, "Student");
+    assert.equal(savedBody.preferences.responseLength, "short");
+    assert.equal(savedBody.preferences.tone, "friendly");
+    assert.equal(savedBody.preferences.format, "steps");
+    assert.equal(savedBody.preferences.instructions, "Use clear steps");
+    assert.equal("ignoredField" in savedBody.preferences, false);
+    assert.equal(res.payload.profile.preferences.language, "ru");
+  } finally { global.fetch = originalFetch; }
+});
+
+test("falls back to safe defaults for unsupported personalization options", async () => {
+  const originalFetch = global.fetch;
+  let savedBody;
+  global.fetch = async (_url, options) => { savedBody = JSON.parse(options.body); return { ok: true, json: async () => [] }; };
+  try {
+    const res = makeResponse();
+    await handler(makeRequest("PUT", { body: { name: "Test User", email: "", interest: "Все возможности", preferences: { language: "xx", responseLength: "instant", tone: "rude", format: "html" } } }), res);
+    assert.equal(res.statusCode, 200);
+    assert.equal(savedBody.preferences.language, "ru");
+    assert.equal(savedBody.preferences.responseLength, "balanced");
+    assert.equal(savedBody.preferences.tone, "neutral");
+    assert.equal(savedBody.preferences.format, "prose");
+  } finally { global.fetch = originalFetch; }
+});
+
 test("rejects invalid profile values without writing to storage", async () => {
   const originalFetch = global.fetch;
   let called = false;
