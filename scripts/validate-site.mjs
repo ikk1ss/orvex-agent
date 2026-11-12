@@ -20,6 +20,8 @@ assert(html.includes('id="memoryLoadMore"') && html.includes("memoryOffset+=data
 assert(html.includes('id="memoryAccountTools"') && html.includes('id="exportAccount"'), "Account export controls are missing");
 assert(html.includes('id="logoutAccount"') && html.includes('id="openDeleteConfirm"'), "Separate logout and account deletion controls are missing");
 assert(html.includes('id="applyLanguage"') && html.includes('id="profileLanguage"') && html.includes("document.documentElement.lang=selected"), "Persistent interface language controls are missing");
+assert(html.includes('class="language-switcher"') && html.includes('data-language="ru"') && html.includes('data-language="en"') && html.includes('data-language="de"'), "Visible header language switcher with all three languages is missing");
+assert(html.includes("button.dataset.language===selected") && html.includes("button.addEventListener('click',async()=>"), "Header language buttons are not connected to language selection");
 assert(html.includes('id="deleteConfirmModal"') && html.includes("deleteConfirmStep===1") && html.includes("deletePhrase.value.trim().toLocaleUpperCase('ru')!=='УДАЛИТЬ'"), "Two-step account deletion confirmation is missing");
 assert(html.includes("fetch('/api/account',{method:'DELETE'") && html.includes("tg.close()"), "Account deletion or app exit action is not wired");
 assert(!html.includes('id="deleteAccount"') && !html.includes("window.confirm('Удалить профиль"), "Old combined memory deletion control or one-step confirmation remains");
