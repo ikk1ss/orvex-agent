@@ -4,7 +4,7 @@
 
 Every push to `main` and every pull request runs:
 
-- `node scripts/validate-site.mjs` for the document shell, Russian language and viewport metadata, Telegram WebApp SDK inclusion, duplicate IDs, in-page links, profile controls, local profile handling, accessibility hooks, and inline JavaScript syntax.
+- `node scripts/validate-site.mjs` for the document shell, Russian language and viewport metadata, Telegram WebApp SDK inclusion, duplicate IDs, in-page links, profile controls, personal memory UI/API wiring, safe text rendering, local profile handling, accessibility hooks, and inline JavaScript syntax.
 - `node --test scripts/backend-auth.test.cjs scripts/memory-api.test.cjs` for Telegram `initData` signature validation, tamper detection, timestamp expiry, malformed input, memory validation, and per-user data scoping.
 
 These are source-level and unit checks. They do not prove that Supabase credentials, live Telegram authentication, profile persistence, or the visual layout work in a real browser.
@@ -14,6 +14,9 @@ These are source-level and unit checks. They do not prove that Supabase credenti
 - Follow `BACKEND_SETUP.md` to configure Supabase and Vercel environment variables.
 - Open `/api/health`. Before configuration, the expected result is `telegramAuth: "setup_required"` and `profileService: "setup_required"`; after configuration each should report `"configured"`.
 - Open the Mini App in Telegram and confirm the page reports a verified session only after `GET /api/session` succeeds.
+- In the Personal Memory section, create a preference, fact, goal, instruction, and note; confirm they appear after reloading the page.
+- Delete one memory and confirm only that record disappears.
+- Open the site in a normal browser and confirm the memory editor stays unavailable outside an authenticated Telegram Mini App session.
 - Test `GET /api/profile`, `PUT /api/profile`, and `DELETE /api/profile` only from an authenticated Telegram Mini App session.
 - Confirm `DELETE /api/profile` removes only the authenticated user's record.
 - Test `GET/POST/DELETE /api/memory` and confirm each operation is scoped to the authenticated Telegram ID.
@@ -39,4 +42,4 @@ These are source-level and unit checks. They do not prove that Supabase credenti
 
 ## Current implementation boundary
 
-The repository contains a static `index.html` plus Vercel Node.js API routes for backend health and Telegram-authenticated profile storage. The profile API requires a Supabase table and three server-side Vercel environment variables. The frontend profile still uses local storage and does not yet send profile data to the API. AI provider requests and agent execution are not implemented. Do not enter API keys or bot tokens into browser code.
+The repository contains a static `index.html` plus Vercel Node.js API routes for backend health, Telegram session verification, profile storage, and personal memory. The memory UI is available only inside an authenticated Telegram Mini App session and requires the Supabase table plus three server-side Vercel environment variables. The frontend profile still uses local storage and does not yet send profile data to the API. AI provider requests and agent execution are not implemented. Do not enter API keys or bot tokens into browser code.
