@@ -19,6 +19,7 @@ assert(html.includes("encodeURIComponent(item.id)"), "Memory deletion ID is not 
 assert(html.includes("id=\"memoryAccountTools\"") && html.includes("id=\"exportAccount\"") && html.includes("id=\"deleteAccount\""), "Account data controls are missing");
 assert(html.includes("fetch('/api/account") && html.includes("window.confirm("), "Account export/deletion actions are not wired or deletion confirmation is missing");
 assert(html.includes("localStorage.removeItem('orvex_agent_profile')"), "Account deletion does not clear local profile data");
+assert(html.includes("setProfileStatus('Профиль не создан'") && html.includes("updateHeaderAction();") && html.includes("openOnboarding();"), "Account deletion must reset profile UI and return the user to onboarding");
 
 
 assert(html.includes("viewportChanged"), "Telegram viewport change handling is missing");
