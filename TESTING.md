@@ -5,7 +5,7 @@
 Every push to `main` and every pull request runs:
 
 - `node scripts/validate-site.mjs` for the document shell, Russian language and viewport metadata, Telegram WebApp SDK inclusion, duplicate IDs, in-page links, profile controls, personal memory UI/API wiring, safe text rendering, local profile handling, accessibility hooks, and inline JavaScript syntax.
-- `node --test scripts/backend-auth.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs` for Telegram `initData` signature validation, profile API authorization and validation, profile upsert scoping, memory validation, per-user data scoping, account export, and atomic account deletion.
+- `node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/session-api.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs` for Telegram `initData` signature validation, backend health configuration reporting, session authorization, profile API validation and per-user upserts, memory validation, per-user data scoping, account export, and atomic account deletion.
 
 These are source-level and unit checks. They do not prove that Supabase credentials, live Telegram authentication, profile persistence, or the visual layout work in a real browser.
 
