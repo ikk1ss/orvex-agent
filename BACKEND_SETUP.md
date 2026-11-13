@@ -56,7 +56,7 @@ The profile and memory APIs and database schema are prepared, but live profile p
 
 ## Telegram bot synchronization
 
-Apply `supabase/migrations/20261113_add_orvex_chat_messages_and_lock_down_access.sql` before enabling persistent bot synchronization. It creates the chat-history table, keeps direct browser-role access disabled, and extends account deletion to remove stored messages.
+Apply these migrations in order before enabling persistent bot synchronization: `supabase/migrations/20261113_add_orvex_chat_messages_and_lock_down_access.sql` creates the chat-history table, revokes direct browser-role grants and extends account deletion; `supabase/migrations/20261113_add_service_role_policies_for_orvex_data.sql` adds explicit service-role-only RLS policies.
 
 Configure `ORVEX_BOT_API_SECRET` in Vercel and the Telegram worker with the exact same random value. The worker receives only this scoped API secret, not the Supabase service-role key. Set `ORVEX_API_URL` in the worker to `https://orvex-agent.vercel.app/api/bot`.
 
