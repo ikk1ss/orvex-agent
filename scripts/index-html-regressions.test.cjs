@@ -58,3 +58,15 @@ test("balance widget loads real data and does not ship demo numbers", () => {
   assert.ok(!/\d{2,}/.test(markup.replace(/id="[^"]*"|aria-[a-z]+="[^"]*"/g, "")), "no hardcoded balance in markup");
   assert.ok(html.includes('id="topupPay" type="button" disabled'), "payment button stays disabled until payments exist");
 });
+
+test("authentication methods appear in the requested order", () => {
+  const telegram = html.indexOf('id="authTelegram"');
+  const google = html.indexOf('id="authGoogle"');
+  const guest = html.indexOf('id="authGuest"');
+  assert.ok(telegram >= 0 && google > telegram && guest > google);
+  assert.ok(html.includes('id="authModal"'));
+  assert.ok(html.includes("signInAnonymously()"));
+  assert.ok(html.includes("signInWithOAuth"));
+  assert.ok(html.includes("is_anonymous"));
+  assert.ok(html.includes("SUPABASE_PUBLISHABLE_KEY"));
+});
