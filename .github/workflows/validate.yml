@@ -24,7 +24,7 @@ jobs:
         run: node scripts/validate-site.mjs
 
       - name: Test Telegram authentication, backend APIs and balance
-        run: node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/session-api.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs scripts/personalization-context.test.cjs scripts/bot-api.test.cjs scripts/balance-api.test.cjs scripts/auth-config-api.test.cjs scripts/index-html-regressions.test.cjs
+        run: node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/session-api.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs scripts/personalization-context.test.cjs scripts/bot-api.test.cjs scripts/balance-api.test.cjs scripts/auth-config-api.test.cjs scripts/guest-quota-api.test.cjs scripts/guest-quota-migration.test.cjs scripts/ai-chat-api.test.cjs scripts/index-html-regressions.test.cjs
 
       - name: Set up Python
         uses: actions/setup-python@v7
