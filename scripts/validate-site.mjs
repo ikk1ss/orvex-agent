@@ -2,12 +2,16 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+const vercelConfig = JSON.parse(readFileSync(new URL("../vercel.json", import.meta.url), "utf8"));
+
 const failures = [];
 const assert = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
 assert(/^<!doctype html>/i.test(html.trimStart()), "Missing HTML5 doctype");
+assert(vercelConfig.functions && vercelConfig.functions["api/ai-chat.js"] && vercelConfig.functions["api/ai-chat.js"].maxDuration === 45, "AI chat function duration must allow up to 45 seconds");
+
 assert(/<html\b[^>]*lang=["']ru["']/i.test(html), "Document language should be Russian");
 assert(/<meta\b[^>]*name=["']viewport["']/i.test(html), "Missing viewport meta tag");
 assert(html.includes("https://telegram.org/js/telegram-web-app.js"), "Telegram WebApp SDK is not included");
