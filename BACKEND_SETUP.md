@@ -32,6 +32,7 @@ Keep all three values server-side. Never add them to `index.html`, commit them t
 - `GET /api/memory`: returns up to 50 memories belonging to the authenticated Telegram user.
 - `POST /api/memory`: stores a validated memory (maximum 1,000 characters) under that Telegram user.
 - `DELETE /api/memory?id=<uuid>`: deletes only the specified memory owned by the authenticated Telegram user.
+- `GET /api/balance`: returns the authenticated user's balance as `{ balance: { rub, usd, rate } }`. The balance is stored in kopecks in `orvex_balances`; the dollar amount is calculated on the server from the Central Bank of Russia rate (cached for one hour) and is `null` if the rate cannot be loaded. A user without a row has a zero balance.
 - `GET /api/account`: exports the authenticated user's profile and all memory records as JSON.
 - `DELETE /api/account`: deletes the authenticated user's profile, memories and stored chat history in one database transaction using a restricted SQL function.
 - `POST /api/bot`: private server-to-server endpoint for the Telegram worker. It loads the Telegram user's profile, preferences, relevant memories and recent chat; saves exchanges and explicit memory notes; and clears chat history. It requires `Authorization: Bearer <ORVEX_BOT_API_SECRET>` and does not accept browser `initData` as a substitute.
@@ -44,10 +45,21 @@ Run:
 
 ```sh
 node scripts/validate-site.mjs
-node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/session-api.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs
+node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/session-api.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs scripts/balance-api.test.cjs scripts/index-html-regressions.test.cjs
 ```
 
 The automated tests use fake test tokens and mocked storage responses. They do not require live Telegram or Supabase credentials.
+
+## Balance
+
+Run the updated `supabase/schema.sql` again on existing projects: it adds the `orvex_balances` table and updates `delete_orvex_account` so account deletion also removes the balance. Payments are not connected yet, so the top-up window in the app only previews the amount and its dollar equivalent. Until payments exist, a balance can be set manually in the Supabase SQL Editor (amount in kopecks, 50000 = 500 RUB):
+
+```sql
+insert into public.orvex_balances (telegram_id, balance_kopecks)
+values ('123456789', 50000)
+on conflict (telegram_id) do update
+  set balance_kopecks = excluded.balance_kopecks, updated_at = now();
+```
 
 ## Current boundary
 

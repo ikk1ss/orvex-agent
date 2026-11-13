@@ -50,3 +50,11 @@ test("every Russian UI string used by the script has an English and German trans
   }
   assert.deepEqual([...new Set(missing)], []);
 });
+
+test("balance widget loads real data and does not ship demo numbers", () => {
+  assert.ok(html.includes('id="balanceWidget"') && html.includes('id="topupModal"'));
+  assert.ok(html.includes("fetch('/api/balance'"));
+  const markup = html.slice(html.indexOf('id="balanceWidget"'), html.indexOf('id="balanceWidget"') + 600);
+  assert.ok(!/\d{2,}/.test(markup.replace(/id="[^"]*"|aria-[a-z]+="[^"]*"/g, "")), "no hardcoded balance in markup");
+  assert.ok(html.includes('id="topupPay" type="button" disabled'), "payment button stays disabled until payments exist");
+});

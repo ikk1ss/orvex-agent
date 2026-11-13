@@ -22,8 +22,10 @@ jobs:
           node-version: 22
       - name: Validate HTML structure and application JavaScript
         run: node scripts/validate-site.mjs
-      - name: Test Telegram authentication and backend APIs
-        run: node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/session-api.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs scripts/personalization-context.test.cjs scripts/bot-api.test.cjs
+
+      - name: Test Telegram authentication, backend APIs and balance
+        run: node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/session-api.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs scripts/personalization-context.test.cjs scripts/bot-api.test.cjs scripts/balance-api.test.cjs scripts/index-html-regressions.test.cjs
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
