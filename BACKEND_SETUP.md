@@ -28,7 +28,7 @@ Keep `SUPABASE_SERVICE_ROLE_KEY`, `TELEGRAM_BOT_TOKEN` and `ORVEX_BOT_API_SECRET
 
 ## Telegram, Google and guest sign-in
 
-The first version of the sign-in screen offers the methods in this order: Telegram, Google, then guest.
+The sign-in methods are presented in this order: Telegram, Google, then guest. When ORVEX is opened inside Telegram, the verified Telegram identity is used automatically. Google and guest sign-in are offered in a normal browser so a guest session cannot accidentally inherit access to Telegram profile, memory or balance endpoints.
 
 1. In Supabase Dashboard, open Authentication → Sign In / Providers and enable **Anonymous Sign-Ins**.
 2. Enable the **Google** provider and enter the Google OAuth Client ID and Client Secret in the Supabase Dashboard. Do not put the Google Client Secret in Vercel or Git.
