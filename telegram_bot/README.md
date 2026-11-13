@@ -51,7 +51,7 @@ Generate one strong random secret and add the exact same value as `ORVEX_BOT_API
 
 ## Database
 
-The migration `supabase/migrations/20261113_add_orvex_chat_messages_and_lock_down_access.sql` creates the bounded chat-history table, keeps it inaccessible to browser roles, and extends account deletion to remove chat history. Apply the migration before enabling persistent bot synchronization.
+Apply these migrations in order before enabling persistent bot synchronization: `supabase/migrations/20261113_add_orvex_chat_messages_and_lock_down_access.sql` creates the bounded chat-history table, revokes direct browser-role grants and extends account deletion; `supabase/migrations/20261113_add_service_role_policies_for_orvex_data.sql` adds explicit service-role-only RLS policies.
 
 The bot API uses the server-side Supabase service key already configured for the Vercel API. Never put that key in the Telegram worker or browser. The worker only receives the separate, narrowly scoped `ORVEX_BOT_API_SECRET`.
 
