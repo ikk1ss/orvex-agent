@@ -42,6 +42,25 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual(settings.orvex_api_url, "https://orvex.example/api/bot")
         self.assertEqual(settings.orvex_bot_api_secret, "x" * 48)
 
+    def test_production_flag_requires_persistent_backend(self):
+        env = {
+            "TELEGRAM_BOT_TOKEN": "test-token",
+            "ORVEX_REQUIRE_BACKEND": "true",
+        }
+        with patch.dict(os.environ, env, clear=True):
+            with self.assertRaisesRegex(ValueError, "ORVEX_BOT_API_SECRET is required"):
+                load_settings()
+
+    def test_production_flag_accepts_configured_backend(self):
+        env = {
+            "TELEGRAM_BOT_TOKEN": "test-token",
+            "ORVEX_REQUIRE_BACKEND": "true",
+            "ORVEX_BOT_API_SECRET": "x" * 48,
+        }
+        with patch.dict(os.environ, env, clear=True):
+            settings = load_settings()
+        self.assertEqual(settings.orvex_bot_api_secret, "x" * 48)
+
     def test_rejects_short_backend_secret(self):
         env = {
             "TELEGRAM_BOT_TOKEN": "test-token",
