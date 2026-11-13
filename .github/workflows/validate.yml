@@ -33,3 +33,5 @@ jobs:
         run: |
           python -m py_compile telegram_bot/config.py telegram_bot/messages.py telegram_bot/personality.py telegram_bot/ai.py telegram_bot/backend.py telegram_bot/bot.py
           python -m unittest discover -s telegram_bot/tests -v
+      - name: Build Telegram worker container
+        run: docker build --tag orvex-agent-telegram:test ./telegram_bot
