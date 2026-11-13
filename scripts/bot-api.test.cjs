@@ -60,7 +60,7 @@ test("loads only the requested Telegram user's profile, memories and recent mess
     if (value.includes("orvex_memories")) {
       return { ok: true, json: async () => [{
         id: "memory-1", content: "Пользователь изучает виртуальные миры",
-        category: "interest", created_at: "2026-11-13T10:00:00.000Z"
+        category: "fact", created_at: "2026-11-13T10:00:00.000Z"
       }] };
     }
     return { ok: true, json: async () => [
@@ -120,7 +120,7 @@ test("saves an exchange and prunes messages older than the retention limit", asy
     assert.equal(calls[2].options.method, "DELETE");
     const prune = new URL(calls[2].url);
     assert.equal(prune.searchParams.get("telegram_id"), "eq.123456");
-    assert.match(prune.searchParams.get("id"), /^not.in.(/);
+    assert.ok(prune.searchParams.get("id").startsWith("not.in.("));
   } finally {
     global.fetch = originalFetch;
   }
