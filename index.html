@@ -947,6 +947,58 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  .profile-btn{padding:8px 11px;font-size:11px}
 }
 
+
+/* Balance widget and top-up dialog */
+.balance{display:flex;align-items:center;gap:6px;padding:4px 4px 4px 12px;border:1px solid rgba(114,216,208,.28);border-radius:14px;background:linear-gradient(135deg,rgba(114,216,208,.12),rgba(169,150,255,.10))}
+.balance-values{display:grid;grid-template-columns:auto auto;grid-template-areas:"label label" "rub usd";align-items:baseline;column-gap:8px;line-height:1.15;min-width:0}
+.balance-label{display:none;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8ee5dc;font-weight:700}
+.balance-rub{font:800 16px Manrope,sans-serif;letter-spacing:-.02em;color:var(--text);white-space:nowrap}
+.balance-usd{font-size:12px;color:var(--muted);white-space:nowrap}
+.balance.is-loading .balance-rub,.balance.is-loading .balance-usd{opacity:.5}
+.balance-add{width:34px;height:34px;flex:0 0 34px;border:0;border-radius:10px;font:700 22px/1 Manrope,sans-serif;color:#101322;background:linear-gradient(110deg,#72d8d0,#a996ff);box-shadow:0 6px 18px rgba(114,216,208,.22);transition:transform .2s,box-shadow .2s}
+.balance-add:hover{transform:translateY(-1px) scale(1.04);box-shadow:0 10px 24px rgba(114,216,208,.3)}
+.balance-add:active{transform:scale(.96)}
+#topupModal{position:fixed;inset:0;z-index:24;display:none;place-items:center;padding:18px;background:rgba(3,7,14,.7)}
+#topupModal.open{display:grid}
+.topup-card{width:min(440px,100%);max-height:calc(var(--tg-viewport-height,100vh) - 36px);overflow:auto;padding:26px;border:1px solid rgba(169,150,255,.28);border-radius:24px;background:linear-gradient(145deg,rgba(31,43,68,.96),rgba(14,17,34,.98));box-shadow:0 28px 90px rgba(0,0,0,.5),0 0 55px rgba(114,216,208,.07);overscroll-behavior:contain}
+.topup-card h2{font:700 24px Manrope,sans-serif;letter-spacing:-.03em;margin:0}
+.topup-current{display:grid;grid-template-columns:1fr auto;grid-template-areas:"t t" "r u";align-items:baseline;gap:2px 10px;margin:18px 0 20px;padding:15px 16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.035)}
+.topup-current span{grid-area:t;font-size:12px;color:var(--muted)}
+.topup-current b{grid-area:r;font:800 28px Manrope,sans-serif;letter-spacing:-.03em}
+.topup-current small{grid-area:u;font-size:14px;color:var(--muted)}
+.topup-label{font-size:12px;color:#c5cede;margin-bottom:9px}
+.topup-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.topup-chip{padding:12px 4px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04);color:var(--text);font-size:14px;font-weight:700;transition:background .2s,border-color .2s}
+.topup-chip:hover{border-color:rgba(114,216,208,.5)}
+.topup-chip[aria-pressed="true"]{border-color:var(--accent-cyan);background:linear-gradient(130deg,rgba(114,216,208,.2),rgba(169,150,255,.18))}
+.topup-custom{margin-top:14px}
+.topup-summary{display:grid;grid-template-columns:1fr auto;grid-template-areas:"t t" "r u";gap:2px 10px;align-items:baseline;margin:6px 0 16px;color:var(--muted);font-size:12px}
+.topup-summary span{grid-area:t}.topup-summary b{grid-area:r;font:800 20px Manrope,sans-serif;color:var(--text)}.topup-summary small{grid-area:u;font-size:13px}
+.topup-pay:disabled{opacity:.45;cursor:not-allowed}
+.topup-note{margin:14px 0 0;padding:12px 14px;border:1px solid rgba(255,193,140,.25);border-radius:12px;background:rgba(255,193,140,.07);color:#c9bda9;font-size:12px;line-height:1.6}
+.topup-note b{color:#ffd09f}
+.header .balance{grid-column:1;grid-row:1;justify-self:start}
+.header .brand{grid-row:1}
+.header .header-right{grid-row:1}
+@media(max-width:820px){
+ .header .balance{grid-column:1;grid-row:3;justify-self:stretch;justify-content:space-between;padding:7px 8px 7px 14px}
+ .header .brand{grid-row:1}
+ .header .header-right{grid-row:2}
+ .balance-values{display:grid;grid-template-columns:auto auto;grid-template-areas:"label label" "rub usd";column-gap:8px;justify-content:start}
+ .balance-label{display:block;grid-area:label}
+ .balance-rub{grid-area:rub;font-size:18px}
+ .balance-usd{grid-area:usd}
+}
+@media(max-width:620px){
+ .topup-card{padding:21px}
+ .topup-chips{grid-template-columns:repeat(2,1fr)}
+}
+/* Lighter ambient effects on touch devices and small screens */
+@media(max-width:620px),(hover:none){
+ .ambient-orb,.ambient-streak{animation:none!important;mix-blend-mode:normal}
+ .visual-glow{animation:none}
+}
+@media(prefers-reduced-transparency:reduce){.topup-card{backdrop-filter:none}}
 </style>
 </head>
 <body class="orvex-booting">
@@ -962,6 +1014,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <a class="brand" href="#home" aria-label="ORVEX Agent, на главную">
 <span class="brand-symbol" aria-hidden="true"></span>
 <span>ORVEX <b>AGENT</b></span></a>
+<div class="balance" id="balanceWidget" aria-live="polite"><div class="balance-values" id="balanceValues" title="Откройте в Telegram, чтобы увидеть баланс"><span class="balance-label">Баланс</span><b class="balance-rub" id="balanceRub">— ₽</b><span class="balance-usd" id="balanceUsd">— $</span></div><button class="balance-add" id="balanceAdd" type="button" aria-label="Пополнить баланс" aria-haspopup="dialog">+</button></div>
 <div class="header-right">
 <nav class="nav" aria-label="Основная навигация"><a href="#status">Статус</a><a href="#memory">Память</a><a href="#roadmap">Планы</a></nav>
 <div class="language-menu" id="languageMenu"><button class="language-current" id="languageCurrent" type="button" aria-expanded="false" aria-controls="languageOptions">Русский <span aria-hidden="true">⌄</span></button><div class="language-options" id="languageOptions" role="group" aria-label="Язык интерфейса" hidden><button class="language-option" type="button" data-language="ru" aria-label="Русский" aria-pressed="false" title="Русский">Русский</button><button class="language-option" type="button" data-language="en" aria-label="English" aria-pressed="false" title="English">English</button><button class="language-option" type="button" data-language="de" aria-label="Deutsch" aria-pressed="false" title="Deutsch">Deutsch</button></div></div>
@@ -1116,6 +1169,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <p class="local-note">Локальное сохранение. Серверной регистрации пока нет.</p>
 </section>
 </div>
+<div id="topupModal" role="dialog" aria-modal="true" aria-labelledby="topupTitle" aria-hidden="true">
+<div class="topup-card">
+<div class="modal-head"><h2 id="topupTitle">Пополнение баланса</h2><button class="close" id="topupClose" type="button" aria-label="Закрыть">×</button></div>
+<div class="topup-current"><span>Сейчас на балансе</span><b id="topupCurrentRub">— ₽</b><small id="topupCurrentUsd">— $</small></div>
+<div class="topup-label" id="topupAmountLabel">Выберите сумму</div>
+<div class="topup-chips" id="topupChips" role="group" aria-labelledby="topupAmountLabel"><button type="button" class="topup-chip" data-amount="100">100 ₽</button><button type="button" class="topup-chip" data-amount="300">300 ₽</button><button type="button" class="topup-chip" data-amount="500">500 ₽</button><button type="button" class="topup-chip" data-amount="1000">1 000 ₽</button></div>
+<label class="field topup-custom">Или введите свою сумму, ₽<input id="topupAmount" type="number" inputmode="numeric" min="50" max="100000" step="1" placeholder="Например, 750"></label>
+<div class="topup-summary" id="topupSummary" hidden><span>Будет зачислено</span><b id="topupSummaryRub">0 ₽</b><small id="topupSummaryUsd"></small></div>
+<button class="primary topup-pay" id="topupPay" type="button" disabled>Перейти к оплате</button>
+<p class="topup-note" id="topupNote"><b>Оплата пока не подключена.</b> Деньги не будут списаны. Кнопка станет активной, когда появится приём платежей.</p>
+</div>
+</div>
 <div id="deleteConfirmModal" aria-hidden="true">
  <section class="delete-confirm-card" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
   <h2 id="deleteConfirmTitle">Вы действительно хотите удалить аккаунт?</h2>
@@ -1210,6 +1275,12 @@ Object.assign(translations.en,{
 });
 Object.assign(translations.de,{
  "Платформа":"Plattform","Профиль":"Profil","ORVEX Agent, на главную":"ORVEX Agent, Startseite","Основная навигация":"Hauptnavigation","Закрыть":"Schließen","Аватар профиля":"Profilbild","Например: предпочитаю краткие ответы и пошаговые инструкции.":"Zum Beispiel: Ich bevorzuge kurze Antworten und Schritt-für-Schritt-Anleitungen.","Ваше имя":"Ihr Name","Например, студент, дизайнер, разработчик":"Zum Beispiel: Student, Designer, Entwickler","Что ORVEX Agent должен учитывать о вас?":"Was soll ORVEX Agent über Sie wissen?","Например: игры, технологии, обучение, дизайн":"Zum Beispiel: Spiele, Technik, Lernen, Design","Например: сначала объясняй простыми словами, затем приводи пример":"Zum Beispiel: erst in einfachen Worten erklären, dann ein Beispiel geben","Для подтверждения введите слово УДАЛИТЬ":"Geben Sie zur Bestätigung LÖSCHEN ein","УДАЛИТЬ":"LÖSCHEN","Открыто в браузере":"Im Browser geöffnet","Кнопка Mini App настроена через BotFather. Для серверной проверки нужен TELEGRAM_BOT_TOKEN в Vercel.":"Die Mini-App-Schaltfläche ist in BotFather eingerichtet. Für die serverseitige Prüfung wird TELEGRAM_BOT_TOKEN in Vercel benötigt.","Проверка недоступна":"Prüfung nicht verfügbar","Серверная проверка Telegram пока недоступна.":"Die serverseitige Telegram-Prüfung ist noch nicht verfügbar.","Telegram-пользователь подтверждён сервером.":"Der Telegram-Nutzer wurde vom Server bestätigt.","Не удалось подтвердить Telegram-пользователя.":"Der Telegram-Nutzer konnte nicht bestätigt werden.","Серверная авторизация Telegram требует настройки.":"Die serverseitige Telegram-Autorisierung muss noch eingerichtet werden.","Откройте Mini App в Telegram, чтобы проверить серверную авторизацию.":"Öffnen Sie die Mini App in Telegram, um die serverseitige Autorisierung zu prüfen.","Профиль привязан к вашему Telegram ID и синхронизирован с сервером ORVEX Agent.":"Ihr Profil ist mit Ihrer Telegram-ID verknüpft und mit dem ORVEX-Agent-Server synchronisiert.","Серверное хранение профиля пока недоступно. Данные не будут сохранены, пока серверная настройка не завершена.":"Die serverseitige Profilspeicherung ist noch nicht verfügbar. Daten werden erst nach Abschluss der Servereinrichtung gespeichert.","Я подтверждаю сохранение указанных настроек в профиле ORVEX Agent, привязанном к моему Telegram-аккаунту.":"Ich bestätige, dass diese Einstellungen in meinem mit Telegram verknüpften ORVEX-Agent-Profil gespeichert werden.","Я понимаю, что серверное хранение пока недоступно и профиль не будет сохранён на сервере.":"Mir ist bekannt, dass die Serverspeicherung noch nicht verfügbar ist und das Profil nicht auf dem Server gespeichert wird.","Профиль синхронизирован с сервером ORVEX Agent.":"Das Profil ist mit dem ORVEX-Agent-Server synchronisiert.","Проверка…":"Prüfung…","Проверяем доступность серверного профиля…":"Verfügbarkeit des Serverprofils wird geprüft…","Серверный профиль недоступен. Локальная копия не считается серверным сохранением.":"Das Serverprofil ist nicht verfügbar. Eine lokale Kopie gilt nicht als Serverspeicherung.","В обычном браузере профиль сохраняется только на этом устройстве. Для единого профиля откройте ORVEX Agent через Telegram.":"In einem normalen Browser wird das Profil nur auf diesem Gerät gespeichert. Öffnen Sie ORVEX Agent in Telegram für ein einheitliches Profil.","Я понимаю, что профиль сохраняется только в этом браузере и не отправляется на сервер.":"Mir ist bekannt, dass das Profil nur in diesem Browser gespeichert und nicht an einen Server gesendet wird.","Удаляем аккаунт и персональные данные…":"Konto und persönliche Daten werden gelöscht…","Профиль не создан":"Noch kein Profil","Профиль и персональная память удалены. Вы можете создать новый профиль.":"Profil und persönliche Erinnerungen wurden gelöscht. Sie können ein neues Profil erstellen.","Аккаунт и все записи персональной памяти удалены.":"Konto und alle persönlichen Erinnerungen wurden gelöscht.","Аккаунт и персональные данные удалены":"Konto und persönliche Daten gelöscht","Не удалось удалить аккаунт. Данные не были подтверждённо удалены. Попробуйте ещё раз.":"Das Konto konnte nicht gelöscht werden. Die Löschung wurde nicht bestätigt. Bitte versuchen Sie es erneut.","Вы вышли из локального профиля":"Sie haben sich vom lokalen Profil abgemeldet","Язык интерфейса сохранён в профиле":"Spracheinstellung im Profil gespeichert","Язык изменён на устройстве, но не синхронизирован с сервером":"Sprache auf diesem Gerät geändert, aber nicht mit dem Server synchronisiert","Язык интерфейса изменён":"Oberflächensprache geändert","Серверный профиль пока недоступен. Проверьте настройки Supabase и Vercel.":"Das Serverprofil ist noch nicht verfügbar. Prüfen Sie die Supabase- und Vercel-Einstellungen.","Синхронизирован":"Synchronisiert","Профиль привязан к Telegram ID и хранится в серверной базе ORVEX Agent.":"Das Profil ist mit Ihrer Telegram-ID verknüpft und in der ORVEX-Agent-Serverdatenbank gespeichert.","Профиль синхронизирован с сервером":"Profil mit dem Server synchronisiert","Ошибка синхронизации":"Synchronisierungsfehler","Не удалось сохранить профиль на сервере. Проверьте соединение и попробуйте ещё раз.":"Das Profil konnte nicht auf dem Server gespeichert werden. Prüfen Sie die Verbindung und versuchen Sie es erneut.","Профиль сохранён в этом браузере. Для синхронизации откройте Mini App через Telegram после настройки сервера.":"Das Profil wurde in diesem Browser gespeichert. Öffnen Sie nach der Servereinrichtung die Mini App in Telegram, um es zu synchronisieren.","Профиль сохранён на этом устройстве":"Profil auf diesem Gerät gespeichert","Не удалось сохранить профиль. Проверьте настройки браузера.":"Das Profil konnte nicht gespeichert werden. Prüfen Sie Ihre Browsereinstellungen.","Профиль хранится в этом браузере. Откройте Mini App через Telegram, чтобы использовать единый профиль.":"Das Profil wird in diesem Browser gespeichert. Öffnen Sie die Mini App in Telegram für ein einheitliches Profil.","Проверяем Telegram-сессию и загружаем профиль.":"Telegram-Sitzung wird geprüft und das Profil geladen.","Профиль привязан к Telegram ID и синхронизируется через серверную базу ORVEX Agent.":"Das Profil ist mit Ihrer Telegram-ID verknüpft und wird über die ORVEX-Agent-Serverdatenbank synchronisiert.","Telegram подтверждён, но серверный профиль ещё не подключён. Нужны Supabase и переменные Vercel.":"Telegram ist bestätigt, aber das Serverprofil ist noch nicht verbunden. Supabase und Vercel-Variablen werden benötigt.","Не удалось загрузить серверный профиль. Локальные данные не будут выданы за синхронизированные.":"Das Serverprofil konnte nicht geladen werden. Lokale Daten werden nicht als synchronisiert ausgegeben.","Откройте ORVEX Agent через Telegram, чтобы использовать персональную память.":"Öffnen Sie ORVEX Agent in Telegram, um die persönlichen Erinnerungen zu nutzen.","Загружаем ваши записи…":"Ihre Einträge werden geladen…","Пока нет сохранённых записей. Добавьте первую заметку выше.":"Noch keine gespeicherten Einträge. Fügen Sie oben Ihre erste Notiz hinzu.","Запись":"Eintrag","Удалить":"Löschen","Удалить запись памяти":"Erinnerungseintrag löschen","Не удалось удалить запись. Попробуйте ещё раз.":"Der Eintrag konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.","Не удалось загрузить следующие записи. Попробуйте ещё раз.":"Weitere Einträge konnten nicht geladen werden. Bitte versuchen Sie es erneut.","Подготавливаем архив ваших данных…":"Ihr Datenarchiv wird vorbereitet…","Архив ваших данных подготовлен.":"Ihr Datenarchiv ist bereit.","Не удалось подготовить архив. Попробуйте ещё раз.":"Das Archiv konnte nicht erstellt werden. Bitte versuchen Sie es erneut.","Сохраняем запись…":"Eintrag wird gespeichert…","Сервер памяти пока не настроен. Добавьте переменные Supabase в Vercel и выполните SQL-схему.":"Der Erinnerungsserver ist noch nicht eingerichtet. Fügen Sie die Supabase-Variablen in Vercel hinzu und führen Sie das SQL-Schema aus.","Не удалось сохранить запись. Проверьте соединение и попробуйте ещё раз.":"Der Eintrag konnte nicht gespeichert werden. Prüfen Sie die Verbindung und versuchen Sie es erneut.","Сервер памяти пока не настроен.":"Der Erinnerungsserver ist noch nicht eingerichtet.","Не удалось подтвердить Telegram-сессию или загрузить память. Откройте Mini App в Telegram после настройки сервера.":"Die Telegram-Sitzung konnte nicht bestätigt oder die Erinnerungen konnten nicht geladen werden. Öffnen Sie die Mini App nach der Servereinrichtung in Telegram.","Локально":"Lokal"
+});
+Object.assign(translations.en,{
+ "Баланс":"Balance","Пополнить баланс":"Top up balance","Откройте в Telegram, чтобы увидеть баланс":"Open in Telegram to see your balance","Пополнение баланса":"Top up balance","Сейчас на балансе":"Current balance","Выберите сумму":"Choose an amount","Или введите свою сумму, ₽":"Or enter your own amount, ₽","Например, 750":"For example: 750","Будет зачислено":"Will be credited","Перейти к оплате":"Proceed to payment","Деньги не будут списаны. Кнопка станет активной, когда появится приём платежей.":"No money will be charged. The button will become active once payments are available.","Оплата пока не подключена.":"Payments are not connected yet.","Укажите сумму от 50 до 100 000 ₽":"Enter an amount from 50 to 100,000 ₽","Баланс недоступен":"Balance unavailable","по курсу ЦБ РФ":"at the Central Bank of Russia rate"
+});
+Object.assign(translations.de,{
+ "Баланс":"Guthaben","Пополнить баланс":"Guthaben aufladen","Откройте в Telegram, чтобы увидеть баланс":"Öffnen Sie die App in Telegram, um Ihr Guthaben zu sehen","Пополнение баланса":"Guthaben aufladen","Сейчас на балансе":"Aktuelles Guthaben","Выберите сумму":"Betrag wählen","Или введите свою сумму, ₽":"Oder eigenen Betrag eingeben, ₽","Например, 750":"Zum Beispiel: 750","Будет зачислено":"Wird gutgeschrieben","Перейти к оплате":"Weiter zur Zahlung","Деньги не будут списаны. Кнопка станет активной, когда появится приём платежей.":"Es wird kein Geld abgebucht. Die Schaltfläche wird aktiv, sobald Zahlungen verfügbar sind.","Оплата пока не подключена.":"Zahlungen sind noch nicht verbunden.","Укажите сумму от 50 до 100 000 ₽":"Geben Sie einen Betrag von 50 bis 100.000 ₽ ein","Баланс недоступен":"Guthaben nicht verfügbar","по курсу ЦБ РФ":"zum Kurs der russischen Zentralbank"
 });
 const translationPatterns=[
  {re:/^Память подключена\. Показано записей: (\d+)\.( Можно загрузить ещё\.)?$/,en:(m)=>'Memory connected. Entries shown: '+m[1]+'.'+(m[2]?' More can be loaded.':''),de:(m)=>'Erinnerungen verbunden. Angezeigte Einträge: '+m[1]+'.'+(m[2]?' Weitere können geladen werden.':'')},
@@ -1309,7 +1380,7 @@ function syncTelegramViewport(){
 }
 function showTelegramBack(){try{if(telegramBack)telegramBack.show()}catch(e){}}
 function hideTelegramBack(){try{if(telegramBack)telegramBack.hide()}catch(e){}}
-function handleTelegramBack(){if(onboarding.classList.contains('open'))closeOnboarding();else if(modal.classList.contains('open'))closeModal()}
+function handleTelegramBack(){if(topupModal.classList.contains('open'))closeTopup();else if(onboarding.classList.contains('open'))closeOnboarding();else if(modal.classList.contains('open'))closeModal()}
 try{if(telegramBack&&telegramBack.onClick)telegramBack.onClick(handleTelegramBack)}catch(e){}
 try{
  if(tg){
@@ -1466,6 +1537,78 @@ $('#logoutAccount').addEventListener('click',()=>{
  openOnboarding();toast('Вы вышли из локального профиля');
 });
 
+const balanceWidget=$('#balanceWidget'),balanceRub=$('#balanceRub'),balanceUsd=$('#balanceUsd'),balanceValues=$('#balanceValues');
+const topupModal=$('#topupModal'),topupAmount=$('#topupAmount'),topupChips=[...document.querySelectorAll('.topup-chip')];
+let balanceState=null;
+const TOPUP_MIN=50,TOPUP_MAX=100000;
+function numberLocale(){return {ru:'ru-RU',en:'en-US',de:'de-DE'}[activeInterfaceLanguage]||'ru-RU'}
+function formatRub(value){return new Intl.NumberFormat(numberLocale(),{minimumFractionDigits:Number.isInteger(value)?0:2,maximumFractionDigits:2}).format(value)+' ₽'}
+function formatUsd(value){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(value)}
+function renderBalance(){
+ const b=balanceState;
+ const rub=b?formatRub(b.rub):'— ₽';
+ const usd=b&&b.usd!==null?formatUsd(b.usd):'— $';
+ balanceRub.textContent=rub;balanceUsd.textContent=usd;
+ $('#topupCurrentRub').textContent=rub;$('#topupCurrentUsd').textContent=usd;
+ if(balanceValues)balanceValues.title=b?'':(telegramMiniApp?'Баланс недоступен':'Откройте в Telegram, чтобы увидеть баланс');
+ updateTopupSummary();
+}
+async function loadBalance(){
+ if(!telegramMiniApp){renderBalance();return}
+ balanceWidget.classList.add('is-loading');
+ try{
+  const response=await fetch('/api/balance',{headers:{Authorization:'tma '+tg.initData,Accept:'application/json'},cache:'no-store'});
+  if(!response.ok)throw new Error('balance_unavailable');
+  const data=await response.json();
+  const rub=data&&data.balance&&data.balance.rub;
+  if(typeof rub!=='number'||!Number.isFinite(rub))throw new Error('balance_invalid');
+  const usd=data.balance.usd;
+  balanceState={rub,usd:typeof usd==='number'&&Number.isFinite(usd)?usd:null,rate:data.balance.rate||null};
+ }catch(error){balanceState=null}
+ balanceWidget.classList.remove('is-loading');
+ renderBalance();
+}
+function topupValue(){const raw=topupAmount.value.trim();if(!/^\d{1,6}$/.test(raw))return null;const n=Number(raw);return n>=TOPUP_MIN&&n<=TOPUP_MAX?n:null}
+function updateTopupSummary(){
+ const summary=$('#topupSummary');if(!summary)return;
+ const amount=topupValue();
+ const hasText=topupAmount.value.trim()!=='';
+ summary.hidden=amount===null;
+ if(amount!==null){
+  $('#topupSummaryRub').textContent=formatRub(amount);
+  const rate=balanceState&&balanceState.rate;
+  $('#topupSummaryUsd').textContent=rate?'≈ '+formatUsd(Math.round(amount/rate.rubPerUsd*100)/100):'';
+ }
+ topupAmount.setAttribute('aria-invalid',hasText&&amount===null?'true':'false');
+ topupChips.forEach(chip=>chip.setAttribute('aria-pressed',String(amount!==null&&Number(chip.dataset.amount)===amount)));
+}
+function openTopup(){
+ lastFocusedElement=document.activeElement;
+ topupAmount.value='';updateTopupSummary();renderBalance();
+ topupModal.classList.add('open');topupModal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack();
+ applyInterfaceLanguage(activeInterfaceLanguage);
+ setTimeout(()=>topupChips[0]&&topupChips[0].focus(),60);
+}
+function closeTopup(){
+ topupModal.classList.remove('open');topupModal.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();
+ if(lastFocusedElement&&typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();lastFocusedElement=null;
+}
+$('#balanceAdd').addEventListener('click',openTopup);
+$('#topupClose').addEventListener('click',closeTopup);
+topupModal.addEventListener('click',event=>{if(event.target===topupModal)closeTopup()});
+topupChips.forEach(chip=>chip.addEventListener('click',()=>{topupAmount.value=chip.dataset.amount;updateTopupSummary()}));
+topupAmount.addEventListener('input',updateTopupSummary);
+document.addEventListener('keydown',event=>{
+ if(!topupModal.classList.contains('open'))return;
+ if(event.key==='Escape'){closeTopup();return}
+ if(event.key!=='Tab')return;
+ const focusable=[...topupModal.querySelectorAll('button:not([disabled]),input:not([disabled])')];
+ if(!focusable.length)return;
+ const first=focusable[0],last=focusable[focusable.length-1];
+ if(event.shiftKey&&(document.activeElement===first||!topupModal.contains(document.activeElement))){event.preventDefault();last.focus()}
+ else if(!event.shiftKey&&(document.activeElement===last||!topupModal.contains(document.activeElement))){event.preventDefault();first.focus()}
+});
+
 $('#profileOpen').addEventListener('click',()=>profile?openModal():openOnboarding());
 onboardingBackButton.addEventListener('click',()=>changeOnboardingStep(onboardingStep-1,'back'));
 onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)return;if(onboardingStep<onboardingSlides.length-1)changeOnboardingStep(onboardingStep+1,'forward');else{closeOnboarding();openModal()}});
@@ -1491,6 +1634,7 @@ document.querySelectorAll('.language-option').forEach(button=>button.addEventLis
   }catch(error){toast(language==='ru'?'Язык изменён на устройстве, но не синхронизирован с сервером':language==='en'?'Language changed on this device but not synced to the server':'Sprache auf diesem Gerät geändert, aber nicht mit dem Server synchronisiert')}
  }else toast(language==='ru'?'Язык интерфейса изменён':language==='en'?'Interface language changed':'Oberflächensprache geändert');
  languageOptions.hidden=true;languageCurrent.setAttribute('aria-expanded','false');
+ renderBalance();
 }));
 $('#replayOnboarding').addEventListener('click',()=>{closeModal();openOnboarding()});
 modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
@@ -1714,6 +1858,7 @@ async function initMemoryWorkspace(){
 applyInterfaceLanguage(localStorage.getItem('orvex_agent_language')||'ru');
 initMemoryWorkspace();
 initProfileWorkspace();
+loadBalance();
 })();
 </script>
 

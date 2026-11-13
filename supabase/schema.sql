@@ -39,6 +39,19 @@ alter table public.orvex_memories enable row level security;
 -- No anon/authenticated client policies are created.
 
 
+-- Balance is stored in kopecks (1 RUB = 100 kopecks) as an integer to avoid
+-- floating point errors. The dollar amount is derived on the server from the
+-- current exchange rate and is never stored.
+-- Rows are created or changed only by trusted server-side code (service_role).
+create table if not exists public.orvex_balances (
+  telegram_id text primary key,
+  balance_kopecks bigint not null default 0 check (balance_kopecks >= 0),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.orvex_balances enable row level security;
+
+
 -- Account deletion is performed in one database transaction.
 -- The function is callable only by the server-side service_role.
 create or replace function public.delete_orvex_account(p_telegram_id text)
@@ -49,6 +62,9 @@ set search_path = ''
 as $$
 begin
   delete from public.orvex_memories
+  where telegram_id = p_telegram_id;
+
+  delete from public.orvex_balances
   where telegram_id = p_telegram_id;
 
   delete from public.orvex_profiles
