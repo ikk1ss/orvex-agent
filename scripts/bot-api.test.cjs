@@ -117,6 +117,7 @@ test("saves an exchange and prunes messages older than the retention limit", asy
     assert.equal(inserted.length, 2);
     assert.equal(inserted[0].role, "user");
     assert.equal(inserted[1].role, "assistant");
+    assert.ok(Date.parse(inserted[1].created_at) > Date.parse(inserted[0].created_at));
     assert.equal(calls[2].options.method, "DELETE");
     const prune = new URL(calls[2].url);
     assert.equal(prune.searchParams.get("telegram_id"), "eq.123456");
