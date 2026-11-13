@@ -16,6 +16,11 @@ assert(html.includes('id="authModal"') && html.includes('id="authTelegram"') && 
 assert(html.indexOf('id="authTelegram"') < html.indexOf('id="authGoogle"') && html.indexOf('id="authGoogle"') < html.indexOf('id="authGuest"'), "Authentication methods are not ordered Telegram, Google, guest");
 assert(html.includes("signInAnonymously()") && html.includes("signInWithOAuth"), "Supabase anonymous and Google authentication flows are missing");
 assert(html.includes("fetch('/api/auth-config'"), "Public Supabase auth configuration endpoint is not connected");
+assert(html.includes('id="chat"') && html.includes('id="aiChatForm"') && html.includes('id="aiChatMessages"'), "AI chat workspace is missing");
+assert(html.includes("fetch('/api/ai-chat'") && html.includes("fetch('/api/guest-quota'"), "AI chat and guest quota APIs are not connected");
+assert(html.includes("model:'openrouter/free'"), "The chat client must use the free OpenRouter router");
+assert(html.includes("balanceAdd.disabled=!(telegramMiniApp&&telegramProfileSession)"), "Non-Telegram sessions must not be able to open balance top-up");
+
 
 assert(html.includes("/api/health") && html.includes("/api/session"), "Backend health and Telegram session checks are missing");
 assert(html.includes('id="memory"') && html.includes('id="memoryForm"') && html.includes('id="memoryList"'), "Personal memory workspace elements are missing");
