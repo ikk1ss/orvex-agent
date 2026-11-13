@@ -50,7 +50,7 @@ function getSupabaseHeaders(serviceKey, extra = {}) {
 }
 
 function validTelegramId(value) {
-  return typeof value === "string" && /^\d{1,20}$/.test(value) && Number(value) > 0;
+  return typeof value === "string" && /^[1-9]\d{0,19}$/.test(value);
 }
 
 async function readRows(response) {
