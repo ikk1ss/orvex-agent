@@ -1718,7 +1718,7 @@ deleteProceed.addEventListener('click',async()=>{
 });
 $('#logoutAccount').addEventListener('click',async()=>{
  try{localStorage.removeItem('orvex_agent_profile')}catch(error){}
- if(supabaseClient&&externalAuthSession){try{await supabaseClient.auth.signOut()}catch(error){}externalAuthSession=null;authMode='';delete document.body.dataset.authMode}
+ if(supabaseClient&&externalAuthSession){try{await supabaseClient.auth.signOut()}catch(error){}externalAuthSession=null;authMode='';if(guestQuotaResetTimer)clearTimeout(guestQuotaResetTimer);guestQuota=null;guestQuotaReady=false;delete document.body.dataset.authMode}
  profile=null;chatHistory=[];if(aiChatMessages)aiChatMessages.replaceChildren();updateHeaderAction();closeModal();
  if(telegramMiniApp&&tg&&typeof tg.close==='function'){tg.close();return}
  openAuthModal();initChatWorkspace();toast('Вы вышли из аккаунта');
@@ -2002,6 +2002,7 @@ async function initChatWorkspace(){
  if(!chatWorkspaceInitialized){
   chatWorkspaceInitialized=true;
   aiChatInput.addEventListener('input',updateChatControls);
+  window.addEventListener('focus',()=>{if(authMode==='guest')refreshGuestQuota()});
   aiChatForm.addEventListener('submit',async event=>{
    event.preventDefault();
    const content=aiChatInput.value.trim(),authorization=chatAuthorization();
