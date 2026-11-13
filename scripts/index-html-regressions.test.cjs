@@ -71,6 +71,19 @@ test("authentication methods appear in the requested order", () => {
   assert.ok(html.includes("fetch('/api/auth-config'"));
 });
 
+test("authentication options display a matching app icon on the left", () => {
+  const telegram = html.slice(html.indexOf('id="authTelegram"'), html.indexOf('id="authGoogle"'));
+  const google = html.slice(html.indexOf('id="authGoogle"'), html.indexOf('id="authGuest"'));
+  const guest = html.slice(html.indexOf('id="authGuest"'), html.indexOf('</div>', html.indexOf('id="authGuest"')));
+  for (const button of [telegram, google, guest]) {
+    assert.ok(button.includes('class="auth-method-icon"'));
+    assert.ok(button.includes('<svg'));
+    assert.ok(button.includes('</svg>'));
+    assert.ok(button.includes('<span>'));
+  }
+  assert.ok(google.includes('fill="#EA4335"'), "Google button uses the Google brand mark");
+});
+
 test("guest chat is connected only to the OpenRouter free router", () => {
   assert.ok(html.includes('id="aiChatForm"'));
   assert.ok(html.includes("model:'openrouter/free'"));
