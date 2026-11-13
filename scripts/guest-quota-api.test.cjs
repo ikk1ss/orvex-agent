@@ -18,13 +18,13 @@ function response() {
   };
 }
 
-function withEnv(run) {
+async function withEnv(run) {
   const names = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_PUBLISHABLE_KEY"];
   const previous = Object.fromEntries(names.map(name => [name, process.env[name]]));
   process.env.SUPABASE_URL = "https://example.supabase.co";
   process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role-key";
   process.env.SUPABASE_PUBLISHABLE_KEY = "sb_publishable_test_key_12345678901234567890";
-  try { return run(); }
+  try { return await run(); }
   finally {
     for (const name of names) {
       if (previous[name] === undefined) delete process.env[name];
