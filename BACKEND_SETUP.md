@@ -20,6 +20,7 @@ In the Vercel project settings, add these Environment Variables for Production a
 - `SUPABASE_SERVICE_ROLE_KEY`: the Supabase service-role key. Keep it private and server-side.
 - `SUPABASE_PUBLISHABLE_KEY`: the project's publishable key (`sb_publishable_...`) used by the browser authentication client. It is safe to expose, but must never be confused with the service-role key.
 - `ORVEX_TELEGRAM_BOT_URL`: the public Telegram bot link, for example `https://t.me/your_bot_username`, used when someone opens the site outside Telegram.
+- `OPENROUTER_API_KEY`: the server-side OpenRouter key used by the AI chat. Never put this key in the browser or Git.
 - `ORVEX_BOT_API_SECRET`: a random secret of at least 32 characters, shared only with the Telegram bot worker. Use the same value in Vercel and the worker; never put it in the Mini App or Git.
 
 Keep `SUPABASE_SERVICE_ROLE_KEY`, `TELEGRAM_BOT_TOKEN` and `ORVEX_BOT_API_SECRET` server-side. Never add them to `index.html`, commit them to Git, or send them in chat. The publishable key is intentionally public and is returned by `GET /api/auth-config`. Redeploy after saving the variables.
@@ -38,12 +39,14 @@ The first version of the sign-in screen offers the methods in this order: Telegr
 
 Anonymous users receive a separate Supabase Auth identity. Supabase documents that this identity cannot be recovered after the user signs out, clears browser data or changes device. Do not store important personal data in a guest account until an account-linking and recovery flow is implemented. Google sign-in and guest sign-in are separate sessions in this first stage; automatic migration of guest data into a Google account is not included yet.
 
-The current Telegram profile, memory and balance APIs still use verified Telegram Mini App `initData`. Google and guest sessions do not gain access to those Telegram-only endpoints. Guest AI access and its server-side daily quota are implemented separately in the next stage.
+The current Telegram profile, memory and balance APIs still use verified Telegram Mini App `initData`. Google and guest sessions do not gain access to those Telegram-only endpoints. The AI chat accepts Telegram sessions and Supabase sessions separately. Guest sessions are limited to 20 requests per UTC day; the 21st request is rejected by the server. The quota counter is stored in `orvex_guest_usage`, and the database function updates it atomically.
 
 ## 3. API endpoints
 
 - `GET /api/health`: reports Telegram-auth and profile-storage configuration separately. It never returns secret values.
 - `GET /api/auth-config`: returns the Supabase project URL and publishable key for browser authentication, plus the optional public Telegram bot link. It never returns server-side secrets.
+- `GET /api/guest-quota`: returns the authenticated anonymous user's remaining daily AI requests. It accepts only a verified Supabase anonymous session.
+- `POST /api/ai-chat`: verifies Telegram `initData` or a Supabase access token, allows only `openrouter/free`, calls OpenRouter server-side and enforces the guest quota.
 - `GET /api/session`: verifies the current Telegram Mini App session and returns a minimal user identity without storing it.
 - `GET /api/profile`: verifies Telegram Web App `initData` and returns the authenticated Telegram user's profile.
 - `PUT /api/profile`: verifies Telegram Web App `initData`, validates the submitted profile, and upserts it by Telegram user ID.
@@ -69,6 +72,17 @@ node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/se
 
 The automated tests use fake test tokens and mocked storage responses. They do not require live Telegram or Supabase credentials.
 
+
+## Guest AI quota and free model access
+
+For an existing Supabase project, apply `supabase/migrations/20261114_add_orvex_guest_usage_quota.sql` after the Telegram chat migrations. For a new project, the same table and function are included in `supabase/schema.sql`. The migration is additive and does not change Telegram profiles, memories or balances.
+
+The guest quota is **20 AI requests per UTC calendar day**, resetting at 00:00 UTC. The database function performs an atomic increment, so parallel requests cannot exceed the limit. The quota is tied to the Supabase anonymous user ID, not a browser-supplied ID. If a guest clears browser data or signs out, Supabase cannot recover that anonymous identity.
+
+The Mini App currently exposes only `openrouter/free` to the chat API. The server rejects other model IDs, keeps the OpenRouter key private and returns the remaining guest quota. OpenRouter can choose among its currently available free models; availability and provider rate limits can change. Chat history in the current interface remains in page memory and is cleared when the page reloads.
+
+Before enabling this feature, add `OPENROUTER_API_KEY` to Vercel Production and Preview, apply the database migration, enable Supabase Anonymous Sign-Ins and configure the Google provider as described above. The AI endpoint returns a setup error until the required server-side variables and database function are available.
+
 ## Balance
 
 Run the updated `supabase/schema.sql` again on existing projects: it adds the `orvex_balances` table and updates `delete_orvex_account` so account deletion also removes the balance. Payments are not connected yet, so the top-up window in the app only previews the amount and its dollar equivalent. Until payments exist, a balance can be set manually in the Supabase SQL Editor (amount in kopecks, 50000 = 500 RUB):
@@ -82,7 +96,7 @@ on conflict (telegram_id) do update
 
 ## Current boundary
 
-The profile and memory APIs and database schema are prepared, but live profile persistence and memory access are not active until the Supabase tables exist and the three Vercel environment variables are configured. The profile form now uses the Telegram-authenticated profile API inside the Mini App. It loads the server profile and migrates an existing local profile when the server record is empty. In a normal browser, the profile remains local and is clearly labelled as such. Real-device and in-Telegram checks still need to be performed. AI-provider integration remains intentionally separate and is not enabled by this backend setup.
+The profile and memory APIs and database schema are prepared, but live profile persistence and memory access are not active until the Supabase tables exist and the three Vercel environment variables are configured. The profile form now uses the Telegram-authenticated profile API inside the Mini App. It loads the server profile and migrates an existing local profile when the server record is empty. In a normal browser, the profile remains local and is clearly labelled as such. Real-device and in-Telegram checks still need to be performed. AI chat uses the OpenRouter Free Models Router (`openrouter/free`). The API rejects any other model ID, so a guest cannot change the request to a paid model. The browser never receives the OpenRouter key.
 
 
 ## Telegram bot synchronization
