@@ -73,6 +73,33 @@ docker run --restart unless-stopped \
 
 Use a worker/container host that supports a continuously running process. This polling bot should not be deployed as a Vercel serverless function. Configure `TELEGRAM_BOT_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `ORVEX_BOT_API_SECRET` in Vercel. Configure the Telegram token, OpenRouter key and matching bot API secret in the worker.
 
+## Deploy on Railway
+
+Railway can run this polling bot as a persistent Docker service. The repository is a monorepo, so configure the service root directory as `/telegram_bot`; Railway will then find this directory's `Dockerfile` and build the worker image.
+
+1. Create a new Railway project and connect the GitHub repository `ikk1ss/orvex-agent`.
+2. Select the branch `feature/telegram-ai-core` for the first pre-merge test deployment. After the pull request is merged, switch the service to `main`.
+3. In the service settings, set **Root Directory** to `/telegram_bot`.
+4. Keep the worker at **one replica**. Telegram long polling should have only one active worker for a bot token. Stop any other process polling with the same token before starting this service.
+5. Set the restart policy to **On Failure**.
+6. Add these service variables:
+
+| Variable | Value |
+| --- | --- |
+| `TELEGRAM_BOT_TOKEN` | Token from BotFather |
+| `OPENROUTER_API_KEY` | Your OpenRouter API key |
+| `OPENROUTER_MODEL` | `openrouter/free` |
+| `ORVEX_WEBAPP_URL` | `https://orvex-agent.vercel.app` |
+| `ORVEX_API_URL` | `https://orvex-agent.vercel.app/api/bot` |
+| `ORVEX_BOT_API_SECRET` | A new random secret, at least 32 characters |
+| `ORVEX_REQUIRE_BACKEND` | `true` |
+
+Generate the secret locally, for example with `openssl rand -hex 32`. Add the exact same value to the Vercel project's **Production** environment as `ORVEX_BOT_API_SECRET`, then redeploy the Vercel project. Never put the Supabase service-role key in Railway. The worker must not receive `SUPABASE_SERVICE_ROLE_KEY` or `SUPABASE_URL`.
+
+After the first deploy, check the Railway logs for `ORVEX Agent Telegram bot is starting`. Then test `/start`, a normal message, `/remember`, and `/reset` in a private Telegram chat. Confirm that the Mini App and bot use the same profile and memory. A successful container deployment alone does not prove Telegram end-to-end behavior.
+
+Do not add a Railway healthcheck URL: this worker does not expose an HTTP server. Keep it as a persistent service, not a cron job. Configure the service from the Railway dashboard rather than adding a legacy `railway.toml` file.
+
 ## Tests
 
 From the repository root:
