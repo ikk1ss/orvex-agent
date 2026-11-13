@@ -1,8 +1,9 @@
 import sys
 import unittest
 from pathlib import Path
+import httpx
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from ai import AIConfigurationError, ConversationStore, OpenRouterClient
+from ai import AIConfigurationError, ConversationStore, OpenRouterClient, OPENROUTER_URL
 from personality import SYSTEM_PROMPT
 
 
@@ -36,6 +37,36 @@ class AIClientTests(unittest.IsolatedAsyncioTestCase):
     async def test_missing_key_is_reported_without_network_call(self):
         client = OpenRouterClient(api_key="", model="openrouter/free")
         with self.assertRaises(AIConfigurationError):
+            await client.answer("hello", [])
+
+    async def test_sends_personality_history_and_returns_answer(self):
+        captured = {}
+
+        def handler(request):
+            captured["url"] = str(request.url)
+            captured["authorization"] = request.headers.get("Authorization")
+            captured["payload"] = request.read().decode("utf-8")
+            return httpx.Response(200, json={
+                "choices": [{"message": {"content": "Привет! Чем помочь?"}}]
+            })
+
+        transport = httpx.MockTransport(handler)
+        client = OpenRouterClient("test-secret", "openrouter/free", transport=transport)
+        answer = await client.answer("Привет", [{"role": "user", "content": "Ранее"}])
+        self.assertEqual(answer, "Привет! Чем помочь?")
+        self.assertEqual(captured["url"], OPENROUTER_URL)
+        self.assertEqual(captured["authorization"], "Bearer test-secret")
+        self.assertIn("Ты ORVEX", captured["payload"])
+        self.assertIn("Ранее", captured["payload"])
+
+    async def test_provider_error_is_sanitized(self):
+        def handler(request):
+            return httpx.Response(503, text="provider unavailable with internal details")
+
+        client = OpenRouterClient(
+            "test-secret", "openrouter/free", transport=httpx.MockTransport(handler)
+        )
+        with self.assertRaisesRegex(Exception, "OpenRouter request failed"):
             await client.answer("hello", [])
 
     async def test_personality_has_truthfulness_rules(self):
