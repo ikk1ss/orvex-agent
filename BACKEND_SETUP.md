@@ -17,14 +17,33 @@ In the Vercel project settings, add these Environment Variables for Production a
 
 - `TELEGRAM_BOT_TOKEN`: the token of the ORVEX Agent Telegram bot.
 - `SUPABASE_URL`: the Supabase project URL, for example `https://your-project.supabase.co`.
-- `SUPABASE_SERVICE_ROLE_KEY`: the Supabase service-role key.
+- `SUPABASE_SERVICE_ROLE_KEY`: the Supabase service-role key. Keep it private and server-side.
+- `SUPABASE_PUBLISHABLE_KEY`: the project's publishable key (`sb_publishable_...`) used by the browser authentication client. It is safe to expose, but must never be confused with the service-role key.
+- `ORVEX_TELEGRAM_BOT_URL`: the public Telegram bot link, for example `https://t.me/your_bot_username`, used when someone opens the site outside Telegram.
 - `ORVEX_BOT_API_SECRET`: a random secret of at least 32 characters, shared only with the Telegram bot worker. Use the same value in Vercel and the worker; never put it in the Mini App or Git.
 
-Keep all three values server-side. Never add them to `index.html`, commit them to Git, or send them in chat. Redeploy after saving the variables.
+Keep `SUPABASE_SERVICE_ROLE_KEY`, `TELEGRAM_BOT_TOKEN` and `ORVEX_BOT_API_SECRET` server-side. Never add them to `index.html`, commit them to Git, or send them in chat. The publishable key is intentionally public and is returned by `GET /api/auth-config`. Redeploy after saving the variables.
+
+
+## Telegram, Google and guest sign-in
+
+The first version of the sign-in screen offers the methods in this order: Telegram, Google, then guest.
+
+1. In Supabase Dashboard, open Authentication → Sign In / Providers and enable **Anonymous Sign-Ins**.
+2. Enable the **Google** provider and enter the Google OAuth Client ID and Client Secret in the Supabase Dashboard. Do not put the Google Client Secret in Vercel or Git.
+3. In Google Cloud, configure the OAuth client as a Web application. Add the ORVEX site origin to Authorized JavaScript origins and add the Supabase callback URL shown on the Supabase Google provider page to Authorized redirect URIs.
+4. In Supabase Authentication → URL Configuration, add the ORVEX production URL and the Vercel Preview URL to the allowed Redirect URLs.
+5. Add `SUPABASE_PUBLISHABLE_KEY` and `ORVEX_TELEGRAM_BOT_URL` to Vercel as described above. The Telegram URL must be the public `https://t.me/<bot_username>` link for the ORVEX bot.
+6. Redeploy the Vercel project.
+
+Anonymous users receive a separate Supabase Auth identity. Supabase documents that this identity cannot be recovered after the user signs out, clears browser data or changes device. Do not store important personal data in a guest account until an account-linking and recovery flow is implemented. Google sign-in and guest sign-in are separate sessions in this first stage; automatic migration of guest data into a Google account is not included yet.
+
+The current Telegram profile, memory and balance APIs still use verified Telegram Mini App `initData`. Google and guest sessions do not gain access to those Telegram-only endpoints. Guest AI access and its server-side daily quota are implemented separately in the next stage.
 
 ## 3. API endpoints
 
 - `GET /api/health`: reports Telegram-auth and profile-storage configuration separately. It never returns secret values.
+- `GET /api/auth-config`: returns the Supabase project URL and publishable key for browser authentication, plus the optional public Telegram bot link. It never returns server-side secrets.
 - `GET /api/session`: verifies the current Telegram Mini App session and returns a minimal user identity without storing it.
 - `GET /api/profile`: verifies Telegram Web App `initData` and returns the authenticated Telegram user's profile.
 - `PUT /api/profile`: verifies Telegram Web App `initData`, validates the submitted profile, and upserts it by Telegram user ID.
