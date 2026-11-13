@@ -50,26 +50,31 @@ test("rejects account export without Telegram authorization", async () => {
   assert.equal(res.payload.error, "telegram_auth_required");
 });
 
-test("exports only the authenticated Telegram user's profile and memories", async () => {
+test("exports the authenticated user's profile, memories and conversation history", async () => {
   const originalFetch = global.fetch;
   const requestedUrls = [];
   global.fetch = async (url) => {
-    requestedUrls.push(String(url));
+    const value = String(url);
+    requestedUrls.push(value);
     return {
       ok: true,
-      json: async () => String(url).includes("orvex_profiles")
+      json: async () => value.includes("orvex_profiles")
         ? [{ display_name: "Test", email: "", interest: "note" }]
-        : [{ id: "memory-1", content: "A private note" }]
+        : value.includes("orvex_chat_messages")
+          ? [{ role: "user", content: "A private message" }]
+          : [{ id: "memory-1", content: "A private note" }]
     };
   };
   try {
     const res = makeResponse();
     await handler(makeRequest("GET"), res);
     assert.equal(res.statusCode, 200);
+    assert.equal(res.payload.schemaVersion, 2);
     assert.equal(res.payload.telegramUserId, "24681012");
     assert.equal(res.payload.profile.display_name, "Test");
     assert.equal(res.payload.memories.length, 1);
-    assert.equal(requestedUrls.length, 2);
+    assert.equal(res.payload.conversationHistory[0].content, "A private message");
+    assert.equal(requestedUrls.length, 3);
     for (const url of requestedUrls) {
       assert.equal(new URL(url).searchParams.get("telegram_id"), "eq.24681012");
     }
@@ -84,7 +89,7 @@ test("paginates account memory export beyond the PostgREST default row limit", a
   const exported = [];
   global.fetch = async (url, options = {}) => {
     const value = String(url);
-    if (value.includes("orvex_profiles")) {
+    if (value.includes("orvex_profiles") || value.includes("orvex_chat_messages")) {
       return { ok: true, json: async () => [] };
     }
     const range = options.headers && options.headers.Range;
@@ -114,7 +119,7 @@ test("refuses to return a silently truncated export above the safety limit", asy
   const originalFetch = global.fetch;
   global.fetch = async (url) => ({
     ok: true,
-    json: async () => String(url).includes("orvex_profiles")
+    json: async () => String(url).includes("orvex_profiles") || String(url).includes("orvex_chat_messages")
       ? []
       : Array.from({ length: 500 }, (_, index) => ({ id: "memory-" + index }))
   });
