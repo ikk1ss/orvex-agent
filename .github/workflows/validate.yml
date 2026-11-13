@@ -29,5 +29,5 @@ jobs:
           python-version: "3.12"
       - name: Test Python Telegram bot
         run: |
-          python -m py_compile telegram_bot/config.py telegram_bot/messages.py telegram_bot/bot.py
+          python -m py_compile telegram_bot/config.py telegram_bot/messages.py telegram_bot/personality.py telegram_bot/ai.py telegram_bot/bot.py
           python -m unittest discover -s telegram_bot/tests -v
