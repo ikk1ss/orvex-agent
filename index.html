@@ -7,6 +7,7 @@
 <meta name="description" content="ORVEX Agent — единое пространство для работы с искусственным интеллектом.">
 <title>ORVEX Agent</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -999,6 +1000,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  .visual-glow{animation:none}
 }
 @media(prefers-reduced-transparency:reduce){.topup-card{backdrop-filter:none}}
+
+#authModal{position:fixed;inset:0;z-index:24;display:none;place-items:center;padding:18px;background:#03060de8;backdrop-filter:blur(16px)}
+#authModal.open{display:grid}
+.auth-panel{width:min(440px,100%);padding:28px;border:1px solid #4d8dff45;border-radius:22px;background:linear-gradient(145deg,#19243a,#0d1422);box-shadow:0 30px 100px #0009}
+.auth-panel h2{font:700 25px Manrope,sans-serif;letter-spacing:-.04em;margin:0}
+.auth-panel>p{font-size:13px;line-height:1.7;color:#96a4b8;margin:10px 0 20px}
+.auth-methods{display:grid;gap:10px}
+.auth-method{width:100%;min-height:50px;padding:13px 16px;border:1px solid var(--line);border-radius:12px;background:#ffffff08;color:var(--text);font-size:14px;font-weight:700;text-align:center;transition:.2s}
+.auth-method:hover:not(:disabled){border-color:#8db6ff88;background:#ffffff12}
+.auth-method-primary{border:0;color:#09111c;background:linear-gradient(110deg,#4d8dff,#c5d3e8)}
+.auth-method-guest{background:transparent;color:#aebbd0}
+.auth-method:disabled{cursor:not-allowed;opacity:.42}
+.auth-note{min-height:38px;margin:16px 0 0!important;font-size:11px!important;color:#8291a8!important;text-align:center}
+@media(max-width:620px){.auth-panel{padding:23px}.auth-panel h2{font-size:23px}.auth-method{font-size:13px}}
+
 </style>
 </head>
 <body class="orvex-booting">
@@ -1139,6 +1155,20 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  </div>
 </div>
 
+
+<div id="authModal" aria-hidden="true">
+ <section class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <h2 id="authTitle">Выберите способ входа</h2>
+  <p>Войдите через Telegram или Google. Если хотите сначала ознакомиться с ORVEX, продолжите как гость.</p>
+  <div class="auth-methods">
+   <button class="auth-method auth-method-primary" id="authTelegram" type="button">Войти через Telegram</button>
+   <button class="auth-method" id="authGoogle" type="button" disabled>Войти через Google</button>
+   <button class="auth-method auth-method-guest" id="authGuest" type="button" disabled>Продолжить как гость</button>
+  </div>
+  <p class="auth-note" id="authNote" role="status">Проверяем доступность способов входа…</p>
+ </section>
+</div>
+
 <div id="profileModal" aria-hidden="true">
 <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 <div class="modal-head"><h2 id="modalTitle">Ваш профиль</h2><button class="close" id="profileClose" type="button" aria-label="Закрыть">×</button></div>
@@ -1194,6 +1224,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 'use strict';
 const $=s=>document.querySelector(s);
 const modal=$('#profileModal'),form=$('#profileForm');
+const authModal=$('#authModal');
+const authTelegramButton=$('#authTelegram'),authGoogleButton=$('#authGoogle'),authGuestButton=$('#authGuest'),authNote=$('#authNote');
+let authConfig=null,supabaseClient=null,externalAuthSession=null,authMode='';
 const onboarding=$('#onboarding');
 const onboardingSlides=[...document.querySelectorAll('[data-onboarding-step]')];
 let onboardingStep=0;
@@ -1251,6 +1284,101 @@ async function changeOnboardingStep(nextStep,direction){
 }
 function openOnboarding(){onboardingStep=0;onboardingTransitioning=false;renderOnboarding();onboarding.classList.add('open');onboarding.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack()}
 function closeOnboarding(){onboarding.classList.remove('open');onboarding.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack()}
+
+function openAuthModal(){
+ if(externalAuthSession)return;
+ authModal.classList.add('open');
+ authModal.setAttribute('aria-hidden','false');
+ document.body.style.overflow='hidden';
+ showTelegramBack();
+}
+function closeAuthModal(){
+ authModal.classList.remove('open');
+ authModal.setAttribute('aria-hidden','true');
+ document.body.style.overflow='';
+ hideTelegramBack();
+}
+function updateAuthOptions(){
+ if(authGoogleButton)authGoogleButton.disabled=!supabaseClient;
+ if(authGuestButton)authGuestButton.disabled=!supabaseClient;
+ if(authTelegramButton)authTelegramButton.disabled=!(telegramMiniApp||(authConfig&&authConfig.telegramBotUrl));
+ if(authNote){
+  if(supabaseClient)authNote.textContent='Гостевой режим использует отдельную сессию. Вход через Google требует включённого провайдера в Supabase.';
+  else authNote.textContent='Google и гостевой вход пока требуют настройки публичного ключа Supabase и провайдеров авторизации.';
+ }
+}
+async function initAuthWorkspace(){
+ try{
+  const response=await fetch('/api/auth-config',{headers:{Accept:'application/json'},cache:'no-store'});
+  if(!response.ok)throw new Error('auth_config_unavailable');
+  authConfig=await response.json();
+  const createClient=window.supabase&&window.supabase.createClient;
+  if(typeof createClient!=='function')throw new Error('supabase_sdk_unavailable');
+  supabaseClient=createClient(authConfig.supabaseUrl,authConfig.publishableKey,{
+   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+  });
+  const result=await supabaseClient.auth.getSession();
+  if(result.error)throw result.error;
+  externalAuthSession=result.data&&result.data.session||null;
+  if(externalAuthSession){
+   const user=externalAuthSession.user||{};
+   authMode=user.is_anonymous?'guest':'google';
+   document.body.dataset.authMode=authMode;
+  }
+ }catch(error){
+  supabaseClient=null;
+  externalAuthSession=null;
+  authMode='';
+ }
+ updateAuthOptions();
+}
+authTelegramButton.addEventListener('click',async()=>{
+ authTelegramButton.disabled=true;
+ try{
+  if(telegramMiniApp&&tg&&tg.initData){
+   const response=await fetch('/api/session',{headers:{Authorization:'tma '+tg.initData,Accept:'application/json'},cache:'no-store'});
+   if(!response.ok)throw new Error('telegram_auth_unavailable');
+   const result=await response.json();
+   if(!result.authenticated)throw new Error('telegram_auth_unavailable');
+   closeAuthModal();
+   openModal();
+   return;
+  }
+  if(authConfig&&authConfig.telegramBotUrl){
+   window.location.assign(authConfig.telegramBotUrl);
+   return;
+  }
+  toast('Откройте ORVEX Agent через Telegram Mini App.');
+ }catch(error){toast('Не удалось подтвердить вход через Telegram. Попробуйте открыть Mini App заново.')}
+ finally{updateAuthOptions()}
+});
+authGoogleButton.addEventListener('click',async()=>{
+ if(!supabaseClient)return;
+ authGoogleButton.disabled=true;
+ try{
+  const {error}=await supabaseClient.auth.signInWithOAuth({
+   provider:'google',
+   options:{redirectTo:window.location.origin+window.location.pathname}
+  });
+  if(error)throw error;
+ }catch(error){toast('Не удалось начать вход через Google. Проверьте настройки OAuth в Supabase.')}
+ finally{updateAuthOptions()}
+});
+authGuestButton.addEventListener('click',async()=>{
+ if(!supabaseClient)return;
+ authGuestButton.disabled=true;
+ try{
+  const {data,error}=await supabaseClient.auth.signInAnonymously();
+  if(error)throw error;
+  externalAuthSession=data.session||null;
+  authMode='guest';
+  document.body.dataset.authMode='guest';
+  closeAuthModal();
+  updateHeaderAction();
+  toast('Гостевой режим включён.');
+ }catch(error){toast('Не удалось создать гостевую сессию. Проверьте настройки Supabase Auth.')}
+ finally{updateAuthOptions()}
+});
 
 const translations={
  en:{
@@ -1370,7 +1498,7 @@ const interfaceLanguageObserver=new MutationObserver(records=>{
  });
 });
 interfaceLanguageObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','aria-label','title']});
-function updateHeaderAction(){const button=$('#profileOpen');button.textContent=profile?'Мой профиль':'Начать';const remove=$('#openDeleteConfirm');if(remove)remove.disabled=!(telegramMiniApp&&telegramProfileSession);applyInterfaceLanguage((profile&&profile.preferences&&profile.preferences.language)||localStorage.getItem('orvex_agent_language')||'ru')}
+function updateHeaderAction(){const button=$('#profileOpen');button.textContent=profile?'Мой профиль':(externalAuthSession?'Аккаунт':'Начать');const remove=$('#openDeleteConfirm');if(remove)remove.disabled=!(telegramMiniApp&&telegramProfileSession);applyInterfaceLanguage((profile&&profile.preferences&&profile.preferences.language)||localStorage.getItem('orvex_agent_language')||'ru')}
 const tg=window.Telegram&&window.Telegram.WebApp;
 const telegramBack=tg&&tg.BackButton;
 function syncTelegramViewport(){
@@ -1530,11 +1658,12 @@ deleteProceed.addEventListener('click',async()=>{
   deleteProceed.disabled=false;$('#cancelDelete').disabled=false;
  }
 });
-$('#logoutAccount').addEventListener('click',()=>{
+$('#logoutAccount').addEventListener('click',async()=>{
  try{localStorage.removeItem('orvex_agent_profile')}catch(error){}
+ if(supabaseClient&&externalAuthSession){try{await supabaseClient.auth.signOut()}catch(error){}externalAuthSession=null;authMode='';delete document.body.dataset.authMode}
  profile=null;updateHeaderAction();closeModal();
  if(telegramMiniApp&&tg&&typeof tg.close==='function'){tg.close();return}
- openOnboarding();toast('Вы вышли из локального профиля');
+ openAuthModal();toast('Вы вышли из аккаунта');
 });
 
 const balanceWidget=$('#balanceWidget'),balanceRub=$('#balanceRub'),balanceUsd=$('#balanceUsd'),balanceValues=$('#balanceValues');
@@ -1609,9 +1738,9 @@ document.addEventListener('keydown',event=>{
  else if(!event.shiftKey&&(document.activeElement===last||!topupModal.contains(document.activeElement))){event.preventDefault();first.focus()}
 });
 
-$('#profileOpen').addEventListener('click',()=>profile?openModal():openOnboarding());
+$('#profileOpen').addEventListener('click',()=>profile||externalAuthSession?openModal():openOnboarding());
 onboardingBackButton.addEventListener('click',()=>changeOnboardingStep(onboardingStep-1,'back'));
-onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)return;if(onboardingStep<onboardingSlides.length-1)changeOnboardingStep(onboardingStep+1,'forward');else{closeOnboarding();openModal()}});
+onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)return;if(onboardingStep<onboardingSlides.length-1)changeOnboardingStep(onboardingStep+1,'forward');else{closeOnboarding();if(telegramMiniApp&&telegramProfileSession)openModal();else openAuthModal()}});
 $('#heroProfile').addEventListener('click',openModal);
 $('#profileClose').addEventListener('click',closeModal);
 
@@ -1707,7 +1836,7 @@ form.addEventListener('submit',async e=>{
 async function initProfileWorkspace(){
  if(!telegramMiniApp){
   setProfileStatus('Локально','Профиль хранится в этом браузере. Откройте Mini App через Telegram, чтобы использовать единый профиль.',false);
-  if(!profile)openOnboarding();
+  if(!profile&&!externalAuthSession)openOnboarding();
   updateHeaderAction();
   return;
  }
@@ -1746,7 +1875,7 @@ async function initProfileWorkspace(){
    :'Не удалось загрузить серверный профиль. Локальные данные не будут выданы за синхронизированные.';
   setProfileStatus('Требует настройки',message,false);
   updateHeaderAction();
-  if(!profile)openModal();
+  if(!profile)openAuthModal();
  }
 }
 
@@ -1857,7 +1986,7 @@ async function initMemoryWorkspace(){
 }
 applyInterfaceLanguage(localStorage.getItem('orvex_agent_language')||'ru');
 initMemoryWorkspace();
-initProfileWorkspace();
+initAuthWorkspace().finally(()=>initProfileWorkspace());
 loadBalance();
 })();
 </script>
