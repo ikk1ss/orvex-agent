@@ -2,7 +2,9 @@ import sys
 import unittest
 import json
 from pathlib import Path
+
 import httpx
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ai import AIConfigurationError, ConversationStore, OpenRouterClient, OPENROUTER_URL
 from personality import SYSTEM_PROMPT
@@ -54,13 +56,15 @@ class AIClientTests(unittest.IsolatedAsyncioTestCase):
 
         transport = httpx.MockTransport(handler)
         client = OpenRouterClient("test-secret", "openrouter/free", transport=transport)
-        answer = await client.answer("Привет", [{"role": "user", "content": "Ранее"}])
+        answer = await client.answer("Привет", [{"role": "user", "content": "Ранее"}], "Язык ответа: ru")
         self.assertEqual(answer, "Привет! Чем помочь?")
         self.assertEqual(captured["url"], OPENROUTER_URL)
         self.assertEqual(captured["authorization"], "Bearer test-secret")
         payload = json.loads(captured["payload"])
         self.assertIn("Ты ORVEX", payload["messages"][0]["content"])
-        self.assertIn("Ранее", payload["messages"][1]["content"])
+        self.assertIn("Персональный контекст пользователя", payload["messages"][1]["content"])
+        self.assertIn("Язык ответа: ru", payload["messages"][1]["content"])
+        self.assertIn("Ранее", payload["messages"][2]["content"])
 
     async def test_provider_error_is_sanitized(self):
         def handler(request):
@@ -75,9 +79,10 @@ class AIClientTests(unittest.IsolatedAsyncioTestCase):
     async def test_telegram_handler_module_imports(self):
         self.assertTrue(callable(handle_text))
 
-    async def test_personality_has_truthfulness_rules(self):
+    async def test_personality_has_truthfulness_and_preference_rules(self):
         self.assertIn("Не выдумывай факты", SYSTEM_PROMPT)
         self.assertIn("языке пользователя", SYSTEM_PROMPT)
+        self.assertIn("язык ответа", SYSTEM_PROMPT)
 
 
 if __name__ == "__main__":
