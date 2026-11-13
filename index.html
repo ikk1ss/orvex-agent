@@ -1084,7 +1084,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  <div class="chat-panel">
   <div class="chat-toolbar">
    <span class="chat-model">Модель: <code>openrouter/free</code></span>
-   <span class="chat-quota"><span id="chatQuotaLabel">Гостевой лимит:</span> <b id="chatQuotaValue">—</b></span>
+   <span class="chat-quota"><span id="chatQuotaLabel">Гостевой лимит:</span> <b id="chatQuotaValue">—</b> <small id="chatQuotaReset">Сброс: 00:00 UTC</small></span>
   </div>
   <div class="chat-messages" id="aiChatMessages" role="log" aria-live="polite">
    <div class="chat-empty" id="chatEmpty">Пока нет сообщений. Напишите первое сообщение ниже.</div>
@@ -1428,6 +1428,7 @@ authGuestButton.addEventListener('click',async()=>{
 
 const translations={
  en:{
+ 'Сброс: 00:00 UTC':'Resets: 00:00 UTC',
  'В Telegram вход выполняется через подтверждённую Telegram-сессию.':'In Telegram, sign-in uses the verified Telegram session.',
  'Войти':'Sign in',
  'Войдите или продолжите как гость, чтобы отправить сообщение. История этого чата хранится только до перезагрузки страницы.':'Sign in or continue as a guest to send a message. This chat history is kept only until the page is reloaded.',
@@ -1436,6 +1437,7 @@ const translations={
  'Статус':'Status','Память':'Memory','Планы':'Roadmap','Язык':'Language','Язык интерфейса':'Interface language','Начать':'Get started','Мой профиль':'My profile','Настроить профиль':'Set up profile','Состояние проекта':'Project status','Персональная AI-платформа':'Personal AI platform','Что уже готово':'What is ready','Состояние разработки':'Development status','Персональная память':'Personal memory','Личное пространство':'Personal workspace','Дорожная карта':'Roadmap','Следующие шаги':'Next steps','Ваш профиль':'Your profile','Как к вам обращаться?':'What should we call you?','Электронная почта':'Email address','Что вам интересно?':'What are you interested in?','О вас':'About you','Чем вы занимаетесь?':'What do you do?','Кратко о себе':'A little about you','Ваши интересы и темы':'Your interests and topics','Как должен отвечать ИИ':'How AI should respond','Язык интерфейса':'Interface language','Выберите язык':'Choose a language','Сменить язык':'Change language','Длина ответов':'Response length','Тон общения':'Communication tone','Формат ответов':'Response format','Дополнительные инструкции ИИ':'Additional AI instructions','Сохранить профиль':'Save profile','Посмотреть ознакомление ещё раз':'View introduction again','Сеанс приложения':'App session','Закрыть ORVEX Agent на этом устройстве. Telegram-аккаунт останется подключён.':'Close ORVEX Agent on this device. Your Telegram account will remain connected.','Выйти':'Log out','Удаление аккаунта':'Account deletion','Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.':'Delete your profile and all personal memory entries. This action cannot be undone.','Удалить аккаунт':'Delete account','Вы действительно хотите удалить аккаунт?':'Do you really want to delete your account?','Будут безвозвратно удалены ваш профиль и все записи персональной памяти. Экспортируйте данные заранее, если хотите сохранить копию.':'Your profile and all personal memory entries will be permanently deleted. Export your data first if you want to keep a copy.','Для подтверждения введите слово УДАЛИТЬ':'Type УДАЛИТЬ to confirm','Отмена':'Cancel','Продолжить':'Continue','Подтвердите окончательное удаление':'Confirm permanent deletion','Последняя проверка: действие необратимо. Профиль и вся персональная память будут удалены.':'Final check: this action cannot be undone. Your profile and all personal memory will be deleted.','Да, удалить аккаунт':'Yes, delete account','Русский':'Russian','English':'English','Deutsch':'German','Кратко':'Short','Сбалансированно':'Balanced','Подробно':'Detailed','Нейтральный':'Neutral','Дружелюбный':'Friendly','Формальный':'Formal','Обычный текст':'Plain text','Пошаговые инструкции':'Step-by-step instructions','Списки и пункты':'Bullets and lists','Скачать мои данные':'Export my data','Сохранить запись':'Save memory','Показать ещё':'Show more','Заметка':'Note','Предпочтение':'Preference','Факт':'Fact','Цель':'Goal','Инструкция':'Instruction'
  },
  de:{
+ 'Сброс: 00:00 UTC':'Zurücksetzung: 00:00 UTC',
  'В Telegram вход выполняется через подтверждённую Telegram-сессию.':'In Telegram erfolgt die Anmeldung über die bestätigte Telegram-Sitzung.',
  'Войти':'Anmelden',
  'Войдите или продолжите как гость, чтобы отправить сообщение. История этого чата хранится только до перезагрузки страницы.':'Melden Sie sich an oder fahren Sie als Gast fort, um eine Nachricht zu senden. Der Chatverlauf bleibt nur bis zum Neuladen der Seite erhalten.',
@@ -1943,7 +1945,7 @@ const aiChatMessages=$('#aiChatMessages');
 const aiChatStatus=$('#aiChatStatus');
 const aiChatQuotaLabel=$('#chatQuotaLabel');
 const aiChatQuotaValue=$('#chatQuotaValue');
-let chatWorkspaceInitialized=false,chatBusy=false,chatHistory=[],guestQuota=null,guestQuotaReady=false;
+let chatWorkspaceInitialized=false,chatBusy=false,chatHistory=[],guestQuota=null,guestQuotaReady=false,guestQuotaResetTimer=null;
 function chatAuthorization(){
  if(telegramMiniApp&&tg&&tg.initData)return 'tma '+tg.initData;
  if(externalAuthSession&&typeof externalAuthSession.access_token==='string')return 'Bearer '+externalAuthSession.access_token;
@@ -1958,6 +1960,8 @@ function renderChatMessage(role,content){
 }
 function updateChatQuota(){
  if(!aiChatQuotaLabel||!aiChatQuotaValue)return;
+ const resetLabel=$('#chatQuotaReset');
+ if(resetLabel)resetLabel.hidden=authMode!=='guest';
  if(authMode==='guest'&&guestQuota){
   aiChatQuotaLabel.textContent='Гостевой лимит:';
   aiChatQuotaValue.textContent=guestQuota.remaining+'/'+guestQuota.dailyLimit;
@@ -1985,6 +1989,9 @@ async function refreshGuestQuota(){
   const data=await response.json();
   if(!data.quota||!Number.isInteger(data.quota.remaining)||!Number.isInteger(data.quota.dailyLimit))throw new Error('guest_quota_invalid');
   guestQuota=data.quota;guestQuotaReady=true;updateChatQuota();
+  if(guestQuotaResetTimer)clearTimeout(guestQuotaResetTimer);
+  const resetAt=Date.parse(guestQuota.resetsAt);
+  if(Number.isFinite(resetAt)){const delay=Math.max(1000,Math.min(86400000,resetAt-Date.now()+1500));guestQuotaResetTimer=window.setTimeout(()=>refreshGuestQuota(),delay)}
   if(guestQuota.remaining===0)aiChatStatus.textContent='Лимит гостевого режима исчерпан. Войдите через Telegram или Google, чтобы продолжить.';
  }catch(error){
   aiChatStatus.textContent='Не удалось проверить гостевой лимит. Настройте базу данных Supabase.';
