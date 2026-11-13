@@ -1,5 +1,6 @@
 import sys
 import unittest
+import json
 from pathlib import Path
 import httpx
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -56,8 +57,9 @@ class AIClientTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(answer, "Привет! Чем помочь?")
         self.assertEqual(captured["url"], OPENROUTER_URL)
         self.assertEqual(captured["authorization"], "Bearer test-secret")
-        self.assertIn("Ты ORVEX", captured["payload"])
-        self.assertIn("Ранее", captured["payload"])
+        payload = json.loads(captured["payload"])
+        self.assertIn("Ты ORVEX", payload["messages"][0]["content"])
+        self.assertIn("Ранее", payload["messages"][1]["content"])
 
     async def test_provider_error_is_sanitized(self):
         def handler(request):
