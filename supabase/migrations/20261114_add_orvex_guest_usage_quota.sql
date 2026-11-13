@@ -22,7 +22,6 @@ returns table (
   resets_at timestamptz
 )
 language plpgsql
-security definer
 set search_path = public, pg_temp
 as $$
 declare
