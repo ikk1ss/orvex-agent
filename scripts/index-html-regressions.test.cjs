@@ -70,3 +70,12 @@ test("authentication methods appear in the requested order", () => {
   assert.ok(html.includes("is_anonymous"));
   assert.ok(html.includes("fetch('/api/auth-config'"));
 });
+
+test("guest chat is connected only to the OpenRouter free router", () => {
+  assert.ok(html.includes('id="aiChatForm"'));
+  assert.ok(html.includes("model:'openrouter/free'"));
+  assert.ok(html.includes("fetch('/api/ai-chat'"));
+  assert.ok(html.includes("fetch('/api/guest-quota'"));
+  assert.ok(html.includes("guestQuota.remaining>0"));
+  assert.ok(html.includes("balanceAdd.disabled=!(telegramMiniApp&&telegramProfileSession)"));
+});
