@@ -1559,7 +1559,7 @@ function syncTelegramViewport(){
 }
 function showTelegramBack(){try{if(telegramBack)telegramBack.show()}catch(e){}}
 function hideTelegramBack(){try{if(telegramBack)telegramBack.hide()}catch(e){}}
-function handleTelegramBack(){if(topupModal.classList.contains('open'))closeTopup();else if(onboarding.classList.contains('open'))closeOnboarding();else if(modal.classList.contains('open'))closeModal()}
+function handleTelegramBack(){if(topupModal.classList.contains('open'))closeTopup();else if(authModal.classList.contains('open'))closeAuthModal();else if(onboarding.classList.contains('open'))closeOnboarding();else if(modal.classList.contains('open'))closeModal()}
 try{if(telegramBack&&telegramBack.onClick)telegramBack.onClick(handleTelegramBack)}catch(e){}
 try{
  if(tg){
