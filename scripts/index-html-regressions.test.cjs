@@ -68,5 +68,5 @@ test("authentication methods appear in the requested order", () => {
   assert.ok(html.includes("signInAnonymously()"));
   assert.ok(html.includes("signInWithOAuth"));
   assert.ok(html.includes("is_anonymous"));
-  assert.ok(html.includes("SUPABASE_PUBLISHABLE_KEY"));
+  assert.ok(html.includes("fetch('/api/auth-config'"));
 });
