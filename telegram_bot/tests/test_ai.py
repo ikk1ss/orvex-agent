@@ -6,6 +6,7 @@ import httpx
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ai import AIConfigurationError, ConversationStore, OpenRouterClient, OPENROUTER_URL
 from personality import SYSTEM_PROMPT
+from bot import handle_text
 
 
 class ConversationStoreTests(unittest.TestCase):
@@ -70,6 +71,9 @@ class AIClientTests(unittest.IsolatedAsyncioTestCase):
         )
         with self.assertRaisesRegex(Exception, "OpenRouter request failed"):
             await client.answer("hello", [])
+
+    async def test_telegram_handler_module_imports(self):
+        self.assertTrue(callable(handle_text))
 
     async def test_personality_has_truthfulness_rules(self):
         self.assertIn("Не выдумывай факты", SYSTEM_PROMPT)
