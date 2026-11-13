@@ -42,6 +42,15 @@ create index if not exists orvex_chat_messages_owner_created_idx
 
 alter table public.orvex_chat_messages enable row level security;
 
+create policy orvex_profiles_service_role_only
+  on public.orvex_profiles for all to service_role using (true) with check (true);
+
+create policy orvex_memories_service_role_only
+  on public.orvex_memories for all to service_role using (true) with check (true);
+
+create policy orvex_chat_messages_service_role_only
+  on public.orvex_chat_messages for all to service_role using (true) with check (true);
+
 -- Browser roles do not access these tables directly. The Mini App uses
 -- authenticated server API routes, which use the server-side service key.
 revoke all on table public.orvex_profiles from anon, authenticated;
