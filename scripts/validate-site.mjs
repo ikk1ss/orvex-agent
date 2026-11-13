@@ -11,6 +11,12 @@ assert(/^<!doctype html>/i.test(html.trimStart()), "Missing HTML5 doctype");
 assert(/<html\b[^>]*lang=["']ru["']/i.test(html), "Document language should be Russian");
 assert(/<meta\b[^>]*name=["']viewport["']/i.test(html), "Missing viewport meta tag");
 assert(html.includes("https://telegram.org/js/telegram-web-app.js"), "Telegram WebApp SDK is not included");
+assert(html.includes("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"), "Pinned Supabase Auth SDK is not included");
+assert(html.includes('id="authModal"') && html.includes('id="authTelegram"') && html.includes('id="authGoogle"') && html.includes('id="authGuest"'), "Telegram, Google and guest authentication controls are missing");
+assert(html.indexOf('id="authTelegram"') < html.indexOf('id="authGoogle"') && html.indexOf('id="authGoogle"') < html.indexOf('id="authGuest"'), "Authentication methods are not ordered Telegram, Google, guest");
+assert(html.includes("signInAnonymously()") && html.includes("signInWithOAuth"), "Supabase anonymous and Google authentication flows are missing");
+assert(html.includes("fetch('/api/auth-config'"), "Public Supabase auth configuration endpoint is not connected");
+
 assert(html.includes("/api/health") && html.includes("/api/session"), "Backend health and Telegram session checks are missing");
 assert(html.includes('id="memory"') && html.includes('id="memoryForm"') && html.includes('id="memoryList"'), "Personal memory workspace elements are missing");
 assert(html.includes("initMemoryWorkspace") && html.includes("fetch('/api/memory"), "Personal memory API integration is missing");
