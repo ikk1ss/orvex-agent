@@ -49,7 +49,7 @@ test("loads only the requested Telegram user's profile, memories and recent mess
     const value = String(url);
     urls.push(value);
     const params = new URL(value).searchParams;
-    assert.equal(params.get("telegram_id"), "123456");
+    assert.equal(params.get("telegram_id"), "eq.123456");
     if (value.includes("orvex_profiles")) {
       return { ok: true, json: async () => [{
         display_name: "Test User",
