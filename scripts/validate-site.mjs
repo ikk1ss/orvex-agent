@@ -34,7 +34,7 @@ assert(html.includes("new MutationObserver(records=>") && html.includes("record.
 assert(html.includes("'Добро пожаловать':'Welcome'") && html.includes("'Добро пожаловать':'Willkommen'"), "The onboarding greeting must be translated in English and German");
 assert(html.includes("--accent-cyan:#72d8d0") && html.includes("--accent-violet:#a996ff"), "The refreshed cyan and violet design palette is missing");
 assert(html.includes("backdrop-filter:none;-webkit-backdrop-filter:none"), "Mobile transparency effects must be reduced for performance");
-assert(html.includes('id="deleteConfirmModal"') && html.includes("deleteConfirmStep===1") && html.includes("deletePhrase.value.trim().toLocaleUpperCase('ru')!=='УДАЛИТЬ'"), "Two-step account deletion confirmation is missing");
+assert(html.includes('id="deleteConfirmModal"') && html.includes("deleteConfirmStep===1") && html.includes("function isDeletePhrase(") && html.includes("!isDeletePhrase(deletePhrase.value)"), "Two-step account deletion confirmation is missing");
 assert(html.includes("fetch('/api/account',{method:'DELETE'") && html.includes("tg.close()"), "Account deletion or app exit action is not wired");
 assert(!html.includes('id="deleteAccount"') && !html.includes("window.confirm('Удалить профиль"), "Old combined memory deletion control or one-step confirmation remains");
 
@@ -93,7 +93,7 @@ assert(html.includes('aria-hidden="true"') && html.includes("setAttribute('aria-
 assert(html.includes('id="profileAvatarImage"') && html.includes('id="replayOnboarding"'), "Profile avatar and onboarding replay controls are missing");
 assert(html.includes('class="profile-account-section"') && html.includes('class="profile-account-section danger"'), "Logout and deletion actions must be visually separated");
 assert(html.includes("localStorage.setItem('orvex_agent_language',language)") && html.includes("applyInterfaceLanguage(language)"), "Selected interface language is not saved and applied");
-assert(html.includes("Type УДАЛИТЬ to confirm") && html.includes("Geben Sie УДАЛИТЬ zur Bestätigung ein"), "Deletion phrase must remain consistent across supported languages");
+assert(html.includes('"Для подтверждения введите слово УДАЛИТЬ":"Type DELETE to confirm"') && html.includes('"Для подтверждения введите слово УДАЛИТЬ":"Geben Sie zur Bestätigung LÖSCHEN ein"') && html.includes("['УДАЛИТЬ','DELETE','LÖSCHEN']"), "Deletion phrase must remain consistent across supported languages");
 assert(html.includes("renderProfileAvatar") && html.includes("telegramAvatarUrl"), "Telegram avatar rendering is not wired");
 
 if (failures.length) {
