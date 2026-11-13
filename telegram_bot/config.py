@@ -24,6 +24,7 @@ def load_settings() -> Settings:
     ai_model = environ.get("OPENROUTER_MODEL", DEFAULT_AI_MODEL).strip() or DEFAULT_AI_MODEL
     bot_secret = environ.get("ORVEX_BOT_API_SECRET", "").strip()
     api_url = environ.get("ORVEX_API_URL", webapp_url.rstrip("/") + "/api/bot").strip()
+    require_backend = environ.get("ORVEX_REQUIRE_BACKEND", "").strip().lower() in {"1", "true", "yes"}
 
     if not token:
         raise ValueError("TELEGRAM_BOT_TOKEN is required")
@@ -34,6 +35,9 @@ def load_settings() -> Settings:
         or parsed_webapp.username or parsed_webapp.password or parsed_webapp.fragment
     ):
         raise ValueError("ORVEX_WEBAPP_URL must be a valid HTTPS URL without credentials or fragment")
+
+    if require_backend and not bot_secret:
+        raise ValueError("ORVEX_BOT_API_SECRET is required when ORVEX_REQUIRE_BACKEND is enabled")
 
     if bot_secret:
         if len(bot_secret) < 32:
