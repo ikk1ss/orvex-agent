@@ -19,7 +19,7 @@ function getConfig() {
   const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const openRouterKey = process.env.OPENROUTER_API_KEY;
-  if (!supabaseUrl || !serviceKey || !publishableKey || !openRouterKey) return null;
+  if (!supabaseUrl || !serviceKey || !openRouterKey) return null;
   try {
     const parsed = new URL(supabaseUrl);
     if (parsed.protocol !== "https:" || parsed.username || parsed.password) return null;
@@ -56,7 +56,7 @@ async function authenticate(req, config) {
     if (!result.ok) return null;
     return { kind: "telegram", telegramId: String(result.user.id) };
   }
-  if (!authorization.startsWith("Bearer ")) return null;
+  if (!authorization.startsWith("Bearer ") || !config.publishableKey) return null;
   const token = authorization.slice(7).trim();
   if (!token || token.length > 8192) return null;
   const response = await fetch(config.supabaseUrl + "/auth/v1/user", {
