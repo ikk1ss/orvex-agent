@@ -11,7 +11,7 @@ from telegram.ext import (
     ContextTypes, MessageHandler, filters,
 )
 
-from ai import AIConfigurationError, AIProviderError, ConversationStore, OpenRouterClient
+from ai import AIConfigurationError, AIProviderError, ConversationStore, OpenRouterClient, MAX_INPUT_CHARS
 from backend import BackendClient, BackendError
 from config import load_settings
 from messages import (
@@ -114,6 +114,9 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         return
 
     user_text = message.text or ""
+    if len(user_text) > MAX_INPUT_CHARS:
+        await message.reply_text("Сообщение слишком длинное. Максимум 8000 символов.")
+        return
     try:
         await context.bot.send_chat_action(chat_id=message.chat_id, action=ChatAction.TYPING)
         if backend:
