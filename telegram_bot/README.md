@@ -1,20 +1,24 @@
 # ORVEX Agent Telegram bot
 
-A small Python launcher for the ORVEX Agent Telegram Mini App.
+The Telegram bot is the conversational interface for ORVEX Agent. The Mini App remains the control center.
 
-## What it does
+## Current capabilities
 
-- Responds to `/start`, `/app`, `/help`, and `/privacy`.
-- Adds an inline Web App button to open `https://orvex-agent.vercel.app`.
-- Configures Telegram's menu button to open the Mini App.
-- Does not store chat messages or user profiles.
-- Does not call an AI provider. AI features remain intentionally disabled until the provider and server-side request flow are ready.
+- Natural-language private chat powered by OpenRouter's OpenAI-compatible Chat Completions API.
+- ORVEX personality and response rules in `personality.py`.
+- Short-lived conversation context, isolated by Telegram user ID.
+- `/reset` clears the current user's in-memory context.
+- `/start`, `/app`, `/help`, and `/privacy` commands.
+- Telegram menu button opens the Mini App.
+- Group messages are not processed.
+
+Conversation context is held in process memory only. It is lost when the bot restarts. Persistent memory, shared Mini App preferences, model selection from the Mini App, and agent tools are not implemented yet.
 
 ## Requirements
 
 - Python 3.10+
 - A Telegram bot token created with BotFather
-- The ORVEX Agent Mini App URL
+- An OpenRouter API key
 
 ## Run locally
 
@@ -22,40 +26,23 @@ From this directory:
 
 ```sh
 python -m venv .venv
-```
-
-Activate the virtual environment, then install dependencies:
-
-```sh
-# Linux / macOS / Termux
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-On Windows PowerShell, activate with:
-
-```powershell
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-Set environment variables. Do not put the real token in source files:
+Set environment variables. Never commit real credentials:
 
 ```sh
-export TELEGRAM_BOT_TOKEN="your-token"
+export TELEGRAM_BOT_TOKEN="your-telegram-token"
+export OPENROUTER_API_KEY="your-openrouter-key"
+export OPENROUTER_MODEL="openrouter/free"
 export ORVEX_WEBAPP_URL="https://orvex-agent.vercel.app"
 python bot.py
 ```
 
-PowerShell:
+`OPENROUTER_MODEL` is optional and defaults to `openrouter/free`. Without `OPENROUTER_API_KEY`, the bot keeps its commands available but clearly reports that AI is not configured.
 
-```powershell
-$env:TELEGRAM_BOT_TOKEN="your-token"
-$env:ORVEX_WEBAPP_URL="https://orvex-agent.vercel.app"
-python bot.py
-```
-
-## Deploy with Docker
+## Docker
 
 Build from this directory:
 
@@ -63,17 +50,19 @@ Build from this directory:
 docker build -t orvex-agent-telegram .
 docker run --restart unless-stopped \
   -e TELEGRAM_BOT_TOKEN="$TELEGRAM_BOT_TOKEN" \
+  -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" \
+  -e OPENROUTER_MODEL="openrouter/free" \
   -e ORVEX_WEBAPP_URL="https://orvex-agent.vercel.app" \
   orvex-agent-telegram
 ```
 
-Use a worker/container host that supports a continuously running process. This polling bot should not be deployed as a Vercel serverless function. Configure the same bot token separately in Vercel as `TELEGRAM_BOT_TOKEN` for validating Mini App `initData`.
+Use a worker/container host that supports a continuously running process. This polling bot should not be deployed as a Vercel serverless function. Configure `TELEGRAM_BOT_TOKEN` separately in Vercel for validating Mini App `initData`.
 
 ## Tests
 
-Run the dependency-free unit tests from the repository root:
+From the repository root:
 
 ```sh
+python -m py_compile telegram_bot/config.py telegram_bot/messages.py telegram_bot/personality.py telegram_bot/ai.py telegram_bot/bot.py
 python -m unittest discover -s telegram_bot/tests -v
-python -m py_compile telegram_bot/config.py telegram_bot/messages.py telegram_bot/bot.py
 ```
