@@ -77,5 +77,7 @@ test("guest chat is connected only to the OpenRouter free router", () => {
   assert.ok(html.includes("fetch('/api/ai-chat'"));
   assert.ok(html.includes("fetch('/api/guest-quota'"));
   assert.ok(html.includes("guestQuota.remaining>0"));
+  assert.ok(html.includes("authGoogleButton.disabled=!supabaseClient||telegramMiniApp"));
+  assert.ok(html.includes("authGuestButton.disabled=!supabaseClient||telegramMiniApp"));
   assert.ok(html.includes("balanceAdd.disabled=!(telegramMiniApp&&telegramProfileSession)"));
 });
