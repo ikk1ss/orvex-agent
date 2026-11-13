@@ -20,7 +20,7 @@ function response() {
   };
 }
 
-function withEnv(run) {
+async function withEnv(run) {
   const names = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_PUBLISHABLE_KEY", "TELEGRAM_BOT_TOKEN", "OPENROUTER_API_KEY"];
   const previous = Object.fromEntries(names.map(name => [name, process.env[name]]));
   process.env.SUPABASE_URL = "https://example.supabase.co";
@@ -28,7 +28,7 @@ function withEnv(run) {
   process.env.SUPABASE_PUBLISHABLE_KEY = "sb_publishable_test_key_12345678901234567890";
   process.env.TELEGRAM_BOT_TOKEN = botToken;
   process.env.OPENROUTER_API_KEY = "test-openrouter-key";
-  try { return run(); }
+  try { return await run(); }
   finally {
     for (const name of names) {
       if (previous[name] === undefined) delete process.env[name];
