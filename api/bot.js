@@ -129,12 +129,14 @@ module.exports = async function botApiHandler(req, res) {
       if (!userMessage || !assistantMessage || userMessage.length > 8000 || assistantMessage.length > 16000) {
         return reply(res, 400, { error: "invalid_exchange" });
       }
+      const userCreatedAt = new Date().toISOString();
+      const assistantCreatedAt = new Date(Date.now() + 1).toISOString();
       const insertResponse = await fetch(root + "/orvex_chat_messages", {
         method: "POST",
         headers: getSupabaseHeaders(config.serviceKey, { Prefer: "return=minimal" }),
         body: JSON.stringify([
-          { telegram_id: telegramId, role: "user", content: userMessage },
-          { telegram_id: telegramId, role: "assistant", content: assistantMessage }
+          { telegram_id: telegramId, role: "user", content: userMessage, created_at: userCreatedAt },
+          { telegram_id: telegramId, role: "assistant", content: assistantMessage, created_at: assistantCreatedAt }
         ]),
         signal: AbortSignal.timeout(8000)
       });
