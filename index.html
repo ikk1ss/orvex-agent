@@ -1342,8 +1342,8 @@ function closeAuthModal(){
  hideTelegramBack();
 }
 function updateAuthOptions(){
- if(authGoogleButton)authGoogleButton.disabled=!supabaseClient;
- if(authGuestButton)authGuestButton.disabled=!supabaseClient;
+ if(authGoogleButton)authGoogleButton.disabled=!supabaseClient||telegramMiniApp;
+ if(authGuestButton)authGuestButton.disabled=!supabaseClient||telegramMiniApp;
  if(authTelegramButton)authTelegramButton.disabled=!(telegramMiniApp||(authConfig&&authConfig.telegramBotUrl));
  if(authNote){
   if(supabaseClient)authNote.textContent='Гостевой режим использует отдельную сессию. Вход через Google требует включённого провайдера в Supabase.';
