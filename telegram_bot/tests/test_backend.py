@@ -1,5 +1,6 @@
 import sys
 import unittest
+import json
 from pathlib import Path
 
 import httpx
@@ -15,7 +16,7 @@ class BackendClientTests(unittest.IsolatedAsyncioTestCase):
         def handler(request):
             captured["url"] = str(request.url)
             captured["authorization"] = request.headers.get("Authorization")
-            captured["payload"] = request.read().decode("utf-8")
+            captured["payload"] = json.loads(request.read().decode("utf-8"))
             return httpx.Response(200, json={
                 "messages": [
                     {"role": "user", "content": "Previous question"},
@@ -33,7 +34,7 @@ class BackendClientTests(unittest.IsolatedAsyncioTestCase):
         result = await client.get_context(123456, "Что ты обо мне знаешь?")
         self.assertEqual(captured["url"], "https://orvex.example/api/bot")
         self.assertEqual(captured["authorization"], "Bearer " + "x" * 48)
-        self.assertIn('"telegramId": "123456"', captured["payload"])
+        self.assertEqual(captured["payload"]["telegramId"], "123456")
         self.assertEqual(len(result["messages"]), 2)
         self.assertEqual(result["personalization_context"], "Имя: Аркадий")
 
