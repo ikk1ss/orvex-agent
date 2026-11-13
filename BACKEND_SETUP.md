@@ -67,7 +67,7 @@ Run:
 
 ```sh
 node scripts/validate-site.mjs
-node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/session-api.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs scripts/balance-api.test.cjs scripts/index-html-regressions.test.cjs
+node --test scripts/backend-auth.test.cjs scripts/health-api.test.cjs scripts/session-api.test.cjs scripts/profile-api.test.cjs scripts/memory-api.test.cjs scripts/account-api.test.cjs scripts/balance-api.test.cjs scripts/auth-config-api.test.cjs scripts/guest-quota-api.test.cjs scripts/guest-quota-migration.test.cjs scripts/ai-chat-api.test.cjs scripts/index-html-regressions.test.cjs
 ```
 
 The automated tests use fake test tokens and mocked storage responses. They do not require live Telegram or Supabase credentials.
@@ -77,7 +77,7 @@ The automated tests use fake test tokens and mocked storage responses. They do n
 
 For an existing Supabase project, apply `supabase/migrations/20261114_add_orvex_guest_usage_quota.sql` after the Telegram chat migrations. For a new project, the same table and function are included in `supabase/schema.sql`. The migration is additive and does not change Telegram profiles, memories or balances.
 
-The guest quota is **20 AI requests per UTC calendar day**, resetting at 00:00 UTC. The database function performs an atomic increment, so parallel requests cannot exceed the limit. The quota is tied to the Supabase anonymous user ID, not a browser-supplied ID. If a guest clears browser data or signs out, Supabase cannot recover that anonymous identity.
+The guest quota is **20 AI requests per UTC calendar day**, resetting at 00:00 UTC. The database function performs an atomic increment, so parallel requests cannot exceed the limit. The quota is tied to the Supabase anonymous user ID, not a browser-supplied ID. If a guest clears browser data or signs out, Supabase cannot recover that anonymous identity. Supabase recommends CAPTCHA or Cloudflare Turnstile for anonymous sign-ups before public launch because users can create additional anonymous identities.
 
 The Mini App currently exposes only `openrouter/free` to the chat API. The server rejects other model IDs, keeps the OpenRouter key private and returns the remaining guest quota. OpenRouter can choose among its currently available free models; availability and provider rate limits can change. Chat history in the current interface remains in page memory and is cleared when the page reloads.
 
