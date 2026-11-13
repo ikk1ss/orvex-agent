@@ -161,8 +161,9 @@ test("Google-authenticated users can use the free router without the guest quota
   });
 });
 
-test("Telegram Mini App sessions do not use the anonymous quota", async () => {
+test("Telegram Mini App sessions do not require the browser publishable key", async () => {
   await withEnv(async () => {
+    delete process.env.SUPABASE_PUBLISHABLE_KEY;
     const mock = mockFetch([
       ["https://openrouter.ai/api/v1/chat/completions", () =>
         ok({ model: "provider/model:free", choices: [{ message: { content: "Ответ" } }] })]
