@@ -9,18 +9,12 @@ create table if not exists public.orvex_profiles (
   updated_at timestamptz not null default now()
 );
 
--- Keep this migration safe for projects where the profile table already exists.
--- Existing profiles receive empty preferences without losing any profile data.
 alter table public.orvex_profiles
   add column if not exists preferences jsonb not null default '{}'::jsonb
     check (jsonb_typeof(preferences) = 'object');
 
 alter table public.orvex_profiles enable row level security;
 
--- The table is accessed only by the server-side service-role key.
--- Never put SUPABASE_SERVICE_ROLE_KEY in index.html or any browser bundle.
-
- 
 create table if not exists public.orvex_memories (
   id uuid primary key default gen_random_uuid(),
   telegram_id text not null,
@@ -35,12 +29,30 @@ create index if not exists orvex_memories_owner_created_idx
 
 alter table public.orvex_memories enable row level security;
 
--- Memory rows are available only through the authenticated server API.
--- No anon/authenticated client policies are created.
+create table if not exists public.orvex_chat_messages (
+  id uuid primary key default gen_random_uuid(),
+  telegram_id text not null,
+  role text not null check (role in ('user', 'assistant')),
+  content text not null check (char_length(content) between 1 and 16000),
+  created_at timestamptz not null default now()
+);
 
+create index if not exists orvex_chat_messages_owner_created_idx
+  on public.orvex_chat_messages (telegram_id, created_at desc, id desc);
 
--- Account deletion is performed in one database transaction.
--- The function is callable only by the server-side service_role.
+alter table public.orvex_chat_messages enable row level security;
+
+-- Browser roles do not access these tables directly. The Mini App uses
+-- authenticated server API routes, which use the server-side service key.
+revoke all on table public.orvex_profiles from anon, authenticated;
+revoke all on table public.orvex_memories from anon, authenticated;
+revoke all on table public.orvex_chat_messages from anon, authenticated;
+
+grant select, insert, update, delete on table public.orvex_profiles to service_role;
+grant select, insert, update, delete on table public.orvex_memories to service_role;
+grant select, insert, delete on table public.orvex_chat_messages to service_role;
+
+-- Account deletion removes profile, personal memory and conversation history atomically.
 create or replace function public.delete_orvex_account(p_telegram_id text)
 returns void
 language plpgsql
@@ -48,6 +60,9 @@ security definer
 set search_path = ''
 as $$
 begin
+  delete from public.orvex_chat_messages
+  where telegram_id = p_telegram_id;
+
   delete from public.orvex_memories
   where telegram_id = p_telegram_id;
 
