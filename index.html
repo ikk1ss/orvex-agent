@@ -1380,7 +1380,7 @@ function renderProfileAvatar(){
  const image=$("#profileAvatarImage"),initials=$("#profileAvatarInitials"),name=$("#profileDisplayName");
  const displayName=profile&&profile.name||"Ваш профиль";
  if(name)name.textContent=displayName;
- if(initials)initials.textContent=displayName.trim().split(/\\s+/).slice(0,2).map(part=>part[0]).join("").toUpperCase()||"OR";
+ if(initials)initials.textContent=displayName.trim().split(/\s+/).slice(0,2).map(part=>part[0]).join("").toUpperCase()||"OR";
  if(image&&telegramAvatarUrl){try{const url=new URL(telegramAvatarUrl);if(url.protocol==="https:"){image.src=url.href;image.hidden=false;if(initials)initials.hidden=true;return}}catch(error){}}
  if(image){image.removeAttribute("src");image.hidden=true}
  if(initials)initials.hidden=false;
@@ -1402,6 +1402,7 @@ function fillForm(){
 }
 function openModal(){lastFocusedElement=document.activeElement;fillForm();modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack();setTimeout(()=>form.elements.name.focus(),80)}
 function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();if(lastFocusedElement&&typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();lastFocusedElement=null}
+function saveLocal(key,value){try{localStorage.setItem(key,typeof value==='string'?value:JSON.stringify(value))}catch(error){}}
 function toast(message){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=message;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 
 const deleteModal=$('#deleteConfirmModal'),deletePhrase=$('#deletePhrase'),deletePhraseField=$('#deletePhraseField'),deleteProceed=$('#proceedDelete');
@@ -1467,7 +1468,7 @@ document.querySelectorAll('.language-option').forEach(button=>button.addEventLis
   try{
    const response=await fetch('/api/profile',{method:'PUT',headers:{Authorization:'tma '+tg.initData,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({name:profile.name,email:profile.email||'',interest:profile.interest||'Личный ИИ-помощник',preferences:profile.preferences||{}})});
    if(!response.ok)throw new Error('language_sync_failed');
-   const result=await response.json();profile=result.profile||profile;localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
+   const result=await response.json();profile=result.profile||profile;saveLocal('orvex_agent_profile',profile);
    toast(language==='ru'?'Язык интерфейса сохранён в профиле':language==='en'?'Interface language saved to your profile':'Spracheinstellung im Profil gespeichert');
   }catch(error){toast(language==='ru'?'Язык изменён на устройстве, но не синхронизирован с сервером':language==='en'?'Language changed on this device but not synced to the server':'Sprache auf diesem Gerät geändert, aber nicht mit dem Server synchronisiert')}
  }else toast(language==='ru'?'Язык интерфейса изменён':language==='en'?'Interface language changed':'Oberflächensprache geändert');
@@ -1527,7 +1528,7 @@ form.addEventListener('submit',async e=>{
    profile=result.profile||data;
    try{localStorage.setItem('orvex_agent_language',profile.preferences&&profile.preferences.language||'ru')}catch(error){}
    updateHeaderAction();
-   localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
+   saveLocal('orvex_agent_profile',profile);
    setProfileStatus('Синхронизирован','Профиль привязан к Telegram ID и хранится в серверной базе ORVEX Agent.',true);
    closeModal();toast('Профиль синхронизирован с сервером');
   }catch(error){setProfileStatus('Ошибка синхронизации','Не удалось сохранить профиль на сервере. Проверьте соединение и попробуйте ещё раз.',false);toast('Не удалось сохранить профиль на сервере. Проверьте соединение и попробуйте ещё раз.')}
@@ -1564,7 +1565,7 @@ async function initProfileWorkspace(){
   if(remote&&typeof remote.display_name==='string'){
    profile={name:remote.display_name,email:remote.email||'',interest:remote.interest||'Личный ИИ-помощник',preferences:remote.preferences&&typeof remote.preferences==='object'?remote.preferences:{}};
    try{localStorage.setItem('orvex_agent_language',profile.preferences.language||'ru')}catch(error){}
-   localStorage.setItem('orvex_agent_profile',JSON.stringify(profile));
+   saveLocal('orvex_agent_profile',profile);
   }else{
    // Telegram identity is authoritative. Do not migrate an unowned browser cache
    // into a new Telegram account, because it may belong to another user.
@@ -1589,7 +1590,7 @@ async function initProfileWorkspace(){
 
 async function initMemoryWorkspace(){
  const state=$('#memoryState'),memoryForm=$('#memoryForm'),list=$('#memoryList'),submit=$('#memorySubmit');
- const accountTools=$('#memoryAccountTools'),exportButton=$('#exportAccount'),deleteButton=$('#deleteAccount'),moreButton=$('#memoryLoadMore');
+ const accountTools=$('#memoryAccountTools'),exportButton=$('#exportAccount'),moreButton=$('#memoryLoadMore');
  if(!state||!memoryForm||!list)return;
  if(!tg||!tg.initData){
   state.textContent='Откройте ORVEX Agent через Telegram, чтобы использовать персональную память.';
