@@ -1,20 +1,27 @@
 # ORVEX Agent Telegram bot
 
-A small Python launcher for the ORVEX Agent Telegram Mini App.
+The Telegram bot is the conversational interface for ORVEX Agent. The Mini App remains the control center.
 
-## What it does
+## Current capabilities
 
-- Responds to `/start`, `/app`, `/help`, and `/privacy`.
-- Adds an inline Web App button to open `https://orvex-agent.vercel.app`.
-- Configures Telegram's menu button to open the Mini App.
-- Does not store chat messages or user profiles.
-- Does not call an AI provider. AI features remain intentionally disabled until the provider and server-side request flow are ready.
+- Natural-language private chat powered by OpenRouter's OpenAI-compatible Chat Completions API.
+- ORVEX personality and response rules in `personality.py`.
+- Loads the user's profile, response preferences and relevant saved memories from the shared ORVEX backend.
+- Stores up to 100 recent chat messages per Telegram user in Supabase when the bot backend is configured.
+- `/reset` deletes chat history but leaves the profile and separately saved memories intact.
+- `/remember text` saves a note to the same personal memory used by the Mini App.
+- `/start`, `/app`, `/help`, and `/privacy` commands.
+- Telegram menu button opens the Mini App.
+- Group messages are not processed.
+
+If `ORVEX_BOT_API_SECRET` is not configured, the bot uses temporary in-memory conversation context. Profile and memory synchronization are unavailable in that mode.
 
 ## Requirements
 
 - Python 3.10+
 - A Telegram bot token created with BotFather
-- The ORVEX Agent Mini App URL
+- An OpenRouter API key
+- An ORVEX server API URL and a shared bot API secret for persistent history and profile/memory synchronization
 
 ## Run locally
 
@@ -22,40 +29,33 @@ From this directory:
 
 ```sh
 python -m venv .venv
-```
-
-Activate the virtual environment, then install dependencies:
-
-```sh
-# Linux / macOS / Termux
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-On Windows PowerShell, activate with:
-
-```powershell
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-Set environment variables. Do not put the real token in source files:
+Set environment variables. Never commit real credentials:
 
 ```sh
-export TELEGRAM_BOT_TOKEN="your-token"
+export TELEGRAM_BOT_TOKEN="your-telegram-token"
+export OPENROUTER_API_KEY="your-openrouter-key"
+export OPENROUTER_MODEL="openrouter/free"
 export ORVEX_WEBAPP_URL="https://orvex-agent.vercel.app"
+export ORVEX_API_URL="https://orvex-agent.vercel.app/api/bot"
+export ORVEX_BOT_API_SECRET="your-random-secret-at-least-32-characters-long"
 python bot.py
 ```
 
-PowerShell:
+Generate one strong random secret and add the exact same value as `ORVEX_BOT_API_SECRET` to the Vercel project environment and the bot worker environment. Keep it private. The endpoint rejects requests without this secret. `ORVEX_API_URL` defaults to `https://orvex-agent.vercel.app/api/bot`.
 
-```powershell
-$env:TELEGRAM_BOT_TOKEN="your-token"
-$env:ORVEX_WEBAPP_URL="https://orvex-agent.vercel.app"
-python bot.py
-```
+`OPENROUTER_MODEL` is optional and defaults to `openrouter/free`. Without `OPENROUTER_API_KEY`, the bot keeps its commands available but reports that AI is not configured.
 
-## Deploy with Docker
+## Database
+
+Apply these migrations in order before enabling persistent bot synchronization: `supabase/migrations/20261113_add_orvex_chat_messages_and_lock_down_access.sql` creates the bounded chat-history table, revokes direct browser-role grants and extends account deletion; `supabase/migrations/20261113_add_service_role_policies_for_orvex_data.sql` adds explicit service-role-only RLS policies.
+
+The bot API uses the server-side Supabase service key already configured for the Vercel API. Never put that key in the Telegram worker or browser. The worker only receives the separate, narrowly scoped `ORVEX_BOT_API_SECRET`.
+
+## Docker
 
 Build from this directory:
 
@@ -63,17 +63,51 @@ Build from this directory:
 docker build -t orvex-agent-telegram .
 docker run --restart unless-stopped \
   -e TELEGRAM_BOT_TOKEN="$TELEGRAM_BOT_TOKEN" \
+  -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" \
+  -e OPENROUTER_MODEL="openrouter/free" \
   -e ORVEX_WEBAPP_URL="https://orvex-agent.vercel.app" \
+  -e ORVEX_API_URL="https://orvex-agent.vercel.app/api/bot" \
+  -e ORVEX_BOT_API_SECRET="$ORVEX_BOT_API_SECRET" \
   orvex-agent-telegram
 ```
 
-Use a worker/container host that supports a continuously running process. This polling bot should not be deployed as a Vercel serverless function. Configure the same bot token separately in Vercel as `TELEGRAM_BOT_TOKEN` for validating Mini App `initData`.
+Use a worker/container host that supports a continuously running process. This polling bot should not be deployed as a Vercel serverless function. Configure `TELEGRAM_BOT_TOKEN`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `ORVEX_BOT_API_SECRET` in Vercel. Configure the Telegram token, OpenRouter key and matching bot API secret in the worker.
+
+## Deploy on Railway
+
+Railway can run this polling bot as a persistent Docker service. The repository is a monorepo, so configure the service root directory as `/telegram_bot`; Railway will then find this directory's `Dockerfile` and build the worker image.
+
+1. Create a new Railway project and connect the GitHub repository `ikk1ss/orvex-agent`.
+2. Select the branch `feature/telegram-ai-core` for the first pre-merge test deployment. After the pull request is merged, switch the service to `main`.
+3. In the service settings, set **Root Directory** to `/telegram_bot`.
+4. Keep the worker at **one replica**. Telegram long polling should have only one active worker for a bot token. Stop any other process polling with the same token before starting this service.
+5. Set the restart policy to **On Failure**.
+6. Add these service variables:
+
+| Variable | Value |
+| --- | --- |
+| `TELEGRAM_BOT_TOKEN` | Token from BotFather |
+| `OPENROUTER_API_KEY` | Your OpenRouter API key |
+| `OPENROUTER_MODEL` | `openrouter/free` |
+| `ORVEX_WEBAPP_URL` | `https://orvex-agent.vercel.app` |
+| `ORVEX_API_URL` | `https://orvex-agent.vercel.app/api/bot` |
+| `ORVEX_BOT_API_SECRET` | A new random secret, at least 32 characters |
+| `ORVEX_REQUIRE_BACKEND` | `true` |
+
+Generate the secret locally, for example with `openssl rand -hex 32`. Add the exact same value to the Vercel project's **Production** environment as `ORVEX_BOT_API_SECRET`, then redeploy the Vercel project. Never put the Supabase service-role key in Railway. The worker must not receive `SUPABASE_SERVICE_ROLE_KEY` or `SUPABASE_URL`.
+
+After the first deploy, check the Railway logs for `ORVEX Agent Telegram bot is starting`. Then test `/start`, a normal message, `/remember`, and `/reset` in a private Telegram chat. Confirm that the Mini App and bot use the same profile and memory. A successful container deployment alone does not prove Telegram end-to-end behavior.
+
+Do not add a Railway healthcheck URL: this worker does not expose an HTTP server. Keep it as a persistent service, not a cron job. Configure the service from the Railway dashboard rather than adding a legacy `railway.toml` file.
 
 ## Tests
 
-Run the dependency-free unit tests from the repository root:
+From the repository root:
 
 ```sh
+node --test scripts/bot-api.test.cjs
+python -m py_compile telegram_bot/config.py telegram_bot/messages.py telegram_bot/personality.py telegram_bot/ai.py telegram_bot/backend.py telegram_bot/bot.py
 python -m unittest discover -s telegram_bot/tests -v
-python -m py_compile telegram_bot/config.py telegram_bot/messages.py telegram_bot/bot.py
 ```
+
+Automated tests use mocked Telegram/OpenRouter/Supabase responses. They do not prove that a live Telegram bot has been deployed or tested end to end.
