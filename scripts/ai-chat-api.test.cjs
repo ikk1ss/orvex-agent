@@ -127,6 +127,33 @@ test("guest requests use the free router and consume one daily request", async (
   });
 });
 
+test("allows the 20th guest request and reports zero remaining", async () => {
+  await withEnv(async () => {
+    const mock = mockFetch([
+      ["https://example.supabase.co/auth/v1/user", () => ok({ id: guestId, is_anonymous: true })],
+      ["https://example.supabase.co/rest/v1/rpc/orvex_guest_quota", () =>
+        ok([{ allowed: true, used: 20, remaining: 0, resets_at: "2026-11-15T00:00:00Z" }])],
+      ["https://openrouter.ai/api/v1/chat/completions", () =>
+        ok({ model: "provider/model:free", choices: [{ message: { content: "Последний ответ" } }] })],
+      ["https://example.supabase.co/rest/v1/orvex_auth_chat_messages", () =>
+        ({ ok: true, status: 201, json: async () => [] })]
+    ]);
+    try {
+      const res = response();
+      await handler({
+        method: "POST",
+        headers: { authorization: "Bearer " + accessToken },
+        body: { model: "openrouter/free", messages }
+      }, res);
+      assert.equal(res.statusCode, 200);
+      assert.equal(res.payload.message, "Последний ответ");
+      assert.equal(res.payload.quota.used, 20);
+      assert.equal(res.payload.quota.remaining, 0);
+      assert.equal(mock.calls.length, 4);
+    } finally { mock.restore(); }
+  });
+});
+
 test("blocks the 21st guest request without calling OpenRouter", async () => {
   await withEnv(async () => {
     const mock = mockFetch([
