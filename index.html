@@ -2019,7 +2019,7 @@ form.addEventListener('submit',async e=>{
    saveLocal('orvex_agent_profile',profile);updateHeaderAction();
    setProfileStatus('Синхронизирован','Профиль сохранён в вашем аккаунте ORVEX Agent.',true);
    closeModal();toast('Профиль синхронизирован с сервером');
-  }catch(error){setProfileStatus('Ошибка синхронизации','Не удалось сохранить профиль на сервере. Попробуйте ещё раз.',false);toast('Не удалось сохранить профиль на сервере.')}
+  }catch(error){if(saveGeneration===authGeneration){setProfileStatus('Ошибка синхронизации','Не удалось сохранить профиль на сервере. Попробуйте ещё раз.',false);toast('Не удалось сохранить профиль на сервере.')}}
   finally{submitButton.disabled=false}
   return;
  }
@@ -2142,7 +2142,7 @@ async function refreshGuestQuota(){
   const response=await fetch('/api/guest-quota',{headers:{Authorization:'Bearer '+externalAuthSession.access_token,Accept:'application/json'},cache:'no-store'});
   if(!response.ok)throw new Error('guest_quota_unavailable');
   const data=await response.json();
-  if(quotaGeneration!==authGeneration||authMode!=='guest'||!externalAuthSession||externalAuthSession.user.id!==quotaUserId)return;
+  if(quotaGeneration!==authGeneration||authMode!=='guest'||!externalAuthSession||!externalAuthSession.user||externalAuthSession.user.id!==quotaUserId)return;
   if(!data.quota||!Number.isInteger(data.quota.remaining)||!Number.isInteger(data.quota.dailyLimit))throw new Error('guest_quota_invalid');
   guestQuota=data.quota;guestQuotaReady=true;updateChatQuota();
   if(guestQuotaResetTimer)clearTimeout(guestQuotaResetTimer);
@@ -2150,7 +2150,7 @@ async function refreshGuestQuota(){
   if(Number.isFinite(resetAt)){const delay=Math.max(1000,Math.min(86400000,resetAt-Date.now()+1500));guestQuotaResetTimer=window.setTimeout(()=>refreshGuestQuota(),delay)}
   if(guestQuota.remaining===0)aiChatStatus.textContent='Лимит гостевого режима исчерпан. Войдите через Telegram или Google, чтобы продолжить.';
  }catch(error){
-  aiChatStatus.textContent='Не удалось проверить гостевой лимит. Настройте базу данных Supabase.';
+  if(quotaGeneration===authGeneration)aiChatStatus.textContent='Не удалось проверить гостевой лимит. Настройте базу данных Supabase.';
  }finally{updateChatControls()}
 }
 async function initChatWorkspace(){
