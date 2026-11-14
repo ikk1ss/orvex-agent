@@ -2016,16 +2016,19 @@ document.querySelectorAll('.language-option').forEach(button=>button.addEventLis
   try{
    const response=await fetch('/api/profile',{method:'PUT',headers:{Authorization:'tma '+tg.initData,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({name:profile.name,email:profile.email||'',interest:profile.interest||'Личный ИИ-помощник',preferences:profile.preferences||{}})});
    if(!response.ok)throw new Error('language_sync_failed');
-   const result=await response.json();profile=result.profile||profile;saveLocal('orvex_agent_profile',profile);
+   const result=await response.json();
+   if(languageGeneration!==authGeneration||!externalAuthSession||!externalAuthSession.user||externalAuthSession.user.id!==languageUserId)return;
+   profile=result.profile||profile;saveLocal('orvex_agent_profile',profile);
    toast(language==='ru'?'Язык интерфейса сохранён в профиле':language==='en'?'Interface language saved to your profile':'Spracheinstellung im Profil gespeichert');
   }catch(error){toast(language==='ru'?'Язык изменён на устройстве, но не синхронизирован с сервером':language==='en'?'Language changed on this device but not synced to the server':'Sprache auf diesem Gerät geändert, aber nicht mit dem Server synchronisiert')}
  }else if(externalAuthSession&&profile&&profile.name){
+  const languageGeneration=authGeneration,languageUserId=externalAuthSession.user&&externalAuthSession.user.id;
   try{
    const response=await fetch('/api/user-data',{method:'PUT',headers:{Authorization:'Bearer '+externalAuthSession.access_token,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({name:profile.name,email:profile.email||'',interest:profile.interest||'Личный ИИ-помощник',preferences:profile.preferences||{}})});
    if(!response.ok)throw new Error('language_sync_failed');
    const result=await response.json();profile=result.profile||profile;saveLocal('orvex_agent_profile',profile);
    toast(language==='ru'?'Язык интерфейса сохранён в профиле':language==='en'?'Interface language saved to your profile':'Spracheinstellung im Profil gespeichert');
-  }catch(error){toast(language==='ru'?'Язык изменён, но не синхронизирован с сервером':language==='en'?'Language changed but not synced to the server':'Sprache geändert, aber nicht mit dem Server synchronisiert')}
+  }catch(error){if(languageGeneration===authGeneration)toast(language==='ru'?'Язык изменён, но не синхронизирован с сервером':language==='en'?'Language changed but not synced to the server':'Sprache geändert, aber nicht mit dem Server synchronisiert')}
  }else toast(language==='ru'?'Язык интерфейса изменён':language==='en'?'Interface language changed':'Oberflächensprache geändert');
  languageOptions.hidden=true;languageCurrent.setAttribute('aria-expanded','false');
  renderBalance();
