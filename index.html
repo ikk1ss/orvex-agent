@@ -1096,7 +1096,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div>
 <div class="eyebrow">Персональная AI-платформа</div>
 <h1>Ваше пространство<br>для <span>нового интеллекта.</span></h1>
-<p class="hero-copy">ORVEX Agent объединит интеллектуального помощника, AI-инструменты и автоматизацию в одном рабочем пространстве. Сейчас мы последовательно создаём основу платформы.</p>
+<p class="hero-copy">ORVEX Agent объединяет AI-чат, персональный профиль и настройки. Сейчас завершаем синхронизацию аккаунтов и адаптацию интерфейса, затем перейдём к основному Telegram-боту.</p>
 <div class="hero-actions"><a class="primary-link" href="#status">Состояние проекта <span class="arrow">↗</span></a><button class="outline-link" id="heroProfile" type="button">Настроить профиль</button></div>
 <div class="hero-footnote">Текущие возможности и этапы разработки указаны без демонстрационных данных.</div>
 </div>
@@ -1135,15 +1135,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="status-grid">
 <article class="status-card"><div class="status-top"><span class="status-icon">◈</span><span class="pill ready">Опубликован</span></div><h3>Веб-интерфейс</h3><p>Сайт опубликован и открывается по защищённому HTTPS-адресу.</p></article>
 <article class="status-card"><div class="status-top"><span class="status-icon">⌘</span><span class="pill ready">Настроено</span></div><h3>Запуск в Telegram</h3><p id="telegramAuthNote">Mini App открывается через Telegram. Сервер проверяет подписанные данные Telegram перед доступом к личным функциям.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">◎</span><span class="pill partial" id="profileStatus">Локально</span></div><h3>Профиль пользователя</h3><p id="profileStatusText">Профиль может храниться в аккаунте Google или гостевой сессии. В Telegram используется отдельная подтверждённая Telegram-сессия.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">◎</span><span class="pill partial" id="profileStatus">Локально</span></div><h3>Профиль пользователя</h3><p id="profileStatusText">Без входа профиль хранится локально. После входа используется отдельная серверная сессия Google, гостя или Telegram.</p></article>
 <article class="status-card"><div class="status-top"><span class="status-icon">⌁</span><span class="pill pending" id="backendStatus">Требует настройки</span></div><h3>Сервер и база данных</h3><p>Серверные API используют Supabase для профилей, истории чата и гостевого лимита. Применение миграций и проверка live-конфигурации ещё требуются.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">✳</span><span class="pill pending">В планах</span></div><h3>AI-модели и агенты</h3><p>AI-чат работает через OpenRouter/free. Выбор конкретных моделей и запуск агентных задач ещё не доступны.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">⌕</span><span class="pill pending">В планах</span></div><h3>Тестирование и мониторинг</h3><p>Автоматические проверки и CI настроены. Ручные проверки интерфейса и live-сервисов ещё предстоят.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">✳</span><span class="pill partial">Частично</span></div><h3>AI-модели и агенты</h3><p>AI-чат работает через OpenRouter/free. Выбор конкретных моделей и запуск агентных задач ещё не доступны.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">⌕</span><span class="pill partial">Частично</span></div><h3>Тестирование и мониторинг</h3><p>Автоматические проверки и CI настроены. Ручные проверки интерфейса и live-сервисов ещё предстоят.</p></article>
 </div>
 </section>
 
 <section class="section" id="memory">
-<div class="section-head"><div><div class="kicker">Личное пространство</div><h2 class="section-title">Персональная память</h2></div><div class="section-sub">Сохраняйте заметки, предпочтения и цели в защищённом хранилище.</div></div>
+<div class="section-head"><div><div class="kicker">Личное пространство</div><h2 class="section-title">Персональная память</h2></div><div class="section-sub">Сохраняйте заметки, предпочтения и цели в Telegram Mini App после подтверждения сессии и настройки Supabase.</div></div>
 <div class="memory-panel">
 <p class="memory-state" id="memoryState" role="status" aria-live="polite">Проверяем доступ к персональной памяти…</p>
 <form class="memory-form" id="memoryForm" hidden>
@@ -1167,6 +1167,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="roadmap-item"><span class="roadmap-num">02</span><div><b>Проверить вход и синхронизацию данных</b><small>Проверить Telegram, Google и гостевой вход, профиль, историю чата и лимит запросов.</small></div><span class="roadmap-label">После настройки сервера</span></div>
 <div class="roadmap-item"><span class="roadmap-num">03</span><div><b>Довести адаптацию интерфейса</b><small>Проверить отображение и все основные сценарии на телефоне, компьютере и внутри Telegram.</small></div><span class="roadmap-label">Следующий этап</span></div>
 <div class="roadmap-item"><span class="roadmap-num">04</span><div><b>Финальное тестирование Mini App</b><small>Пройти регрессионные сценарии, проверить ошибки и подготовить приложение к передаче на этап Telegram-бота.</small></div><span class="roadmap-label">После интеграции</span></div>
+<div class="roadmap-item"><span class="roadmap-num">05</span><div><b>Основной Telegram-бот</b><small>Подключить AI-диалоги, профиль и память после завершения Mini App.</small></div><span class="roadmap-label">После Mini App</span></div>
+<div class="roadmap-item"><span class="roadmap-num">06</span><div><b>Бот поддержки</b><small>Создать отдельного бота для вопросов пользователей и обращений в поддержку.</small></div><span class="roadmap-label">Финальный этап</span></div>
+<div class="roadmap-item"><span class="roadmap-num">07</span><div><b>Административная панель</b><small>Добавить защищённое управление пользователями, настройками и диагностикой.</small></div><span class="roadmap-label">Финальный этап</span></div>
 </div>
 </div>
 </section>
@@ -1664,6 +1667,34 @@ Object.assign(translations.de,{
 'Без входа профиль сохраняется только на этом устройстве. Войдите через Google или откройте Telegram Mini App для синхронизации.':'Ohne Anmeldung wird Ihr Profil nur auf diesem Gerät gespeichert. Melden Sie sich mit Google an oder öffnen Sie die Telegram Mini App zur Synchronisierung.',
 'Я понимаю, что без входа профиль сохраняется только в этом браузере.':'Ich verstehe, dass mein Profil ohne Anmeldung nur in diesem Browser gespeichert wird.',
 'Локальное сохранение. Войдите в аккаунт для серверной синхронизации.':'Lokal gespeichert. Melden Sie sich für die Serversynchronisierung an.'
+});
+Object.assign(translations.en,{
+'ORVEX Agent объединяет AI-чат, персональный профиль и настройки. Сейчас завершаем синхронизацию аккаунтов и адаптацию интерфейса, затем перейдём к основному Telegram-боту.':'ORVEX Agent brings together AI chat, a personal profile, and settings. We are finishing account synchronization and responsive layouts before moving on to the main Telegram bot.',
+'Без входа профиль хранится локально. После входа используется отдельная серверная сессия Google, гостя или Telegram.':'Without signing in, the profile is stored locally. After sign-in, a separate Google, guest, or Telegram server session is used.',
+'Сохраняйте заметки, предпочтения и цели в Telegram Mini App после подтверждения сессии и настройки Supabase.':'Save notes, preferences, and goals in the Telegram Mini App after session verification and Supabase setup.',
+'Частично':'Partially',
+'Основной Telegram-бот':'Main Telegram bot',
+'Подключить AI-диалоги, профиль и память после завершения Mini App.':'Connect AI conversations, profiles, and memory after the Mini App is complete.',
+'После Mini App':'After the Mini App',
+'Бот поддержки':'Support bot',
+'Создать отдельного бота для вопросов пользователей и обращений в поддержку.':'Create a separate bot for user questions and support requests.',
+'Финальный этап':'Final phase',
+'Административная панель':'Admin panel',
+'Добавить защищённое управление пользователями, настройками и диагностикой.':'Add secure management for users, settings, and diagnostics.'
+});
+Object.assign(translations.de,{
+'ORVEX Agent объединяет AI-чат, персональный профиль и настройки. Сейчас завершаем синхронизацию аккаунтов и адаптацию интерфейса, затем перейдём к основному Telegram-боту.':'ORVEX Agent vereint AI-Chat, persönliches Profil und Einstellungen. Wir schließen die Kontosynchronisierung und die responsive Oberfläche ab, bevor wir mit dem Haupt-Telegram-Bot beginnen.',
+'Без входа профиль хранится локально. После входа используется отдельная серверная сессия Google, гостя или Telegram.':'Ohne Anmeldung wird das Profil lokal gespeichert. Nach der Anmeldung wird eine separate Google-, Gast- oder Telegram-Serversitzung verwendet.',
+'Сохраняйте заметки, предпочтения и цели в Telegram Mini App после подтверждения сессии и настройки Supabase.':'Speichern Sie Notizen, Präferenzen und Ziele in der Telegram Mini App nach Sitzungsprüfung und Supabase-Einrichtung.',
+'Частично':'Teilweise',
+'Основной Telegram-бот':'Haupt-Telegram-Bot',
+'Подключить AI-диалоги, профиль и память после завершения Mini App.':'AI-Dialoge, Profil und Erinnerungen nach Fertigstellung der Mini App verbinden.',
+'После Mini App':'Nach der Mini App',
+'Бот поддержки':'Support-Bot',
+'Создать отдельного бота для вопросов пользователей и обращений в поддержку.':'Einen separaten Bot für Benutzerfragen und Supportanfragen erstellen.',
+'Финальный этап':'Abschlussphase',
+'Административная панель':'Admin-Panel',
+'Добавить защищённое управление пользователями, настройками и диагностикой.':'Eine sichere Verwaltung für Benutzer, Einstellungen und Diagnose hinzufügen.'
 });
 const originalTextNodes=new WeakMap(),originalAttributes=new WeakMap();
 let activeInterfaceLanguage='ru';
