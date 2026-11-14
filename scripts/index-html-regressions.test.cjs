@@ -158,3 +158,15 @@ test("profile language sync cannot overwrite a newly selected account", () => {
   assert.ok(html.includes("languageGeneration!==authGeneration"));
   assert.ok(html.includes("languageUserId=externalAuthSession.user&&externalAuthSession.user.id"));
 });
+
+
+test("the roadmap lists all seven phases in the agreed order", () => {
+  const roadmapStart = html.indexOf('<section class="roadmap" id="roadmap">');
+  const roadmapEnd = html.indexOf("</section>", roadmapStart);
+  const roadmap = html.slice(roadmapStart, roadmapEnd);
+  const stages = [...roadmap.matchAll(/roadmap-num">([0-9]{2})/g)].map(match => match[1]);
+  assert.deepEqual(stages, ["01", "02", "03", "04", "05", "06", "07"]);
+  assert.ok(roadmap.indexOf("Основной Telegram-бот") < roadmap.indexOf("Бот поддержки"));
+  assert.ok(roadmap.indexOf("Бот поддержки") < roadmap.indexOf("Административная панель"));
+  assert.ok(roadmap.includes("Финальный этап"));
+});
