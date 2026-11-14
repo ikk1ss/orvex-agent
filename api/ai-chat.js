@@ -84,7 +84,8 @@ async function consumeGuestQuota(config, userId) {
       !Number.isInteger(rows[0].used) || rows[0].used < 0 || rows[0].used > DAILY_GUEST_LIMIT ||
       !Number.isInteger(rows[0].remaining) || rows[0].remaining < 0 || rows[0].remaining > DAILY_GUEST_LIMIT ||
       rows[0].used + rows[0].remaining !== DAILY_GUEST_LIMIT ||
-      rows[0].allowed !== (rows[0].remaining > 0) ||
+      (rows[0].used < DAILY_GUEST_LIMIT && !rows[0].allowed) ||
+      (!rows[0].allowed && rows[0].remaining !== 0) ||
       typeof rows[0].resets_at !== "string" || !Number.isFinite(Date.parse(rows[0].resets_at))) throw new Error("guest_quota_invalid");
   return {
     allowed: rows[0].allowed,
