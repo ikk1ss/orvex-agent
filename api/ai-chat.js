@@ -187,7 +187,7 @@ module.exports = async function aiChatHandler(req, res) {
       message: content.trim(),
       model: typeof data.model === "string" ? data.model : "openrouter/free",
       quota,
-      historySaved
+      historySaved: identity.kind === "telegram" ? null : historySaved
     });
   } catch (error) {
     console.error("[ORVEX AI] Request failed", {
