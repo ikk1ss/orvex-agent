@@ -1383,6 +1383,7 @@ async function initAuthWorkspace(){
    if(session)document.body.dataset.authMode=authMode;
    else delete document.body.dataset.authMode;
    if(identityChanged||!session){
+    authGeneration++;
     chatHistory=[];
     chatHistoryLoadedFor='';
     guestQuota=null;
@@ -2140,6 +2141,7 @@ async function initChatWorkspace(){
      body:JSON.stringify({model:'openrouter/free',messages:chatHistory.slice(-12)})
     });
     const data=await response.json();
+    if(requestGeneration!==authGeneration)return;
     if(data.quota){guestQuota=data.quota;guestQuotaReady=true;updateChatQuota()}
     if(response.status===429){
      aiChatStatus.textContent='Лимит гостевого режима исчерпан. Войдите через Telegram или Google, чтобы продолжить.';
@@ -2156,7 +2158,7 @@ async function initChatWorkspace(){
     chatHistory.push({role:'assistant',content:data.message.trim()});
     renderChatMessage('assistant',data.message.trim());
     aiChatStatus.textContent=data.historySaved===false?'Ответ получен, но история не сохранилась.':(data.historySaved===true?'Готово. История сохранена.':'Готово.');
-   }catch(error){aiChatStatus.textContent='Проверьте подключение и настройки AI-сервера.'}
+   }catch(error){if(requestGeneration===authGeneration)aiChatStatus.textContent='Проверьте подключение и настройки AI-сервера.'}
    finally{chatBusy=false;updateChatControls();if(authMode==='guest'&&guestQuotaReady)updateChatQuota()}
   });
  }
@@ -2166,12 +2168,13 @@ async function initChatWorkspace(){
   updateChatQuota();updateChatControls();return;
  }
  if(externalAuthSession){
-  const ownerId=externalAuthSession.user&&externalAuthSession.user.id;
+  const ownerId=externalAuthSession.user&&externalAuthSession.user.id,historyGeneration=authGeneration;
   if(ownerId&&chatHistoryLoadedFor!==ownerId){
    try{
     const historyResponse=await fetch('/api/user-data',{headers:{Authorization:'Bearer '+externalAuthSession.access_token,Accept:'application/json'},cache:'no-store'});
     if(!historyResponse.ok)throw new Error('chat_history_load_failed');
     const stored=await historyResponse.json();
+    if(historyGeneration!==authGeneration||!externalAuthSession||!externalAuthSession.user||externalAuthSession.user.id!==ownerId)return;
     chatHistory=Array.isArray(stored.messages)?stored.messages.filter(item=>item&&['user','assistant'].includes(item.role)&&typeof item.content==='string').map(item=>({role:item.role,content:item.content})): [];
     aiChatMessages.replaceChildren();
     if(chatHistory.length)chatHistory.forEach(item=>renderChatMessage(item.role,item.content));
