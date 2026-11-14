@@ -19,7 +19,7 @@ test("server profile responses never depend on unguarded localStorage writes", (
 test("translation dictionaries do not mix languages", () => {
   const start = html.indexOf("const translations={");
   const end = html.indexOf("const originalTextNodes");
-  const translations = new Function(html.slice(start, end).replace(/function isDeletePhrase[\s\S]*$/, "") + "\nreturn translations;")();
+  const translations = new Function(html.slice(start, end) + "\nreturn translations;")();
   const latin = (v) => /[A-Za-z]/.test(v);
   // English values must not be German-only and vice versa for known markers.
   assert.equal(translations.de["Персональные функции"], "Persönliche Funktionen");
@@ -36,7 +36,7 @@ test("translation dictionaries do not mix languages", () => {
 test("every Russian UI string used by the script has an English and German translation", () => {
   const start = html.indexOf("const translations={");
   const end = html.indexOf("const originalTextNodes");
-  const translations = new Function(html.slice(start, end).replace(/function isDeletePhrase[\s\S]*$/, "") + "\nreturn translations;")();
+  const translations = new Function(html.slice(start, end) + "\nreturn translations;")();
   const script = html.slice(html.indexOf("<script>"), html.indexOf("const translations={")) +
     html.slice(html.indexOf("const originalTextNodes"), html.indexOf("</script>", html.indexOf("const originalTextNodes")));
   const missing = [];
@@ -105,12 +105,13 @@ test("guest chat is connected only to the OpenRouter free router", () => {
 
 
 test("onboarding and status copy describe the current AI and sign-in features", () => {
-  assert.ok(html.includes("AI-чат уже подключён через OpenRouter."));
+  const markup = html.slice(html.indexOf("</head>"), html.indexOf("<script>"));
+  assert.ok(markup.includes("AI-чат уже подключён через OpenRouter."));
   assert.ok(html.includes("openrouter/free"));
-  assert.ok(html.includes("Порядок входа: Telegram, Google, затем гостевой режим."));
-  assert.ok(html.includes("20 запросов в сутки"));
-  assert.ok(!html.includes("реальные AI-запросы и выбор моделей в интерфейсе ещё не подключены"));
-  assert.ok(!html.includes("История этого чата хранится только до перезагрузки страницы"));
+  assert.ok(markup.includes("Порядок входа: Telegram, Google, затем гостевой режим."));
+  assert.ok(markup.includes("20 запросов в сутки"));
+  assert.ok(!markup.includes("реальные AI-запросы и выбор моделей в интерфейсе ещё не подключены"));
+  assert.ok(!markup.includes("История этого чата хранится только до перезагрузки страницы"));
 });
 
 test("profile copy distinguishes external account storage from local-only mode", () => {
