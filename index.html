@@ -1422,6 +1422,7 @@ authGuestButton.addEventListener('click',async()=>{
   document.body.dataset.authMode='guest';
   closeAuthModal();
   updateHeaderAction();
+  await initProfileWorkspace();
   await initChatWorkspace();
   toast('Гостевой режим включён.');
  }catch(error){toast('Не удалось создать гостевую сессию. Проверьте настройки Supabase Auth.')}
@@ -1852,7 +1853,7 @@ document.addEventListener('keydown',event=>{
 
 $('#profileOpen').addEventListener('click',()=>{if(!telegramMiniApp&&!externalAuthSession){openAuthModal();return}if(profile||externalAuthSession)openModal();else openOnboarding()});
 onboardingBackButton.addEventListener('click',()=>changeOnboardingStep(onboardingStep-1,'back'));
-onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)return;if(onboardingStep<onboardingSlides.length-1)changeOnboardingStep(onboardingStep+1,'forward');else{closeOnboarding();if(telegramMiniApp&&telegramProfileSession)openModal();else openAuthModal()}});
+onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)return;if(onboardingStep<onboardingSlides.length-1)changeOnboardingStep(onboardingStep+1,'forward');else{closeOnboarding();if((telegramMiniApp&&telegramProfileSession)||externalAuthSession)openModal();else openAuthModal()}});
 $('#heroProfile').addEventListener('click',openModal);
 $('#profileClose').addEventListener('click',closeModal);
 
