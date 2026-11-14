@@ -1918,9 +1918,14 @@ function saveLocal(key,value){try{localStorage.setItem(key,typeof value==='strin
 function toast(message){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=message;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 
 const deleteModal=$('#deleteConfirmModal'),deletePhrase=$('#deletePhrase'),deletePhraseField=$('#deletePhraseField'),deleteProceed=$('#proceedDelete');
-let deleteConfirmStep=1;
-function closeDeleteConfirmation(){deleteModal.classList.remove('open');deleteModal.setAttribute('aria-hidden','true')}
+let deleteConfirmStep=1,deleteModalReturnFocus=null;
+function closeDeleteConfirmation(){
+ deleteModal.classList.remove('open');deleteModal.setAttribute('aria-hidden','true');
+ const returnFocus=deleteModalReturnFocus;deleteModalReturnFocus=null;
+ if(returnFocus&&typeof returnFocus.focus==='function'&&returnFocus.isConnected)returnFocus.focus();
+}
 function openDeleteConfirmation(){
+ deleteModalReturnFocus=document.activeElement;
  deleteConfirmStep=1;$('#deleteConfirmTitle').textContent='Вы действительно хотите удалить аккаунт?';
  $('#deleteConfirmText').textContent='Будут безвозвратно удалены ваш профиль и все записи персональной памяти. Экспортируйте данные заранее, если хотите сохранить копию.';
  deletePhraseField.hidden=true;deletePhrase.value='';deleteProceed.textContent='Продолжить';deleteProceed.disabled=false;
