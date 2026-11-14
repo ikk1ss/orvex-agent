@@ -177,6 +177,14 @@ test("Telegram Back closes the topmost account deletion confirmation", () => {
 });
 
 
+
+test("account deletion dialog restores keyboard focus to its opener", () => {
+  assert.ok(html.includes("let deleteConfirmStep=1,deleteModalReturnFocus=null"));
+  assert.ok(html.includes("deleteModalReturnFocus=document.activeElement"));
+  assert.ok(html.includes("returnFocus.isConnected)returnFocus.focus()"));
+});
+
+
 test("guest onboarding explains the non-recoverable anonymous session", () => {
   assert.ok(html.includes("Гостевой аккаунт не восстанавливается после выхода или очистки данных браузера."));
   assert.ok(html.includes("После настройки сервера используйте Google для сохранения истории между устройствами."));
