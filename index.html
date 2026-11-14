@@ -2373,7 +2373,7 @@ async function initChatWorkspace(){
     aiChatMessages.replaceChildren();
     if(chatHistory.length)chatHistory.forEach(item=>renderChatMessage(item.role,item.content));
     chatHistoryLoadedFor=ownerId;
-   }catch(error){aiChatStatus.textContent='Не удалось загрузить историю чата с сервера.'}
+   }catch(error){if(historyGeneration===authGeneration&&externalAuthSession&&externalAuthSession.user&&externalAuthSession.user.id===ownerId)aiChatStatus.textContent='Не удалось загрузить историю чата с сервера.'}
   }
  }
  if(authMode==='guest')await refreshGuestQuota();
