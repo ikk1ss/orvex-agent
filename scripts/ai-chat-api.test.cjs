@@ -155,9 +155,6 @@ test("Google-authenticated users can use the free router without the guest quota
       ["https://example.supabase.co/auth/v1/user", () => ok({ id: guestId, is_anonymous: false })],
       ["https://openrouter.ai/api/v1/chat/completions", () =>
         ok({ model: "provider/model:free", choices: [{ message: { content: "Ответ" } }] })],
-      ["https://example.supabase.co/rest/v1/orvex_auth_chat_messages", () => {
-        throw new Error("Telegram conversations must not use external account storage");
-      }],
       ["https://example.supabase.co/rest/v1/orvex_auth_chat_messages", (url, init) => {
         assert.equal(JSON.parse(init.body)[0].user_id, guestId);
         return { ok: true, status: 201, json: async () => [] };
