@@ -2,15 +2,30 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+const vercelConfig = JSON.parse(readFileSync(new URL("../vercel.json", import.meta.url), "utf8"));
+
 const failures = [];
 const assert = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
 assert(/^<!doctype html>/i.test(html.trimStart()), "Missing HTML5 doctype");
+assert(vercelConfig.functions && vercelConfig.functions["api/ai-chat.js"] && vercelConfig.functions["api/ai-chat.js"].maxDuration === 45, "AI chat function duration must allow up to 45 seconds");
+
 assert(/<html\b[^>]*lang=["']ru["']/i.test(html), "Document language should be Russian");
 assert(/<meta\b[^>]*name=["']viewport["']/i.test(html), "Missing viewport meta tag");
 assert(html.includes("https://telegram.org/js/telegram-web-app.js"), "Telegram WebApp SDK is not included");
+assert(html.includes("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"), "Pinned Supabase Auth SDK is not included");
+assert(html.includes('id="authModal"') && html.includes('id="authTelegram"') && html.includes('id="authGoogle"') && html.includes('id="authGuest"'), "Telegram, Google and guest authentication controls are missing");
+assert(html.indexOf('id="authTelegram"') < html.indexOf('id="authGoogle"') && html.indexOf('id="authGoogle"') < html.indexOf('id="authGuest"'), "Authentication methods are not ordered Telegram, Google, guest");
+assert(html.includes("signInAnonymously()") && html.includes("signInWithOAuth"), "Supabase anonymous and Google authentication flows are missing");
+assert(html.includes("fetch('/api/auth-config'"), "Public Supabase auth configuration endpoint is not connected");
+assert(html.includes('id="chat"') && html.includes('id="aiChatForm"') && html.includes('id="aiChatMessages"'), "AI chat workspace is missing");
+assert(html.includes("fetch('/api/ai-chat'") && html.includes("fetch('/api/guest-quota'"), "AI chat and guest quota APIs are not connected");
+assert(html.includes("model:'openrouter/free'"), "The chat client must use the free OpenRouter router");
+assert(html.includes("balanceAdd.disabled=!(telegramMiniApp&&telegramProfileSession)"), "Non-Telegram sessions must not be able to open balance top-up");
+
+
 assert(html.includes("/api/health") && html.includes("/api/session"), "Backend health and Telegram session checks are missing");
 assert(html.includes('id="memory"') && html.includes('id="memoryForm"') && html.includes('id="memoryList"'), "Personal memory workspace elements are missing");
 assert(html.includes("initMemoryWorkspace") && html.includes("fetch('/api/memory"), "Personal memory API integration is missing");
@@ -44,7 +59,7 @@ assert(html.includes("setProfileStatus('Профиль не создан'") && h
 
 assert(html.includes("viewportChanged"), "Telegram viewport change handling is missing");
 assert(html.includes("viewportStableHeight"), "Telegram stable viewport height is not used");
-assert(html.includes("function handleTelegramBack(){if(topupModal.classList.contains('open'))closeTopup();else if(onboarding.classList.contains('open'))closeOnboarding();else if(modal.classList.contains('open'))closeModal()}") && html.includes("if(telegramBack&&telegramBack.onClick)telegramBack.onClick(handleTelegramBack)"), "Telegram BackButton must close the currently open top-up, onboarding or profile dialog");
+assert(html.includes("function handleTelegramBack(){if(topupModal.classList.contains('open'))closeTopup();else if(deleteModal.classList.contains('open'))closeDeleteConfirmation();else if(authModal.classList.contains('open'))closeAuthModal();else if(onboarding.classList.contains('open'))closeOnboarding();else if(modal.classList.contains('open'))closeModal()}") && html.includes("if(telegramBack&&telegramBack.onClick)telegramBack.onClick(handleTelegramBack)"), "Telegram BackButton must close the topmost top-up, deletion, auth, onboarding or profile dialog");
 assert(html.includes("telegramBack.show()") && html.includes("telegramBack.hide()"), "Telegram BackButton visibility is not managed");
 
 const ids = [...html.matchAll(/\bid=["']([^"']+)["']/g)].map((match) => match[1]);

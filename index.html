@@ -7,6 +7,7 @@
 <meta name="description" content="ORVEX Agent — единое пространство для работы с искусственным интеллектом.">
 <title>ORVEX Agent</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -999,9 +1000,80 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  .visual-glow{animation:none}
 }
 @media(prefers-reduced-transparency:reduce){.topup-card{backdrop-filter:none}}
+
+#authModal{position:fixed;inset:0;z-index:24;display:none;place-items:center;padding:18px;background:#03060de8;backdrop-filter:blur(16px)}
+#authModal.open{display:grid}
+.auth-panel{width:min(440px,100%);padding:28px;border:1px solid #4d8dff45;border-radius:22px;background:linear-gradient(145deg,#19243a,#0d1422);box-shadow:0 30px 100px #0009}
+.auth-panel h2{font:700 25px Manrope,sans-serif;letter-spacing:-.04em;margin:0}
+.auth-panel>p{font-size:13px;line-height:1.7;color:#96a4b8;margin:10px 0 20px}
+.auth-methods{display:grid;gap:10px}
+.auth-method{width:100%;min-height:50px;padding:13px 16px;border:1px solid var(--line);border-radius:12px;background:#ffffff08;color:var(--text);font-size:14px;font-weight:700;text-align:center;transition:.2s;display:flex;align-items:center;justify-content:center;gap:12px}
+.auth-method-icon{width:20px;height:20px;flex:0 0 20px;display:grid;place-items:center}
+.auth-method-icon svg{display:block;width:20px;height:20px}
+.auth-method:hover:not(:disabled){border-color:#8db6ff88;background:#ffffff12}
+.auth-method-primary{border:0;color:#09111c;background:linear-gradient(110deg,#4d8dff,#c5d3e8)}
+.auth-method-guest{background:transparent;color:#aebbd0}
+.auth-method:disabled{cursor:not-allowed;opacity:.42}
+.auth-note{min-height:38px;margin:16px 0 0!important;font-size:11px!important;color:#8291a8!important;text-align:center}
+@media(max-width:620px){.auth-panel{padding:23px}.auth-panel h2{font-size:23px}.auth-method{font-size:13px}}
+
+
+.chat-section{padding-top:36px}
+.chat-panel{border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,#131c2bdb,#0e1521e8);padding:18px}
+.chat-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:2px 2px 14px;border-bottom:1px solid var(--line);color:#aab8cc;font-size:12px}
+.chat-model{font-weight:700;color:#dce6f5}
+.chat-quota{color:#9fb1c9}
+.chat-messages{display:flex;flex-direction:column;gap:12px;min-height:220px;max-height:440px;overflow:auto;padding:18px 2px}
+.chat-empty{margin:auto;color:#8392a8;font-size:13px;text-align:center;max-width:430px}
+.chat-message{max-width:min(82%,720px);padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#ffffff07}
+.chat-message.user{align-self:flex-end;border-color:#4d8dff45;background:#4d8dff12}
+.chat-message.assistant{align-self:flex-start}
+.chat-message-label{display:block;color:#9eb8e1;font-size:10px;font-weight:800;letter-spacing:.08em;margin-bottom:5px}
+.chat-message p{margin:0;color:#e1e8f3;font-size:14px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-form{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;padding-top:14px;border-top:1px solid var(--line)}
+.chat-form textarea{width:100%;min-height:54px;max-height:150px;resize:vertical;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#0a1220;color:var(--text);font:inherit;font-size:14px;outline:none}
+.chat-form textarea:focus{border-color:#8db6ff88}
+.chat-form button{min-height:48px;padding:0 18px;border:0;border-radius:12px;background:linear-gradient(110deg,#4d8dff,#c5d3e8);color:#09111c;font-weight:800;font-size:13px}
+.chat-form button:disabled,.chat-form textarea:disabled{opacity:.45;cursor:not-allowed}
+.chat-status{margin:12px 2px 0;color:#8291a8;font-size:11px;line-height:1.6}
+@media(max-width:620px){.chat-panel{padding:13px}.chat-messages{min-height:190px;max-height:55vh}.chat-message{max-width:94%}.chat-form{grid-template-columns:1fr}.chat-form button{width:100%}}
+
+
+.skip-link{position:fixed;top:12px;left:12px;z-index:10000;padding:12px 16px;border-radius:10px;background:var(--text);color:var(--bg);font-weight:700;transform:translateY(-160%);transition:transform .18s ease}.skip-link:focus{transform:translateY(0)}
+/* Final viewport pass: safe areas and short-screen dialog scrolling */
+#balanceWidget[hidden],#telegramDeleteSection[hidden]{display:none!important}
+#onboarding,#authModal,#profileModal,#topupModal,#deleteConfirmModal{
+ max-height:var(--tg-viewport-height,100dvh);
+ padding-top:max(12px,env(safe-area-inset-top));
+ padding-right:max(12px,env(safe-area-inset-right));
+ padding-bottom:max(12px,env(safe-area-inset-bottom));
+ padding-left:max(12px,env(safe-area-inset-left));
+}
+#authModal,#deleteConfirmModal{overflow-y:auto;overscroll-behavior:contain}
+.auth-panel,.delete-confirm-card{
+ max-height:calc(var(--tg-viewport-height,100dvh) - 32px);
+ overflow:auto;
+ overscroll-behavior:contain;
+}
+@media(max-width:620px){
+ #onboarding{padding: max(15px,env(safe-area-inset-top)) max(15px,env(safe-area-inset-right)) max(15px,env(safe-area-inset-bottom)) max(15px,env(safe-area-inset-left))}
+ #authModal,#deleteConfirmModal{padding: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+ .auth-panel{padding:20px}
+ .delete-confirm-card{padding:19px}
+}
+@media(max-width:370px){
+ .delete-confirm-actions{grid-template-columns:1fr}
+ .chat-toolbar{align-items:flex-start}
+ .chat-quota{max-width:100%;overflow-wrap:anywhere}
+}
+@supports(height:100dvh){
+ #profileModal .modal{max-height:min(calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)),850px)}
+ .topup-card{max-height:calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+}
 </style>
 </head>
 <body class="orvex-booting">
+<a class="skip-link" href="#home">Перейти к содержимому</a>
 <div class="orvex-entry-loader" id="orvexEntryLoader" role="status" aria-live="polite" aria-label="Загрузка ORVEX Agent">
  <div class="entry-loader-glow"></div>
  <div class="entry-loader-mark"><span></span><i></i></div>
@@ -1014,19 +1086,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <a class="brand" href="#home" aria-label="ORVEX Agent, на главную">
 <span class="brand-symbol" aria-hidden="true"></span>
 <span>ORVEX <b>AGENT</b></span></a>
-<div class="balance" id="balanceWidget" aria-live="polite"><div class="balance-values" id="balanceValues" title="Откройте в Telegram, чтобы увидеть баланс"><span class="balance-label">Баланс</span><b class="balance-rub" id="balanceRub">— ₽</b><span class="balance-usd" id="balanceUsd">— $</span></div><button class="balance-add" id="balanceAdd" type="button" aria-label="Пополнить баланс" aria-haspopup="dialog">+</button></div>
+<div class="balance" id="balanceWidget" aria-live="polite" hidden><div class="balance-values" id="balanceValues" title="Откройте в Telegram, чтобы увидеть баланс"><span class="balance-label">Баланс</span><b class="balance-rub" id="balanceRub">— ₽</b><span class="balance-usd" id="balanceUsd">— $</span></div><button class="balance-add" id="balanceAdd" type="button" aria-label="Пополнить баланс" aria-haspopup="dialog">+</button></div>
 <div class="header-right">
-<nav class="nav" aria-label="Основная навигация"><a href="#status">Статус</a><a href="#memory">Память</a><a href="#roadmap">Планы</a></nav>
+<nav class="nav" aria-label="Основная навигация"><a href="#chat">AI-чат</a><a href="#status">Статус</a><a href="#memory">Память</a><a href="#roadmap">Планы</a></nav>
 <div class="language-menu" id="languageMenu"><button class="language-current" id="languageCurrent" type="button" aria-expanded="false" aria-controls="languageOptions">Русский <span aria-hidden="true">⌄</span></button><div class="language-options" id="languageOptions" role="group" aria-label="Язык интерфейса" hidden><button class="language-option" type="button" data-language="ru" aria-label="Русский" aria-pressed="false" title="Русский">Русский</button><button class="language-option" type="button" data-language="en" aria-label="English" aria-pressed="false" title="English">English</button><button class="language-option" type="button" data-language="de" aria-label="Deutsch" aria-pressed="false" title="Deutsch">Deutsch</button></div></div>
 <button class="profile-btn" id="profileOpen" type="button">Начать</button>
 </div>
 </header>
-<main class="wrap" id="home">
+<main class="wrap" id="home" tabindex="-1">
 <section class="hero">
 <div>
 <div class="eyebrow">Персональная AI-платформа</div>
 <h1>Ваше пространство<br>для <span>нового интеллекта.</span></h1>
-<p class="hero-copy">ORVEX Agent объединит интеллектуального помощника, AI-инструменты и автоматизацию в одном рабочем пространстве. Сейчас мы последовательно создаём основу платформы.</p>
+<p class="hero-copy">ORVEX Agent объединяет AI-чат, персональный профиль и настройки. Сейчас завершаем синхронизацию аккаунтов и адаптацию интерфейса, затем перейдём к основному Telegram-боту.</p>
 <div class="hero-actions"><a class="primary-link" href="#status">Состояние проекта <span class="arrow">↗</span></a><button class="outline-link" id="heroProfile" type="button">Настроить профиль</button></div>
 <div class="hero-footnote">Текущие возможности и этапы разработки указаны без демонстрационных данных.</div>
 </div>
@@ -1038,20 +1110,42 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="float-chip chip-three">ORVEX <small>Ваше единое пространство</small></div>
 </div>
 </section>
+
+<section class="section chat-section" id="chat">
+ <div class="section-head">
+  <div><div class="kicker">AI WORKSPACE</div><h2 class="section-title">AI-чат</h2></div>
+  <div class="section-sub">Бесплатный маршрутизатор OpenRouter выбирает доступную бесплатную модель для каждого запроса.</div>
+ </div>
+ <div class="chat-panel">
+  <div class="chat-toolbar">
+   <span class="chat-model">Модель: <code>openrouter/free</code></span>
+   <span class="chat-quota"><span id="chatQuotaLabel">Гостевой лимит:</span> <b id="chatQuotaValue">—</b> <small id="chatQuotaReset">Сброс: 00:00 UTC</small></span>
+  </div>
+  <div class="chat-messages" id="aiChatMessages" role="log" aria-live="polite">
+   <div class="chat-empty" id="chatEmpty">Пока нет сообщений. Напишите первое сообщение ниже.</div>
+  </div>
+  <form class="chat-form" id="aiChatForm">
+   <textarea name="message" maxlength="4000" rows="2" placeholder="Введите сообщение..." aria-label="Сообщение для ORVEX" disabled required></textarea>
+   <button id="aiChatSend" type="submit" disabled>Отправить</button>
+  </form>
+  <p class="chat-status" id="aiChatStatus" role="status">Выберите способ входа, чтобы начать диалог. Для гостевого режима действует лимит 20 запросов в сутки.</p>
+ </div>
+</section>
+
 <section class="section" id="status">
 <div class="section-head"><div><div class="kicker">Состояние разработки</div><h2 class="section-title">Что уже готово</h2></div><div class="section-sub">Актуальные статусы без вымышленных показателей и функций.</div></div>
 <div class="status-grid">
 <article class="status-card"><div class="status-top"><span class="status-icon">◈</span><span class="pill ready">Опубликован</span></div><h3>Веб-интерфейс</h3><p>Сайт опубликован и открывается по защищённому HTTPS-адресу.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">⌘</span><span class="pill ready">Настроено</span></div><h3>Запуск в Telegram</h3><p id="telegramAuthNote">Кнопка Mini App настроена через BotFather. Серверная проверка пользователя требует настройки.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">◎</span><span class="pill partial" id="profileStatus">Локально</span></div><h3>Профиль пользователя</h3><p id="profileStatusText">В браузере доступен локальный профиль. В Telegram профиль будет привязан к вашему Telegram ID после настройки серверного хранилища.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">⌁</span><span class="pill pending" id="backendStatus">Требует настройки</span></div><h3>Сервер и база данных</h3><p>API для Telegram, профилей и персональной памяти подготовлен. Для запуска нужны база Supabase и серверные настройки Vercel.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">✳</span><span class="pill pending">В планах</span></div><h3>AI-модели и агенты</h3><p>Реальные AI-запросы и запуск агентных задач из интерфейса ещё не реализованы.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">⌕</span><span class="pill pending">В планах</span></div><h3>Тестирование и мониторинг</h3><p>Автоматические проверки, журналы ошибок и уведомления ещё предстоит настроить.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">⌘</span><span class="pill ready">Настроено</span></div><h3>Запуск в Telegram</h3><p id="telegramAuthNote">Mini App открывается через Telegram. Сервер проверяет подписанные данные Telegram перед доступом к личным функциям.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">◎</span><span class="pill partial" id="profileStatus">Локально</span></div><h3>Профиль пользователя</h3><p id="profileStatusText">Без входа профиль хранится локально. После входа используется отдельная серверная сессия Google, гостя или Telegram.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">⌁</span><span class="pill pending" id="backendStatus">Требует настройки</span></div><h3>Сервер и база данных</h3><p>Серверные API используют Supabase для профилей, истории чата и гостевого лимита. Применение миграций и проверка live-конфигурации ещё требуются.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">✳</span><span class="pill partial">Частично</span></div><h3>AI-модели и агенты</h3><p>AI-чат работает через OpenRouter/free. Выбор конкретных моделей и запуск агентных задач ещё не доступны.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">⌕</span><span class="pill partial">Частично</span></div><h3>Тестирование и мониторинг</h3><p>Автоматические проверки и CI настроены. Ручные проверки интерфейса и live-сервисов ещё предстоят.</p></article>
 </div>
 </section>
 
 <section class="section" id="memory">
-<div class="section-head"><div><div class="kicker">Личное пространство</div><h2 class="section-title">Персональная память</h2></div><div class="section-sub">Сохраняйте заметки, предпочтения и цели в защищённом хранилище.</div></div>
+<div class="section-head"><div><div class="kicker">Личное пространство</div><h2 class="section-title">Персональная память</h2></div><div class="section-sub">Сохраняйте заметки, предпочтения и цели в Telegram Mini App после подтверждения сессии и настройки Supabase.</div></div>
 <div class="memory-panel">
 <p class="memory-state" id="memoryState" role="status" aria-live="polite">Проверяем доступ к персональной памяти…</p>
 <form class="memory-form" id="memoryForm" hidden>
@@ -1071,14 +1165,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="roadmap-layout">
 <div class="roadmap-intro"><div class="kicker">Дорожная карта</div><h2 class="section-title">Следующие шаги</h2><p>Развиваем платформу последовательно. Каждый новый модуль появится в интерфейсе после его реальной реализации и проверки.</p></div>
 <div class="roadmap-list">
-<div class="roadmap-item"><span class="roadmap-num">01</span><div><b>Настроить сервер и базу</b><small>Создать проект Supabase и добавить серверные переменные в Vercel.</small></div><span class="roadmap-label">Ожидает настройки</span></div>
-<div class="roadmap-item"><span class="roadmap-num">02</span><div><b>Подключить персональную память</b><small>Проверить сохранение, загрузку и удаление личных записей.</small></div><span class="roadmap-label">После настройки сервера</span></div>
-<div class="roadmap-item"><span class="roadmap-num">03</span><div><b>AI-чат и выбор модели</b><small>Подключить провайдера, диалоги и работу с контекстом памяти.</small></div><span class="roadmap-label">Следующий этап</span></div>
-<div class="roadmap-item"><span class="roadmap-num">04</span><div><b>Проверка и диагностика</b><small>Проверить работу на компьютере, телефоне и внутри Telegram.</small></div><span class="roadmap-label">После интеграции</span></div>
+<div class="roadmap-item"><span class="roadmap-num">01</span><div><b>Завершить настройку серверного хранилища</b><small>Применить подготовленные SQL-миграции и проверить серверные переменные.</small></div><span class="roadmap-label">Ожидает настройки</span></div>
+<div class="roadmap-item"><span class="roadmap-num">02</span><div><b>Проверить вход и синхронизацию данных</b><small>Проверить Telegram, Google и гостевой вход, профиль, историю чата и лимит запросов.</small></div><span class="roadmap-label">После настройки сервера</span></div>
+<div class="roadmap-item"><span class="roadmap-num">03</span><div><b>Довести адаптацию интерфейса</b><small>Проверить отображение и все основные сценарии на телефоне, компьютере и внутри Telegram.</small></div><span class="roadmap-label">Следующий этап</span></div>
+<div class="roadmap-item"><span class="roadmap-num">04</span><div><b>Финальное тестирование Mini App</b><small>Пройти регрессионные сценарии, проверить ошибки и подготовить приложение к передаче на этап Telegram-бота.</small></div><span class="roadmap-label">После интеграции</span></div>
+<div class="roadmap-item"><span class="roadmap-num">05</span><div><b>Основной Telegram-бот</b><small>Подключить AI-диалоги, профиль и память после завершения Mini App.</small></div><span class="roadmap-label">После Mini App</span></div>
+<div class="roadmap-item"><span class="roadmap-num">06</span><div><b>Бот поддержки</b><small>Создать отдельного бота для вопросов пользователей и обращений в поддержку.</small></div><span class="roadmap-label">Финальный этап</span></div>
+<div class="roadmap-item"><span class="roadmap-num">07</span><div><b>Административная панель</b><small>Добавить защищённое управление пользователями, настройками и диагностикой.</small></div><span class="roadmap-label">Финальный этап</span></div>
 </div>
 </div>
 </section>
-<div class="notice"><b>О профиле.</b> Сейчас имя и выбранные настройки сохраняются только в этом браузере. Это не полноценная регистрация, данные не отправляются на сервер. Не вводите пароли, платёжные данные или секретные ключи.</div>
+<div class="notice"><b>О профиле.</b> Google- и гостевой вход используют отдельные аккаунты; Telegram Mini App использует подтверждённую Telegram-сессию. Серверная синхронизация зависит от настройки Supabase. Не вводите пароли, платёжные данные или секретные ключи.</div>
 </main>
 <footer class="footer wrap"><span class="footer-brand">ORVEX AGENT</span><span>Персональное пространство на базе искусственного интеллекта</span><span>© 2026 ORVEX Agent</span></footer>
 
@@ -1115,22 +1212,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
    <div class="onboarding-slide" data-onboarding-step="0">
     <div class="onboarding-kicker">Добро пожаловать</div>
     <h1 id="onboardingTitle">Одно пространство для работы с AI.</h1>
-    <p>ORVEX Agent создаётся как персональное рабочее пространство, в котором будут собраны ИИ-помощник, инструменты и автоматизация. Сейчас мы знакомим вас с уже работающими функциями и тем, что находится в разработке.</p>
-    <div class="onboarding-points"><div class="onboarding-point"><b>Ваше пространство</b><span>Профиль и персональные настройки, привязанные к вашему Telegram-аккаунту.</span></div><div class="onboarding-point"><b>Развитие по этапам</b><span>Новые функции будут появляться постепенно, а их статус будет указан прямо в приложении.</span></div></div>
+    <p>ORVEX Agent объединяет AI-чат, профиль и персональные настройки. Новые инструменты и автоматизация будут добавляться по мере готовности.</p>
+    <div class="onboarding-points"><div class="onboarding-point"><b>Ваше пространство</b><span>Войти можно через Telegram в Mini App, а также через Google или гостевой режим в браузере.</span></div><div class="onboarding-point"><b>Развитие по этапам</b><span>Новые функции будут появляться постепенно, а их статус будет указан прямо в приложении.</span></div></div>
    </div>
    <div class="onboarding-slide" data-onboarding-step="1" hidden>
     <div class="onboarding-kicker">Персональные функции</div><h1>Настройки и память под вашим контролем.</h1>
     <p>В ORVEX Agent уже подготовлены функции персонального пространства:</p>
-    <div class="onboarding-points"><div class="onboarding-point"><b>Профиль</b><span>Редактирование личных сведений, интересов, языка, длины и формата ответов, а также собственных инструкций.</span></div><div class="onboarding-point"><b>Персональная память</b><span>Добавление, просмотр и удаление заметок, предпочтений, фактов и целей.</span></div><div class="onboarding-point"><b>Ваши данные</b><span>Можно экспортировать данные или удалить профиль вместе с записями памяти. Настройки стиля ответов начнут влиять на ИИ после подключения чата.</span></div></div>
+    <div class="onboarding-points"><div class="onboarding-point"><b>Профиль</b><span>Редактирование личных сведений, интересов, языка, длины и формата ответов, а также собственных инструкций.</span></div><div class="onboarding-point"><b>Персональная память</b><span>Добавление, просмотр и удаление заметок, предпочтений, фактов и целей. Сейчас раздел памяти доступен в подтверждённой Telegram-сессии.</span></div><div class="onboarding-point"><b>Ваши данные</b><span>Профиль и история чата синхронизируются с аккаунтом Google или гостя после настройки серверного хранилища. Экспорт и удаление данных Telegram станут доступны после настройки серверного хранилища.</span></div></div>
    </div>
    <div class="onboarding-slide" data-onboarding-step="2" hidden>
     <div class="onboarding-kicker">Модели искусственного интеллекта</div><h1>Вы сможете выбирать модель под задачу.</h1>
-    <p>В планах подключить несколько ИИ-моделей с разными сильными сторонами: для повседневных вопросов, анализа, программирования и сложных задач.</p>
-    <div class="onboarding-points"><div class="onboarding-point"><b>Сравнение моделей</b><span>Будут указаны особенности, ограничения и подходящие сценарии каждой модели.</span></div><div class="onboarding-point"><b>Честный статус</b><span>На данный момент реальные AI-запросы и выбор моделей в интерфейсе ещё не подключены. Список появится после интеграции и проверки.</span></div></div>
+    <p>AI-чат уже подключён через OpenRouter. Маршрутизатор openrouter/free выбирает доступную бесплатную модель для запроса.</p>
+    <div class="onboarding-points"><div class="onboarding-point"><b>Сравнение моделей</b><span>Каталог с выбором конкретной модели, её ограничениями и подходящими задачами появится после проверки каждой модели.</span></div><div class="onboarding-point"><b>Честный статус</b><span>Сейчас можно отправлять запросы через openrouter/free. Ручной выбор отдельных моделей и агентные сценарии ещё не реализованы.</span></div></div>
    </div>
    <div class="onboarding-slide" data-onboarding-step="3" hidden>
     <div class="onboarding-kicker">Что дальше</div><h1>Начните с персонального профиля.</h1>
-    <p>После знакомства вы сможете создать профиль. По мере развития ORVEX Agent это описание будет обновляться вместе с доступными моделями, инструментами и возможностями.</p>
+    <p>Выберите способ входа, заполните профиль и попробуйте AI-чат. Гостевой режим включает до 20 запросов в сутки и не поддерживает пополнение баланса. Гостевой аккаунт не восстанавливается после выхода или очистки данных браузера. После настройки сервера используйте Google для сохранения истории между устройствами.</p>
     <div class="onboarding-points"><div class="onboarding-point"><b>Без фиктивных обещаний</b><span>В ознакомлении показываются только подтверждённые функции и явно обозначенные планы.</span></div></div>
    </div>
    <div class="onboarding-actions"><button class="onboarding-back" id="onboardingBack" type="button" disabled>Назад</button><button class="onboarding-next" id="onboardingNext" type="button">Далее</button></div>
@@ -1139,10 +1236,24 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  </div>
 </div>
 
+
+<div id="authModal" aria-hidden="true">
+ <section class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle" tabindex="-1">
+  <h2 id="authTitle">Выберите способ входа</h2>
+  <p>Порядок входа: Telegram, Google, затем гостевой режим. Гостям доступны бесплатные модели и 20 запросов в сутки без пополнения баланса. Гостевой аккаунт не восстанавливается после выхода или очистки данных браузера. После настройки сервера используйте Google для сохранения истории между устройствами.</p>
+  <div class="auth-methods">
+   <button class="auth-method auth-method-primary" id="authTelegram" type="button"><span class="auth-method-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.7 3.3 18.5 20c-.24 1.18-.87 1.47-1.77.92l-4.9-3.61-2.36 2.27c-.26.26-.48.48-.98.48l.35-4.99 9.08-8.2c.4-.35-.09-.55-.62-.2L6.07 13.9l-4.77-1.5c-1.04-.33-1.06-1.04.22-1.55L20.17 3.1c.87-.32 1.63.2 1.53.2Z"/></svg></span><span>Войти через Telegram</span></button>
+   <button class="auth-method" id="authGoogle" type="button" disabled><span class="auth-method-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.72 7.18l7.62 5.91c4.45-4.1 7.14-10.15 7.14-17.56Z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.53 2.56 10.78l7.97-6.19Z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.89l-7.62-5.91c-2.12 1.42-4.84 2.26-8.28 2.26-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"/></svg></span><span>Войти через Google</span></button>
+   <button class="auth-method auth-method-guest" id="authGuest" type="button" disabled><span class="auth-method-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.1 3.2-4.8 7-4.8s6.2 1.7 7 4.8"/></svg></span><span>Продолжить как гость</span></button>
+  </div>
+  <p class="auth-note" id="authNote" role="status">Проверяем доступность способов входа…</p>
+ </section>
+</div>
+
 <div id="profileModal" aria-hidden="true">
 <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 <div class="modal-head"><h2 id="modalTitle">Ваш профиль</h2><button class="close" id="profileClose" type="button" aria-label="Закрыть">×</button></div>
-<p class="modal-intro" id="profileModalIntro">Укажите имя и настройки отображения. В обычном браузере они сохраняются локально, а в Telegram могут синхронизироваться с вашей учётной записью.</p>
+<p class="modal-intro" id="profileModalIntro">Укажите имя и настройки отображения. Для входа через Google или гостевой режим профиль синхронизируется с аккаунтом при настроенном сервере; в Telegram используется ваш Telegram ID.</p>
 <div class="profile-avatar-row"><div class="profile-avatar" id="profileAvatar" aria-label="Аватар профиля"><span id="profileAvatarInitials">OR</span><img id="profileAvatarImage" alt="" hidden></div><div class="profile-avatar-copy"><b id="profileDisplayName">Ваш профиль</b><span id="profileAvatarHint">Фото профиля из Telegram появится здесь, если оно доступно.</span></div></div>
 <form id="profileForm">
 <label class="field">Как к вам обращаться?<input name="name" type="text" maxlength="60" autocomplete="name" placeholder="Ваше имя" required></label>
@@ -1163,10 +1274,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <button class="profile-onboarding-replay" id="replayOnboarding" type="button">Посмотреть ознакомление ещё раз</button>
 </form>
 <div class="profile-account-actions">
- <section class="profile-account-section"><h3>Сеанс приложения</h3><p>Закрыть ORVEX Agent на этом устройстве. Telegram-аккаунт останется подключён.</p><button class="profile-account-button" id="logoutAccount" type="button">Выйти</button></section>
- <section class="profile-account-section danger"><h3>Удаление аккаунта</h3><p>Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.</p><button class="profile-account-button" id="openDeleteConfirm" type="button">Удалить аккаунт</button></section>
+ <section class="profile-account-section"><h3>Сеанс приложения</h3><p>Завершить текущий сеанс ORVEX Agent на этом устройстве. Для продолжения потребуется снова войти.</p><button class="profile-account-button" id="logoutAccount" type="button">Выйти</button></section>
+ <section class="profile-account-section danger" id="telegramDeleteSection" hidden><h3>Удаление аккаунта</h3><p>Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.</p><button class="profile-account-button" id="openDeleteConfirm" type="button">Удалить аккаунт</button></section>
 </div>
-<p class="local-note">Локальное сохранение. Серверной регистрации пока нет.</p>
+<p class="local-note">Данные профиля могут храниться локально или в аккаунте, в зависимости от выбранного способа входа и доступности сервера.</p>
 </section>
 </div>
 <div id="topupModal" role="dialog" aria-modal="true" aria-labelledby="topupTitle" aria-hidden="true">
@@ -1194,6 +1305,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 'use strict';
 const $=s=>document.querySelector(s);
 const modal=$('#profileModal'),form=$('#profileForm');
+const authModal=$('#authModal');
+const authTelegramButton=$('#authTelegram'),authGoogleButton=$('#authGoogle'),authGuestButton=$('#authGuest'),authNote=$('#authNote');
+let authConfig=null,supabaseClient=null,externalAuthSession=null,authMode='',authGeneration=0;
 const onboarding=$('#onboarding');
 const onboardingSlides=[...document.querySelectorAll('[data-onboarding-step]')];
 let onboardingStep=0;
@@ -1249,21 +1363,193 @@ async function changeOnboardingStep(nextStep,direction){
  onboardingTransitioning=false;
  syncOnboardingControls();
 }
-function openOnboarding(){onboardingStep=0;onboardingTransitioning=false;renderOnboarding();onboarding.classList.add('open');onboarding.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack()}
-function closeOnboarding(){onboarding.classList.remove('open');onboarding.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack()}
+let onboardingReturnFocus=null;
+function openOnboarding(){onboardingReturnFocus=document.activeElement;onboardingStep=0;onboardingTransitioning=false;renderOnboarding();onboarding.classList.add('open');onboarding.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack();onboardingNextButton.focus()}
+function closeOnboarding(){onboarding.classList.remove('open');onboarding.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();const returnFocus=onboardingReturnFocus;onboardingReturnFocus=null;const target=returnFocus&&returnFocus.isConnected&&returnFocus!==document.body?returnFocus:document.getElementById('profileOpen');target.focus()}
+
+let authModalReturnFocus=null;
+function openAuthModal(){
+ if(externalAuthSession)return;
+ authModalReturnFocus=document.activeElement;
+ authModal.classList.add('open');
+ authModal.setAttribute('aria-hidden','false');
+ document.body.style.overflow='hidden';
+ showTelegramBack();
+ const firstAvailable=authModal.querySelector('button:not([disabled])');
+ (firstAvailable||authModal.querySelector('.auth-panel')).focus();
+}
+function closeAuthModal(){
+ authModal.classList.remove('open');
+ authModal.setAttribute('aria-hidden','true');
+ document.body.style.overflow='';
+ hideTelegramBack();
+ const returnFocus=authModalReturnFocus;authModalReturnFocus=null;
+ if(returnFocus&&typeof returnFocus.focus==='function'&&returnFocus.isConnected)returnFocus.focus();
+}
+function updateAuthOptions(){
+ if(authGoogleButton)authGoogleButton.disabled=!supabaseClient||telegramMiniApp;
+ if(authGuestButton)authGuestButton.disabled=!supabaseClient||telegramMiniApp;
+ if(authTelegramButton)authTelegramButton.disabled=!(telegramMiniApp||(authConfig&&authConfig.telegramBotUrl));
+ if(authNote){
+  if(telegramMiniApp)authNote.textContent='В Telegram вход выполняется через подтверждённую Telegram-сессию.';
+  else if(supabaseClient)authNote.textContent='Гостевой режим использует отдельную сессию. Вход через Google требует включённого провайдера в Supabase.';
+  else authNote.textContent='Google и гостевой вход пока требуют настройки публичного ключа Supabase и провайдеров авторизации.';
+ }
+}
+async function initAuthWorkspace(){
+ try{
+  const response=await fetch('/api/auth-config',{headers:{Accept:'application/json'},cache:'no-store'});
+  if(!response.ok)throw new Error('auth_config_unavailable');
+  authConfig=await response.json();
+  const createClient=window.supabase&&window.supabase.createClient;
+  if(typeof createClient!=='function')throw new Error('supabase_sdk_unavailable');
+  supabaseClient=createClient(authConfig.supabaseUrl,authConfig.publishableKey,{
+   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+  });
+  const result=await supabaseClient.auth.getSession();
+  if(result.error)throw result.error;
+  externalAuthSession=result.data&&result.data.session||null;
+  let observedAuthUserId=externalAuthSession&&externalAuthSession.user?externalAuthSession.user.id:'';
+  if(externalAuthSession){
+   const user=externalAuthSession.user||{};
+   authMode=user.is_anonymous?'guest':'google';
+   document.body.dataset.authMode=authMode;
+  }
+  // Keep API requests on the current access token after Supabase refreshes it.
+  // Also clear in-memory chat data when the authenticated identity changes.
+  supabaseClient.auth.onAuthStateChange((event,session)=>{
+   const nextUserId=session&&session.user?session.user.id:'';
+   const identityChanged=Boolean(observedAuthUserId&&nextUserId!==observedAuthUserId);
+   observedAuthUserId=nextUserId;
+   externalAuthSession=session||null;
+   authMode=session?(session.user&&session.user.is_anonymous?'guest':'google'):'';
+   if(session)document.body.dataset.authMode=authMode;
+   else delete document.body.dataset.authMode;
+   if(identityChanged||!session){
+    authGeneration++;
+    chatHistory=[];
+    chatHistoryLoadedFor='';
+    guestQuota=null;
+    guestQuotaReady=false;
+    if(guestQuotaResetTimer)clearTimeout(guestQuotaResetTimer);
+    if(aiChatMessages)aiChatMessages.replaceChildren();
+    profile=null;
+    try{localStorage.removeItem('orvex_agent_profile')}catch(storageError){}
+   }
+   updateHeaderAction();
+   updateChatQuota();
+   updateChatControls();
+  });
+ }catch(error){
+  supabaseClient=null;
+  externalAuthSession=null;
+  authMode='';
+ }
+ updateAuthOptions();
+}
+authTelegramButton.addEventListener('click',async()=>{
+ authTelegramButton.disabled=true;
+ try{
+  if(telegramMiniApp&&tg&&tg.initData){
+   const response=await fetch('/api/session',{headers:{Authorization:'tma '+tg.initData,Accept:'application/json'},cache:'no-store'});
+   if(!response.ok)throw new Error('telegram_auth_unavailable');
+   const result=await response.json();
+   if(!result.authenticated)throw new Error('telegram_auth_unavailable');
+   closeAuthModal();
+   openModal();
+   await initChatWorkspace();
+   return;
+  }
+  if(authConfig&&authConfig.telegramBotUrl){
+   window.location.assign(authConfig.telegramBotUrl);
+   return;
+  }
+  toast('Откройте ORVEX Agent через Telegram Mini App.');
+ }catch(error){toast('Не удалось подтвердить вход через Telegram. Попробуйте открыть Mini App заново.')}
+ finally{updateAuthOptions()}
+});
+authGoogleButton.addEventListener('click',async()=>{
+ if(!supabaseClient)return;
+ authGoogleButton.disabled=true;
+ try{
+  const {error}=await supabaseClient.auth.signInWithOAuth({
+   provider:'google',
+   options:{redirectTo:window.location.origin+window.location.pathname}
+  });
+  if(error)throw error;
+ }catch(error){toast('Не удалось начать вход через Google. Проверьте настройки OAuth в Supabase.')}
+ finally{updateAuthOptions()}
+});
+authGuestButton.addEventListener('click',async()=>{
+ if(!supabaseClient)return;
+ authGuestButton.disabled=true;
+ try{
+  const {data,error}=await supabaseClient.auth.signInAnonymously();
+  if(error)throw error;
+  externalAuthSession=data.session||null;
+  authMode='guest';
+  document.body.dataset.authMode='guest';
+  closeAuthModal();
+  updateHeaderAction();
+  await initProfileWorkspace();
+  await initChatWorkspace();
+  toast('Гостевой режим включён.');
+ }catch(error){toast('Не удалось создать гостевую сессию. Проверьте настройки Supabase Auth.')}
+ finally{updateAuthOptions()}
+});
 
 const translations={
  en:{
- 'Статус':'Status','Память':'Memory','Планы':'Roadmap','Язык':'Language','Язык интерфейса':'Interface language','Начать':'Get started','Мой профиль':'My profile','Настроить профиль':'Set up profile','Состояние проекта':'Project status','Персональная AI-платформа':'Personal AI platform','Что уже готово':'What is ready','Состояние разработки':'Development status','Персональная память':'Personal memory','Личное пространство':'Personal workspace','Дорожная карта':'Roadmap','Следующие шаги':'Next steps','Ваш профиль':'Your profile','Как к вам обращаться?':'What should we call you?','Электронная почта':'Email address','Что вам интересно?':'What are you interested in?','О вас':'About you','Чем вы занимаетесь?':'What do you do?','Кратко о себе':'A little about you','Ваши интересы и темы':'Your interests and topics','Как должен отвечать ИИ':'How AI should respond','Язык интерфейса':'Interface language','Выберите язык':'Choose a language','Сменить язык':'Change language','Длина ответов':'Response length','Тон общения':'Communication tone','Формат ответов':'Response format','Дополнительные инструкции ИИ':'Additional AI instructions','Сохранить профиль':'Save profile','Посмотреть ознакомление ещё раз':'View introduction again','Сеанс приложения':'App session','Закрыть ORVEX Agent на этом устройстве. Telegram-аккаунт останется подключён.':'Close ORVEX Agent on this device. Your Telegram account will remain connected.','Выйти':'Log out','Удаление аккаунта':'Account deletion','Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.':'Delete your profile and all personal memory entries. This action cannot be undone.','Удалить аккаунт':'Delete account','Вы действительно хотите удалить аккаунт?':'Do you really want to delete your account?','Будут безвозвратно удалены ваш профиль и все записи персональной памяти. Экспортируйте данные заранее, если хотите сохранить копию.':'Your profile and all personal memory entries will be permanently deleted. Export your data first if you want to keep a copy.','Для подтверждения введите слово УДАЛИТЬ':'Type УДАЛИТЬ to confirm','Отмена':'Cancel','Продолжить':'Continue','Подтвердите окончательное удаление':'Confirm permanent deletion','Последняя проверка: действие необратимо. Профиль и вся персональная память будут удалены.':'Final check: this action cannot be undone. Your profile and all personal memory will be deleted.','Да, удалить аккаунт':'Yes, delete account','Русский':'Russian','English':'English','Deutsch':'German','Кратко':'Short','Сбалансированно':'Balanced','Подробно':'Detailed','Нейтральный':'Neutral','Дружелюбный':'Friendly','Формальный':'Formal','Обычный текст':'Plain text','Пошаговые инструкции':'Step-by-step instructions','Списки и пункты':'Bullets and lists','Скачать мои данные':'Export my data','Сохранить запись':'Save memory','Показать ещё':'Show more','Заметка':'Note','Предпочтение':'Preference','Факт':'Fact','Цель':'Goal','Инструкция':'Instruction'
+ 'Выберите способ входа, чтобы начать диалог.':'Choose a sign-in method to start chatting.',
+ 'Сброс: 00:00 UTC':'Resets: 00:00 UTC',
+ 'В Telegram вход выполняется через подтверждённую Telegram-сессию.':'In Telegram, sign-in uses the verified Telegram session.',
+ 'Войти':'Sign in',
+ 'Войдите или продолжите как гость, чтобы отправить сообщение. История этого чата хранится только до перезагрузки страницы.':'Sign in or continue as a guest to send a message. This chat history is kept only until the page is reloaded.',
+ 'AI-чат':'AI chat','Бесплатный маршрутизатор OpenRouter выбирает доступную бесплатную модель для каждого запроса.':'The OpenRouter free router selects an available free model for each request.','Гостевой лимит:':'Guest limit:','Пока нет сообщений. Напишите первое сообщение ниже.':'No messages yet. Write your first message below.','Введите сообщение...':'Enter a message...','Сообщение для ORVEX':'Message for ORVEX','Отправить':'Send','Войдите или продолжите как гость, чтобы отправить сообщение.':'Sign in or continue as a guest to send a message.','История этого чата хранится только до перезагрузки страницы.':'This chat history is kept only until the page is reloaded.','Войдите, чтобы начать чат.':'Sign in to start chatting.','Лимит гостевого режима исчерпан. Войдите через Telegram или Google, чтобы продолжить.':'The guest limit has been reached. Sign in with Telegram or Google to continue.','Не удалось проверить гостевой лимит. Настройте базу данных Supabase.':'Could not check the guest limit. Configure the Supabase database.','Сервер AI пока не настроен. Добавьте OPENROUTER_API_KEY в Vercel.':'The AI server is not configured yet. Add OPENROUTER_API_KEY to Vercel.','Бесплатная модель временно недоступна. Попробуйте позже.':'The free model is temporarily unavailable. Try again later.','Сообщение не отправлено. Попробуйте ещё раз.':'Message not sent. Try again.','Вы':'You','ORVEX':'ORVEX','Гостевой лимит не применяется.':'Guest limit does not apply.','Доступ Telegram':'Telegram access','Отправляем запрос…':'Sending request…','Готово.':'Done.','Проверьте подключение и настройки AI-сервера.':'Check the connection and AI server settings.', 'Аккаунт':'Account',
+ 'Выберите способ входа':'Choose how to sign in','Войдите через Telegram или Google. Если хотите сначала ознакомиться с ORVEX, продолжите как гость.':'Sign in with Telegram or Google. To explore ORVEX first, continue as a guest.','Войти через Telegram':'Sign in with Telegram','Войти через Google':'Sign in with Google','Продолжить как гость':'Continue as guest','Проверяем доступность способов входа…':'Checking available sign-in methods…','Гостевой режим использует отдельную сессию. Вход через Google требует включённого провайдера в Supabase.':'Guest mode uses a separate session. Google sign-in requires the provider to be enabled in Supabase.','Google и гостевой вход пока требуют настройки публичного ключа Supabase и провайдеров авторизации.':'Google and guest sign-in still need the Supabase public key and auth providers to be configured.','Откройте ORVEX Agent через Telegram Mini App.':'Open ORVEX Agent through the Telegram Mini App.','Не удалось подтвердить вход через Telegram. Попробуйте открыть Mini App заново.':'Could not verify Telegram sign-in. Try reopening the Mini App.','Не удалось начать вход через Google. Проверьте настройки OAuth в Supabase.':'Could not start Google sign-in. Check the OAuth settings in Supabase.','Гостевой режим включён.':'Guest mode is active.','Не удалось создать гостевую сессию. Проверьте настройки Supabase Auth.':'Could not create a guest session. Check Supabase Auth settings.','Вы вышли из аккаунта':'You signed out.',
+ 'Статус':'Status','Память':'Memory','Планы':'Roadmap','Язык':'Language','Язык интерфейса':'Interface language','Начать':'Get started','Мой профиль':'My profile','Настроить профиль':'Set up profile','Состояние проекта':'Project status','Персональная AI-платформа':'Personal AI platform','Что уже готово':'What is ready','Состояние разработки':'Development status','Персональная память':'Personal memory','Личное пространство':'Personal workspace','Дорожная карта':'Roadmap','Следующие шаги':'Next steps','Ваш профиль':'Your profile','Как к вам обращаться?':'What should we call you?','Электронная почта':'Email address','Что вам интересно?':'What are you interested in?','О вас':'About you','Чем вы занимаетесь?':'What do you do?','Кратко о себе':'A little about you','Ваши интересы и темы':'Your interests and topics','Как должен отвечать ИИ':'How AI should respond','Язык интерфейса':'Interface language','Выберите язык':'Choose a language','Сменить язык':'Change language','Длина ответов':'Response length','Тон общения':'Communication tone','Формат ответов':'Response format','Дополнительные инструкции ИИ':'Additional AI instructions','Сохранить профиль':'Save profile','Посмотреть ознакомление ещё раз':'View introduction again','Сеанс приложения':'App session','Закрыть ORVEX Agent на этом устройстве. Telegram-аккаунт останется подключён.':'Close ORVEX Agent on this device. Your Telegram account will remain connected.','Выйти':'Log out','Удаление аккаунта':'Account deletion','Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.':'Delete your profile and all personal memory entries. This action cannot be undone.','Удалить аккаунт':'Delete account','Вы действительно хотите удалить аккаунт?':'Do you really want to delete your account?','Будут безвозвратно удалены ваш профиль и все записи персональной памяти. Экспортируйте данные заранее, если хотите сохранить копию.':'Your profile and all personal memory entries will be permanently deleted. Export your data first if you want to keep a copy.','Для подтверждения введите слово УДАЛИТЬ':'Type УДАЛИТЬ to confirm','Отмена':'Cancel','Продолжить':'Continue','Подтвердите окончательное удаление':'Confirm permanent deletion','Последняя проверка: действие необратимо. Профиль и вся персональная память будут удалены.':'Final check: this action cannot be undone. Your profile and all personal memory will be deleted.','Да, удалить аккаунт':'Yes, delete account','Русский':'Russian','English':'English','Deutsch':'German','Кратко':'Short','Сбалансированно':'Balanced','Подробно':'Detailed','Нейтральный':'Neutral','Дружелюбный':'Friendly','Формальный':'Formal','Обычный текст':'Plain text','Пошаговые инструкции':'Step-by-step instructions','Списки и пункты':'Bullets and lists','Скачать мои данные':'Export my data','Сохранить запись':'Save memory','Показать ещё':'Show more','Заметка':'Note','Предпочтение':'Preference','Факт':'Fact','Цель':'Goal','Инструкция':'Instruction',
+  'Язык изменён, но не синхронизирован с сервером':'Language changed but not synced to the server',
+  'Профиль сохранён в вашем аккаунте ORVEX Agent.':'Profile saved to your ORVEX Agent account.',
+  'Не удалось сохранить профиль на сервере. Попробуйте ещё раз.':'Could not save the profile on the server. Please try again.',
+  'Не удалось сохранить профиль на сервере.':'Could not save the profile on the server.',
+  'Загружаем профиль вашего аккаунта.':'Loading your account profile.',
+  'Профиль привязан к вашему аккаунту и хранится на сервере ORVEX Agent.':'Your profile is linked to your account and stored on the ORVEX Agent server.',
+  'Не удалось загрузить профиль с сервера.':'Could not load your profile from the server.',
+  'Профиль хранится в этом браузере. Войдите через Google или Telegram для серверной синхронизации.':'The profile is stored in this browser. Sign in with Google or Telegram to sync it with the server.',
+  'Ответ получен, но история не сохранилась.':'The reply was received, but chat history was not saved.',
+  'Готово. История сохранена.':'Done. Chat history saved.',
+  'Не удалось загрузить историю чата с сервера.':'Could not load chat history from the server.',
+  'История чата синхронизируется с вашим аккаунтом.':'Chat history is synced with your account.'
  },
  de:{
- 'Статус':'Status','Память':'Erinnerungen','Планы':'Roadmap','Язык':'Sprache','Язык интерфейса':'Oberflächensprache','Начать':'Starten','Мой профиль':'Mein Profil','Настроить профиль':'Profil einrichten','Состояние проекта':'Projektstatus','Персональная AI-платформа':'Persönliche KI-Plattform','Что уже готово':'Was bereits bereit ist','Состояние разработки':'Entwicklungsstand','Персональная память':'Persönliche Erinnerung','Личное пространство':'Persönlicher Bereich','Дорожная карта':'Roadmap','Следующие шаги':'Nächste Schritte','Ваш профиль':'Ihr Profil','Как к вам обращаться?':'Wie dürfen wir Sie nennen?','Электронная почта':'E-Mail-Adresse','Что вам интересно?':'Wofür interessieren Sie sich?','О вас':'Über Sie','Чем вы занимаетесь?':'Was machen Sie beruflich?','Кратко о себе':'Kurz über Sie','Ваши интересы и темы':'Ihre Interessen und Themen','Как должен отвечать ИИ':'Wie die KI antworten soll','Язык интерфейса':'Oberflächensprache','Выберите язык':'Sprache auswählen','Сменить язык':'Sprache ändern','Длина ответов':'Antwortlänge','Тон общения':'Gesprächston','Формат ответов':'Antwortformat','Дополнительные инструкции ИИ':'Zusätzliche KI-Anweisungen','Сохранить профиль':'Profil speichern','Посмотреть ознакомление ещё раз':'Einführung erneut ansehen','Сеанс приложения':'App-Sitzung','Закрыть ORVEX Agent на этом устройстве. Telegram-аккаунт останется подключён.':'ORVEX Agent auf diesem Gerät schließen. Ihr Telegram-Konto bleibt verbunden.','Выйти':'Abmelden','Удаление аккаунта':'Konto löschen','Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.':'Ihr Profil und alle persönlichen Erinnerungen werden gelöscht. Dies kann nicht rückgängig gemacht werden.','Удалить аккаунт':'Konto löschen','Вы действительно хотите удалить аккаунт?':'Möchten Sie Ihr Konto wirklich löschen?','Будут безвозвратно удалены ваш профиль и все записи персональной памяти. Экспортируйте данные заранее, если хотите сохранить копию.':'Ihr Profil und alle persönlichen Erinnerungen werden endgültig gelöscht. Exportieren Sie Ihre Daten vorher, wenn Sie eine Kopie behalten möchten.','Для подтверждения введите слово УДАЛИТЬ':'Geben Sie УДАЛИТЬ zur Bestätigung ein','Отмена':'Abbrechen','Продолжить':'Weiter','Подтвердите окончательное удаление':'Endgültige Löschung bestätigen','Последняя проверка: действие необратимо. Профиль и вся персональная память будут удалены.':'Letzte Prüfung: Diese Aktion ist endgültig. Ihr Profil und alle persönlichen Erinnerungen werden gelöscht.','Да, удалить аккаунт':'Ja, Konto löschen','Русский':'Russisch','English':'Englisch','Deutsch':'Deutsch','Кратко':'Kurz','Сбалансированно':'Ausgewogen','Подробно':'Ausführlich','Нейтральный':'Neutral','Дружелюбный':'Freundlich','Формальный':'Formell','Обычный текст':'Fließtext','Пошаговые инструкции':'Schritt-für-Schritt-Anleitung','Списки и пункты':'Aufzählungen','Скачать мои данные':'Meine Daten exportieren','Сохранить запись':'Eintrag speichern','Показать ещё':'Mehr anzeigen','Заметка':'Notiz','Предпочтение':'Präferenz','Факт':'Fakt','Цель':'Ziel','Инструкция':'Anweisung'
+ 'Выберите способ входа, чтобы начать диалог.':'Wählen Sie eine Anmeldemethode, um den Chat zu starten.',
+ 'Сброс: 00:00 UTC':'Zurücksetzung: 00:00 UTC',
+ 'В Telegram вход выполняется через подтверждённую Telegram-сессию.':'In Telegram erfolgt die Anmeldung über die bestätigte Telegram-Sitzung.',
+ 'Войти':'Anmelden',
+ 'Войдите или продолжите как гость, чтобы отправить сообщение. История этого чата хранится только до перезагрузки страницы.':'Melden Sie sich an oder fahren Sie als Gast fort, um eine Nachricht zu senden. Der Chatverlauf bleibt nur bis zum Neuladen der Seite erhalten.',
+ 'AI-чат':'KI-Chat','Бесплатный маршрутизатор OpenRouter выбирает доступную бесплатную модель для каждого запроса.':'Der kostenlose OpenRouter-Router wählt für jede Anfrage ein verfügbares kostenloses Modell aus.','Гостевой лимит:':'Gastlimit:','Пока нет сообщений. Напишите первое сообщение ниже.':'Noch keine Nachrichten. Schreiben Sie unten Ihre erste Nachricht.','Введите сообщение...':'Nachricht eingeben...','Сообщение для ORVEX':'Nachricht an ORVEX','Отправить':'Senden','Войдите или продолжите как гость, чтобы отправить сообщение.':'Melden Sie sich an oder fahren Sie als Gast fort, um eine Nachricht zu senden.','История этого чата хранится только до перезагрузки страницы.':'Der Chatverlauf bleibt nur bis zum Neuladen der Seite erhalten.','Войдите, чтобы начать чат.':'Melden Sie sich an, um den Chat zu starten.','Лимит гостевого режима исчерпан. Войдите через Telegram или Google, чтобы продолжить.':'Das Gastlimit ist erreicht. Melden Sie sich mit Telegram oder Google an, um fortzufahren.','Не удалось проверить гостевой лимит. Настройте базу данных Supabase.':'Das Gastlimit konnte nicht geprüft werden. Konfigurieren Sie die Supabase-Datenbank.','Сервер AI пока не настроен. Добавьте OPENROUTER_API_KEY в Vercel.':'Der KI-Server ist noch nicht konfiguriert. Fügen Sie OPENROUTER_API_KEY zu Vercel hinzu.','Бесплатная модель временно недоступна. Попробуйте позже.':'Das kostenlose Modell ist vorübergehend nicht verfügbar. Versuchen Sie es später erneut.','Сообщение не отправлено. Попробуйте ещё раз.':'Die Nachricht wurde nicht gesendet. Versuchen Sie es erneut.','Вы':'Sie','ORVEX':'ORVEX','Гостевой лимит не применяется.':'Das Gastlimit gilt nicht.','Доступ Telegram':'Telegram-Zugriff','Отправляем запрос…':'Anfrage wird gesendet…','Готово.':'Fertig.','Проверьте подключение и настройки AI-сервера.':'Überprüfen Sie die Verbindung und die KI-Servereinstellungen.', 'Аккаунт':'Konto',
+ 'Выберите способ входа':'Anmeldemethode auswählen','Войдите через Telegram или Google. Если хотите сначала ознакомиться с ORVEX, продолжите как гость.':'Melden Sie sich mit Telegram oder Google an. Wenn Sie ORVEX zuerst ansehen möchten, fahren Sie als Gast fort.','Войти через Telegram':'Mit Telegram anmelden','Войти через Google':'Mit Google anmelden','Продолжить как гость':'Als Gast fortfahren','Проверяем доступность способов входа…':'Anmeldemethoden werden geprüft…','Гостевой режим использует отдельную сессию. Вход через Google требует включённого провайдера в Supabase.':'Der Gastmodus verwendet eine eigene Sitzung. Für Google-Anmeldung muss der Anbieter in Supabase aktiviert sein.','Google и гостевой вход пока требуют настройки публичного ключа Supabase и провайдеров авторизации.':'Google- und Gastanmeldung benötigen noch den öffentlichen Supabase-Schlüssel und die Auth-Anbieter-Konfiguration.','Откройте ORVEX Agent через Telegram Mini App.':'Öffnen Sie ORVEX Agent über die Telegram Mini App.','Не удалось подтвердить вход через Telegram. Попробуйте открыть Mini App заново.':'Die Telegram-Anmeldung konnte nicht bestätigt werden. Öffnen Sie die Mini App erneut.','Не удалось начать вход через Google. Проверьте настройки OAuth в Supabase.':'Die Google-Anmeldung konnte nicht gestartet werden. Prüfen Sie die OAuth-Einstellungen in Supabase.','Гостевой режим включён.':'Der Gastmodus ist aktiviert.','Не удалось создать гостевую сессию. Проверьте настройки Supabase Auth.':'Die Gastsitzung konnte nicht erstellt werden. Prüfen Sie die Supabase-Auth-Einstellungen.','Вы вышли из аккаунта':'Sie wurden abgemeldet.',
+ 'Статус':'Status','Память':'Erinnerungen','Планы':'Roadmap','Язык':'Sprache','Язык интерфейса':'Oberflächensprache','Начать':'Starten','Мой профиль':'Mein Profil','Настроить профиль':'Profil einrichten','Состояние проекта':'Projektstatus','Персональная AI-платформа':'Persönliche KI-Plattform','Что уже готово':'Was bereits bereit ist','Состояние разработки':'Entwicklungsstand','Персональная память':'Persönliche Erinnerung','Личное пространство':'Persönlicher Bereich','Дорожная карта':'Roadmap','Следующие шаги':'Nächste Schritte','Ваш профиль':'Ihr Profil','Как к вам обращаться?':'Wie dürfen wir Sie nennen?','Электронная почта':'E-Mail-Adresse','Что вам интересно?':'Wofür interessieren Sie sich?','О вас':'Über Sie','Чем вы занимаетесь?':'Was machen Sie beruflich?','Кратко о себе':'Kurz über Sie','Ваши интересы и темы':'Ihre Interessen und Themen','Как должен отвечать ИИ':'Wie die KI antworten soll','Язык интерфейса':'Oberflächensprache','Выберите язык':'Sprache auswählen','Сменить язык':'Sprache ändern','Длина ответов':'Antwortlänge','Тон общения':'Gesprächston','Формат ответов':'Antwortformat','Дополнительные инструкции ИИ':'Zusätzliche KI-Anweisungen','Сохранить профиль':'Profil speichern','Посмотреть ознакомление ещё раз':'Einführung erneut ansehen','Сеанс приложения':'App-Sitzung','Закрыть ORVEX Agent на этом устройстве. Telegram-аккаунт останется подключён.':'ORVEX Agent auf diesem Gerät schließen. Ihr Telegram-Konto bleibt verbunden.','Выйти':'Abmelden','Удаление аккаунта':'Konto löschen','Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.':'Ihr Profil und alle persönlichen Erinnerungen werden gelöscht. Dies kann nicht rückgängig gemacht werden.','Удалить аккаунт':'Konto löschen','Вы действительно хотите удалить аккаунт?':'Möchten Sie Ihr Konto wirklich löschen?','Будут безвозвратно удалены ваш профиль и все записи персональной памяти. Экспортируйте данные заранее, если хотите сохранить копию.':'Ihr Profil und alle persönlichen Erinnerungen werden endgültig gelöscht. Exportieren Sie Ihre Daten vorher, wenn Sie eine Kopie behalten möchten.','Для подтверждения введите слово УДАЛИТЬ':'Geben Sie УДАЛИТЬ zur Bestätigung ein','Отмена':'Abbrechen','Продолжить':'Weiter','Подтвердите окончательное удаление':'Endgültige Löschung bestätigen','Последняя проверка: действие необратимо. Профиль и вся персональная память будут удалены.':'Letzte Prüfung: Diese Aktion ist endgültig. Ihr Profil und alle persönlichen Erinnerungen werden gelöscht.','Да, удалить аккаунт':'Ja, Konto löschen','Русский':'Russisch','English':'Englisch','Deutsch':'Deutsch','Кратко':'Kurz','Сбалансированно':'Ausgewogen','Подробно':'Ausführlich','Нейтральный':'Neutral','Дружелюбный':'Freundlich','Формальный':'Formell','Обычный текст':'Fließtext','Пошаговые инструкции':'Schritt-für-Schritt-Anleitung','Списки и пункты':'Aufzählungen','Скачать мои данные':'Meine Daten exportieren','Сохранить запись':'Eintrag speichern','Показать ещё':'Mehr anzeigen','Заметка':'Notiz','Предпочтение':'Präferenz','Факт':'Fakt','Цель':'Ziel','Инструкция':'Anweisung',
+  'Язык изменён, но не синхронизирован с сервером':'Sprache geändert, aber nicht mit dem Server synchronisiert',
+  'Профиль сохранён в вашем аккаунте ORVEX Agent.':'Profil in Ihrem ORVEX-Agent-Konto gespeichert.',
+  'Не удалось сохранить профиль на сервере. Попробуйте ещё раз.':'Das Profil konnte nicht auf dem Server gespeichert werden. Bitte versuchen Sie es erneut.',
+  'Не удалось сохранить профиль на сервере.':'Das Profil konnte nicht auf dem Server gespeichert werden.',
+  'Загружаем профиль вашего аккаунта.':'Ihr Kontoprofil wird geladen.',
+  'Профиль привязан к вашему аккаунту и хранится на сервере ORVEX Agent.':'Ihr Profil ist mit Ihrem Konto verknüpft und wird auf dem ORVEX-Agent-Server gespeichert.',
+  'Не удалось загрузить профиль с сервера.':'Ihr Profil konnte nicht vom Server geladen werden.',
+  'Профиль хранится в этом браузере. Войдите через Google или Telegram для серверной синхронизации.':'Das Profil wird in diesem Browser gespeichert. Melden Sie sich mit Google oder Telegram an, um es mit dem Server zu synchronisieren.',
+  'Ответ получен, но история не сохранилась.':'Die Antwort wurde empfangen, aber der Chatverlauf wurde nicht gespeichert.',
+  'Готово. История сохранена.':'Fertig. Chatverlauf gespeichert.',
+  'Не удалось загрузить историю чата с сервера.':'Der Chatverlauf konnte nicht vom Server geladen werden.',
+  'История чата синхронизируется с вашим аккаунтом.':'Der Chatverlauf wird mit Ihrem Konto synchronisiert.'
  }};
 
 Object.assign(translations.en,{
+'Гостевой аккаунт не восстанавливается после выхода или очистки данных браузера. После настройки сервера используйте Google для сохранения истории между устройствами.':'Guest accounts cannot be recovered after sign-out or clearing browser data.',
  'Подготавливаем ваше пространство':'Preparing your workspace','для':'for','нового интеллекта.':'a new kind of intelligence.','ORVEX Agent объединит интеллектуального помощника, AI-инструменты и автоматизацию в одном рабочем пространстве. Сейчас мы последовательно создаём основу платформы.':'ORVEX Agent is being built as one workspace for an AI assistant, tools and automation. We are developing the platform step by step.','Текущие возможности и этапы разработки указаны без демонстрационных данных.':'Current features and development stages are listed without demo data.','Интерфейс опубликован':'Interface is live','Разработка продолжается':'In development','Ваше единое пространство':'Your unified workspace','Актуальные статусы без вымышленных показателей и функций.':'Current status without invented metrics or features.','Опубликован':'Published','Веб-интерфейс':'Web interface','Сайт опубликован и открывается по защищённому HTTPS-адресу.':'The website is published and available over HTTPS.','Настроено':'Configured','Запуск в Telegram':'Telegram launch','Кнопка Mini App настроена через BotFather. Серверная проверка пользователя требует настройки.':'The Mini App button is configured in BotFather. Server-side user verification still needs configuration.','Локально':'Local','Профиль пользователя':'User profile','В браузере доступен локальный профиль. В Telegram профиль будет привязан к вашему Telegram ID после настройки серверного хранилища.':'A local profile is available in the browser. In Telegram, the profile will be linked to your Telegram ID after server storage is configured.','Требует настройки':'Needs setup','Сервер и база данных':'Server and database','API для Telegram, профилей и персональной памяти подготовлен. Для запуска нужны база Supabase и серверные настройки Vercel.':'The Telegram, profile and personal memory APIs are prepared. Supabase and Vercel server settings are required to run them.','В планах':'Planned','AI-модели и агенты':'AI models and agents','Реальные AI-запросы и запуск агентных задач из интерфейса ещё не реализованы.':'Live AI requests and agent tasks are not yet available in the interface.','Тестирование и мониторинг':'Testing and monitoring','Автоматические проверки, журналы ошибок и уведомления ещё предстоит настроить.':'Automated checks, error logs and alerts still need to be configured.','Сохраняйте заметки, предпочтения и цели в защищённом хранилище.':'Save notes, preferences and goals in secure storage.','Проверяем доступ к персональной памяти…':'Checking access to personal memory…','Новая запись':'New entry','Категория':'Category','Сохранить запись':'Save entry','Показать ещё':'Show more','Скачать мои данные':'Export my data','Память доступна только после подтверждения Telegram-сессии и настройки серверной базы. Не сохраняйте пароли, ключи доступа или платёжные данные.':'Memory is available after Telegram session verification and server storage setup. Do not save passwords, access keys or payment details.','Развиваем платформу последовательно. Каждый новый модуль появится в интерфейсе после его реальной реализации и проверки.':'We are developing the platform step by step. Each module will appear after implementation and testing.','Настроить сервер и базу':'Set up the server and database','Создать проект Supabase и добавить серверные переменные в Vercel.':'Create a Supabase project and add server variables in Vercel.','Ожидает настройки':'Awaiting setup','Подключить персональную память':'Connect personal memory','Проверить сохранение, загрузку и удаление личных записей.':'Test saving, loading and deleting personal entries.','После настройки сервера':'After server setup','AI-чат и выбор модели':'AI chat and model selection','Подключить провайдера, диалоги и работу с контекстом памяти.':'Connect the provider, conversations and memory context.','Следующий этап':'Next stage','Проверка и диагностика':'Testing and diagnostics','Проверить работу на компьютере, телефоне и внутри Telegram.':'Test on desktop, mobile and inside Telegram.','После интеграции':'After integration','О профиле.':'About the profile.','Сейчас имя и выбранные настройки сохраняются только в этом браузере. Это не полноценная регистрация, данные не отправляются на сервер. Не вводите пароли, платёжные данные или секретные ключи.':'Your name and settings are currently stored only in this browser. This is not full registration and the data is not sent to a server. Do not enter passwords, payment data or secret keys.','Персональное пространство на базе искусственного интеллекта':'A personal AI workspace','ПРИМЕРЫ СЦЕНАРИЕВ В РАЗРАБОТКЕ':'EXAMPLE WORKFLOWS IN DEVELOPMENT','Составить план дня':'Create a daily plan','Будущий сценарий':'Planned workflow','Подготовить письмо':'Draft an email','Разобрать документ':'Review a document','Помочь с кодом':'Help with code','Найти нужную информацию':'Find information','Собрать идеи проекта':'Collect project ideas','Напомнить о задаче':'Remind about a task','Сравнить варианты':'Compare options','Добро пожаловать':'Welcome','Одно пространство для работы с AI.':'One workspace for working with AI.','ORVEX Agent создаётся как персональное рабочее пространство, в котором будут собраны ИИ-помощник, инструменты и автоматизация. Сейчас мы знакомим вас с уже работающими функциями и тем, что находится в разработке.':'ORVEX Agent is being built as a personal workspace for an AI assistant, tools and automation. This introduction explains what already works and what is still in development.','Профиль и персональные настройки, привязанные к вашему Telegram-аккаунту.':'A profile and personal settings linked to your Telegram account.','Развитие по этапам':'Step-by-step development','Новые функции будут появляться постепенно, а их статус будет указан прямо в приложении.':'New features will be added gradually, with their status shown in the app.','Персональные функции':'Personal features','Настройки и память под вашим контролем.':'Your settings and memory, under your control.','В ORVEX Agent уже подготовлены функции персонального пространства:':'Personal workspace features prepared in ORVEX Agent:','Редактирование личных сведений, интересов, языка, длины и формата ответов, а также собственных инструкций.':'Edit personal details, interests, language, response length and format, and custom instructions.','Добавление, просмотр и удаление заметок, предпочтений, фактов и целей.':'Add, view and delete notes, preferences, facts and goals.','Ваши данные':'Your data','Можно экспортировать данные или удалить профиль вместе с записями памяти. Настройки стиля ответов начнут влиять на ИИ после подключения чата.':'You can export your data or delete your profile and memory entries. Response style settings will affect AI after chat integration.','Модели искусственного интеллекта':'Artificial intelligence models','Вы сможете выбирать модель под задачу.':'Choose a model for each task.','В планах подключить несколько ИИ-моделей с разными сильными сторонами: для повседневных вопросов, анализа, программирования и сложных задач.':'We plan to connect several AI models with different strengths for everyday questions, analysis, programming and complex tasks.','Сравнение моделей':'Model comparison','Будут указаны особенности, ограничения и подходящие сценарии каждой модели.':'Each model will have its strengths, limitations and recommended use cases.','Честный статус':'Current status','На данный момент реальные AI-запросы и выбор моделей в интерфейсе ещё не подключены. Список появится после интеграции и проверки.':'Live AI requests and model selection are not connected yet. The list will appear after integration and testing.','Что дальше':'What is next','Начните с персонального профиля.':'Start with your personal profile.','После знакомства вы сможете создать профиль. По мере развития ORVEX Agent это описание будет обновляться вместе с доступными моделями, инструментами и возможностями.':'After the introduction, you can create a profile. This overview will be updated as models, tools and features become available.','Без фиктивных обещаний':'No false promises','В ознакомлении показываются только подтверждённые функции и явно обозначенные планы.':'The introduction shows confirmed features and clearly marked plans only.','Назад':'Back','Далее':'Next','Ознакомление можно повторно открыть в любой момент из раздела «Мой профиль».':'You can reopen this introduction at any time from My Profile.','Укажите имя и настройки отображения. В обычном браузере они сохраняются локально, а в Telegram могут синхронизироваться с вашей учётной записью.':'Enter your name and preferences. In a regular browser they are stored locally; in Telegram they can sync with your account.','Фото профиля из Telegram появится здесь, если оно доступно.':'Your Telegram profile photo will appear here if available.','(необязательно)':'(optional)','Личный ИИ-помощник':'Personal AI assistant','Мультиагентная система':'Multi-agent system','Автоматизация задач':'Task automation','Все возможности':'All features','Я подтверждаю сохранение указанных настроек профиля.':'I confirm that these profile settings may be saved.','Локальное сохранение. Серверной регистрации пока нет.':'Local storage. Server registration is not available yet.'
 });
 Object.assign(translations.de,{
+'Гостевой аккаунт не восстанавливается после выхода или очистки данных браузера. После настройки сервера используйте Google для сохранения истории между устройствами.':'Gastkonten können nach dem Abmelden oder dem Löschen der Browserdaten nicht wiederhergestellt werden.',
  'Подготавливаем ваше пространство':'Ihr Arbeitsbereich wird vorbereitet','для':'für','нового интеллекта.':'eine neue Art von Intelligenz.','ORVEX Agent объединит интеллектуального помощника, AI-инструменты и автоматизацию в одном рабочем пространстве. Сейчас мы последовательно создаём основу платформы.':'ORVEX Agent wird als Arbeitsbereich für einen KI-Assistenten, Werkzeuge und Automatisierung entwickelt. Wir bauen die Plattform Schritt für Schritt auf.','Текущие возможности и этапы разработки указаны без демонстрационных данных.':'Aktuelle Funktionen und Entwicklungsphasen werden ohne Demodaten angezeigt.','Интерфейс опубликован':'Oberfläche veröffentlicht','Разработка продолжается':'In Entwicklung','Ваше единое пространство':'Ihr zentraler Arbeitsbereich','Состояние разработки':'Entwicklungsstand','Что уже готово':'Was bereits bereit ist','Актуальные статусы без вымышленных показателей и функций.':'Aktuelle Statusangaben ohne erfundene Kennzahlen oder Funktionen.','Опубликован':'Veröffentlicht','Веб-интерфейс':'Weboberfläche','Сайт опубликован и открывается по защищённому HTTPS-адресу.':'Die Website ist veröffentlicht und über HTTPS erreichbar.','Настроено':'Konfiguriert','Запуск в Telegram':'Start in Telegram','Кнопка Mini App настроена через BotFather. Серверная проверка пользователя требует настройки.':'Die Mini-App-Schaltfläche ist in BotFather eingerichtet. Die serverseitige Nutzerprüfung muss noch konfiguriert werden.','Локально':'Lokal','Профиль пользователя':'Benutzerprofil','В браузере доступен локальный профиль. В Telegram профиль будет привязан к вашему Telegram ID после настройки серверного хранилища.':'Im Browser ist ein lokales Profil verfügbar. In Telegram wird das Profil nach Einrichtung des Servers mit Ihrer Telegram-ID verknüpft.','Требует настройки':'Einrichtung erforderlich','Сервер и база данных':'Server und Datenbank','API для Telegram, профилей и персональной памяти подготовлен. Для запуска нужны база Supabase и серверные настройки Vercel.':'Die APIs für Telegram, Profile und persönliche Erinnerungen sind vorbereitet. Für den Betrieb werden Supabase und Vercel-Servereinstellungen benötigt.','В планах':'Geplant','AI-модели и агенты':'KI-Modelle und Agenten','Реальные AI-запросы и запуск агентных задач из интерфейса ещё не реализованы.':'Echte KI-Anfragen und Agentenaufgaben sind in der Oberfläche noch nicht verfügbar.','Тестирование и мониторинг':'Tests und Überwachung','Автоматические проверки, журналы ошибок и уведомления ещё предстоит настроить.':'Automatische Prüfungen, Fehlerprotokolle und Benachrichtigungen müssen noch eingerichtet werden.','Сохраняйте заметки, предпочтения и цели в защищённом хранилище.':'Speichern Sie Notizen, Präferenzen und Ziele in einem geschützten Speicher.','Проверяем доступ к персональной памяти…':'Zugriff auf persönliche Erinnerungen wird geprüft…','Новая запись':'Neuer Eintrag','Категория':'Kategorie','Сохранить запись':'Eintrag speichern','Показать ещё':'Mehr anzeigen','Скачать мои данные':'Meine Daten exportieren','Память доступна только после подтверждения Telegram-сессии и настройки серверной базы. Не сохраняйте пароли, ключи доступа или платёжные данные.':'Erinnerungen sind erst nach Telegram-Sitzungsprüfung und Einrichtung des Servers verfügbar. Speichern Sie keine Passwörter, Zugriffsschlüssel oder Zahlungsdaten.','Развиваем платформу последовательно. Каждый новый модуль появится в интерфейсе после его реальной реализации и проверки.':'Wir entwickeln die Plattform schrittweise. Neue Module erscheinen erst nach Implementierung und Prüfung.','Настроить сервер и базу':'Server und Datenbank einrichten','Создать проект Supabase и добавить серверные переменные в Vercel.':'Erstellen Sie ein Supabase-Projekt und hinterlegen Sie Servervariablen in Vercel.','Ожидает настройки':'Wartet auf Einrichtung','Подключить персональную память':'Persönliche Erinnerungen verbinden','Проверить сохранение, загрузку и удаление личных записей.':'Speichern, Laden und Löschen persönlicher Einträge testen.','После настройки сервера':'Nach Servereinrichtung','AI-чат и выбор модели':'KI-Chat und Modellauswahl','Подключить провайдера, диалоги и работу с контекстом памяти.':'Anbieter, Dialoge und den Erinnerungskontext verbinden.','Следующий этап':'Nächster Schritt','Проверка и диагностика':'Tests und Diagnose','Проверить работу на компьютере, телефоне и внутри Telegram.':'Die Anwendung auf Computer, Smartphone und in Telegram testen.','После интеграции':'Nach der Integration','О профиле.':'Zum Profil.','Сейчас имя и выбранные настройки сохраняются только в этом браузере. Это не полноценная регистрация, данные не отправляются на сервер. Не вводите пароли, платёжные данные или секретные ключи.':'Ihr Name und Ihre Einstellungen werden derzeit nur in diesem Browser gespeichert. Dies ist keine vollständige Registrierung; die Daten werden nicht an einen Server gesendet. Geben Sie keine Passwörter, Zahlungsdaten oder geheimen Schlüssel ein.','Персональное пространство на базе искусственного интеллекта':'Persönlicher KI-Arbeitsbereich','ПРИМЕРЫ СЦЕНАРИЕВ В РАЗРАБОТКЕ':'BEISPIELE IN ENTWICKLUNG','Составить план дня':'Tagesplan erstellen','Будущий сценарий':'Geplanter Ablauf','Подготовить письмо':'E-Mail vorbereiten','Разобрать документ':'Dokument prüfen','Помочь с кодом':'Bei Code helfen','Найти нужную информацию':'Informationen finden','Собрать идеи проекта':'Projektideen sammeln','Напомнить о задаче':'An Aufgabe erinnern','Сравнить варианты':'Optionen vergleichen','Добро пожаловать':'Willkommen','Одно пространство для работы с AI.':'Ein Arbeitsbereich für KI.','ORVEX Agent создаётся как персональное рабочее пространство, в котором будут собраны ИИ-помощник, инструменты и автоматизация. Сейчас мы знакомим вас с уже работающими функциями и тем, что находится в разработке.':'ORVEX Agent wird als persönlicher Arbeitsbereich für einen KI-Assistenten, Werkzeuge und Automatisierung entwickelt. Diese Einführung erklärt verfügbare und geplante Funktionen.','Профиль и персональные настройки, привязанные к вашему Telegram-аккаунту.':'Ein Profil und persönliche Einstellungen, verknüpft mit Ihrem Telegram-Konto.','Развитие по этапам':'Schrittweise Entwicklung','Новые функции будут появляться постепенно, а их статус будет указан прямо в приложении.':'Neue Funktionen werden schrittweise ergänzt und ihr Status wird in der App angezeigt.','Персональные функции':'Persönliche Funktionen','Настройки и память под вашим контролем.':'Einstellungen und Erinnerungen unter Ihrer Kontrolle.','В ORVEX Agent уже подготовлены функции персонального пространства:':'Diese Funktionen des persönlichen Bereichs sind vorbereitet:','Редактирование личных сведений, интересов, языка, длины и формата ответов, а также собственных инструкций.':'Bearbeiten Sie persönliche Angaben, Interessen, Sprache, Antwortlänge und -format sowie eigene Anweisungen.','Добавление, просмотр и удаление заметок, предпочтений, фактов и целей.':'Notizen, Präferenzen, Fakten und Ziele hinzufügen, ansehen und löschen.','Ваши данные':'Ihre Daten','Можно экспортировать данные или удалить профиль вместе с записями памяти. Настройки стиля ответов начнут влиять на ИИ после подключения чата.':'Sie können Ihre Daten exportieren oder Ihr Profil samt Erinnerungen löschen. Antwortstil-Einstellungen wirken sich nach der Chat-Integration auf die KI aus.','Модели искусственного интеллекта':'Modelle künstlicher Intelligenz','Вы сможете выбирать модель под задачу.':'Wählen Sie ein Modell passend zur Aufgabe.','В планах подключить несколько ИИ-моделей с разными сильными сторонами: для повседневных вопросов, анализа, программирования и сложных задач.':'Geplant sind mehrere KI-Modelle mit unterschiedlichen Stärken für Alltagsfragen, Analysen, Programmierung und komplexe Aufgaben.','Сравнение моделей':'Modellvergleich','Будут указаны особенности, ограничения и подходящие сценарии каждой модели.':'Eigenschaften, Grenzen und passende Einsatzbereiche jedes Modells werden beschrieben.','Честный статус':'Ehrlicher Status','На данный момент реальные AI-запросы и выбор моделей в интерфейсе ещё не подключены. Список появится после интеграции и проверки.':'Echte KI-Anfragen und die Modellauswahl sind derzeit noch nicht verbunden. Die Liste folgt nach Integration und Tests.','Что дальше':'Wie geht es weiter?','Начните с персонального профиля.':'Beginnen Sie mit Ihrem Profil.','После знакомства вы сможете создать профиль. По мере развития ORVEX Agent это описание будет обновляться вместе с доступными моделями, инструментами и возможностями.':'Nach der Einführung können Sie ein Profil erstellen. Diese Übersicht wird mit neuen Modellen, Werkzeugen und Funktionen aktualisiert.','Без фиктивных обещаний':'Keine falschen Versprechen','В ознакомлении показываются только подтверждённые функции и явно обозначенные планы.':'Die Einführung zeigt nur bestätigte Funktionen und klar gekennzeichnete Pläne.','Назад':'Zurück','Далее':'Weiter','Ознакомление можно повторно открыть в любой момент из раздела «Мой профиль».':'Sie können diese Einführung jederzeit unter „Mein Profil“ erneut öffnen.','Укажите имя и настройки отображения. В обычном браузере они сохраняются локально, а в Telegram могут синхронизироваться с вашей учётной записью.':'Geben Sie Ihren Namen und Ihre Einstellungen ein. Im Browser werden sie lokal gespeichert, in Telegram können sie mit Ihrem Konto synchronisiert werden.','Фото профиля из Telegram появится здесь, если оно доступно.':'Ihr Telegram-Profilbild wird hier angezeigt, falls verfügbar.','(необязательно)':'(optional)','Личный ИИ-помощник':'Persönlicher KI-Assistent','Мультиагентная система':'Multi-Agenten-System','Автоматизация задач':'Aufgabenautomatisierung','Все возможности':'Alle Funktionen','Я подтверждаю сохранение указанных настроек профиля.':'Ich bestätige das Speichern dieser Profileinstellungen.','Локальное сохранение. Серверной регистрации пока нет.':'Lokale Speicherung. Eine Serverregistrierung ist noch nicht verfügbar.',
  'Ваше пространство':'Ihr Arbeitsbereich','Персональные функции':'Persönliche Funktionen','Настройки и память под вашим контролем.':'Einstellungen und Erinnerungen unter Ihrer Kontrolle.','В ORVEX Agent уже подготовлены функции персонального пространства:':'Diese Funktionen des persönlichen Bereichs sind in ORVEX Agent vorbereitet:','Ваши данные':'Ihre Daten','Модели искусственного интеллекта':'Modelle künstlicher Intelligenz','Вы сможете выбирать модель под задачу.':'Wählen Sie ein Modell passend zur Aufgabe.','Сравнение моделей':'Modellvergleich','Честный статус':'Ehrlicher Status','Что дальше':'Wie geht es weiter?','Начните с персонального профиля.':'Beginnen Sie mit Ihrem persönlichen Profil.','Без фиктивных обещаний':'Keine falschen Versprechen','Назад':'Zurück','Далее':'Weiter','Примеры сценариев в разработке':'Beispiele in Entwicklung','ПРИМЕРЫ СЦЕНАРИЕВ В РАЗРАБОТКЕ':'BEISPIELE IN ENTWICKLUNG','Профиль и персональные настройки, привязанные к вашему Telegram-аккаунту.':'Ein Profil und persönliche Einstellungen, die mit Ihrem Telegram-Konto verknüpft sind.','Развитие по этапам':'Schrittweise Entwicklung','Новые функции будут появляться постепенно, а их статус будет указан прямо в приложении.':'Neue Funktionen werden schrittweise hinzugefügt. Ihr Status wird direkt in der App angezeigt.','Редактирование личных сведений, интересов, языка, длины и формата ответов, а также собственных инструкций.':'Persönliche Angaben, Interessen, Sprache, Antwortlänge und -format sowie eigene Anweisungen bearbeiten.','Добавление, просмотр и удаление заметок, предпочтений, фактов и целей.':'Notizen, Präferenzen, Fakten und Ziele hinzufügen, ansehen und löschen.','Можно экспортировать данные или удалить профиль вместе с записями памяти. Настройки стиля ответов начнут влиять на ИИ после подключения чата.':'Sie können Ihre Daten exportieren oder Ihr Profil samt Erinnerungen löschen. Die Einstellungen zum Antwortstil wirken sich nach der Chat-Integration auf die KI aus.','В планах подключить несколько ИИ-моделей с разными сильными сторонами: для повседневных вопросов, анализа, программирования и сложных задач.':'Geplant sind mehrere KI-Modelle mit unterschiedlichen Stärken für Alltagsfragen, Analysen, Programmierung und komplexe Aufgaben.','Будут указаны особенности, ограничения и подходящие сценарии каждой модели.':'Eigenschaften, Grenzen und passende Einsatzbereiche jedes Modells werden aufgeführt.','На данный момент реальные AI-запросы и выбор моделей в интерфейсе ещё не подключены. Список появится после интеграции и проверки.':'Echte KI-Anfragen und die Modellauswahl sind derzeit noch nicht verbunden. Die Liste folgt nach Integration und Tests.','После знакомства вы сможете создать профиль. По мере развития ORVEX Agent это описание будет обновляться вместе с доступными моделями, инструментами и возможностями.':'Nach der Einführung können Sie ein Profil erstellen. Diese Übersicht wird mit verfügbaren Modellen, Werkzeugen und Funktionen aktualisiert.','В ознакомлении показываются только подтверждённые функции и явно обозначенные планы.':'Die Einführung zeigt nur bestätigte Funktionen und klar gekennzeichnete Pläne.','Ознакомление можно повторно открыть в любой момент из раздела «Мой профиль».':'Sie können diese Einführung jederzeit im Bereich „Mein Profil“ erneut öffnen.'
 });
@@ -1291,6 +1577,138 @@ function patternTranslation(text,language){
  return null;
 }
 function isDeletePhrase(value){return ['УДАЛИТЬ','DELETE','LÖSCHEN'].includes(String(value).trim().toLocaleUpperCase('ru'))}
+Object.assign(translations.en,{
+ 'Профиль сохранён в вашем аккаунте ORVEX Agent.':'Profile saved to your ORVEX Agent account.',
+ 'Не удалось сохранить профиль на сервере. Попробуйте ещё раз.':'Could not save the profile on the server. Please try again.',
+ 'Не удалось сохранить профиль на сервере.':'Could not save the profile on the server.',
+ 'Загружаем профиль вашего аккаунта.':'Loading your account profile.',
+ 'Профиль привязан к вашему аккаунту и хранится на сервере ORVEX Agent.':'Your profile is linked to your account and stored on the ORVEX Agent server.',
+ 'Не удалось загрузить профиль с сервера.':'Could not load your profile from the server.',
+ 'Профиль хранится в этом браузере. Войдите через Google или Telegram для серверной синхронизации.':'The profile is stored in this browser. Sign in with Google or Telegram to sync it with the server.',
+ 'Ответ получен, но история не сохранилась.':'The reply was received, but chat history was not saved.',
+ 'Готово. История сохранена.':'Done. Chat history saved.',
+ 'Не удалось загрузить историю чата с сервера.':'Could not load chat history from the server.',
+ 'История чата синхронизируется с вашим аккаунтом.':'Chat history is synced with your account.'
+});
+Object.assign(translations.de,{
+ 'Профиль сохранён в вашем аккаунте ORVEX Agent.':'Profil in Ihrem ORVEX-Agent-Konto gespeichert.',
+ 'Не удалось сохранить профиль на сервере. Попробуйте ещё раз.':'Das Profil konnte nicht auf dem Server gespeichert werden. Bitte versuchen Sie es erneut.',
+ 'Не удалось сохранить профиль на сервере.':'Das Profil konnte nicht auf dem Server gespeichert werden.',
+ 'Загружаем профиль вашего аккаунта.':'Ihr Kontoprofil wird geladen.',
+ 'Профиль привязан к вашему аккаунту и хранится на сервере ORVEX Agent.':'Ihr Profil ist mit Ihrem Konto verknüpft und wird auf dem ORVEX-Agent-Server gespeichert.',
+ 'Не удалось загрузить профиль с сервера.':'Ihr Profil konnte nicht vom Server geladen werden.',
+ 'Профиль хранится в этом браузере. Войдите через Google или Telegram для серверной синхронизации.':'Das Profil wird in diesem Browser gespeichert. Melden Sie sich mit Google oder Telegram an, um es mit dem Server zu synchronisieren.',
+ 'Ответ получен, но история не сохранилась.':'Die Antwort wurde empfangen, aber der Chatverlauf wurde nicht gespeichert.',
+ 'Готово. История сохранена.':'Fertig. Chatverlauf gespeichert.',
+ 'Не удалось загрузить историю чата с сервера.':'Der Chatverlauf konnte nicht vom Server geladen werden.',
+ 'История чата синхронизируется с вашим аккаунтом.':'Der Chatverlauf wird mit Ihrem Konto synchronisiert.'
+});
+Object.assign(translations.en,{
+'ORVEX Agent объединяет AI-чат, профиль и персональные настройки. Новые инструменты и автоматизация будут добавляться по мере готовности.':'ORVEX Agent brings together AI chat, a profile, and personal settings. New tools and automation will be added as they are completed.',
+'Войти можно через Telegram в Mini App, а также через Google или гостевой режим в браузере.':'Sign in through Telegram in the Mini App, or use Google or guest access in a browser.',
+'Добавление, просмотр и удаление заметок, предпочтений, фактов и целей. Сейчас раздел памяти доступен в подтверждённой Telegram-сессии.':'Add, view, and delete notes, preferences, facts, and goals. The memory section is currently available in a verified Telegram session.',
+'Профиль и история чата синхронизируются с аккаунтом Google или гостя после настройки серверного хранилища. Экспорт и удаление данных Telegram станут доступны после настройки серверного хранилища.':'Profile and chat history sync with Google or guest accounts once server storage is configured. Telegram data export and deletion will be available after server storage is configured.',
+'AI-чат уже подключён через OpenRouter. Маршрутизатор openrouter/free выбирает доступную бесплатную модель для запроса.':'AI chat is connected through OpenRouter. The openrouter/free router selects an available free model for each request.',
+'Сейчас можно отправлять запросы через openrouter/free. Ручной выбор отдельных моделей и агентные сценарии ещё не реализованы.':'You can send requests through openrouter/free. Manual model selection and agent workflows are not implemented yet.',
+'Выберите способ входа, заполните профиль и попробуйте AI-чат. Гостевой режим включает до 20 запросов в сутки и не поддерживает пополнение баланса.':'Choose a sign-in method, complete your profile, and try AI chat. Guest access includes up to 20 requests per day and does not support balance top-ups.',
+'Выберите способ входа, чтобы начать диалог. Для гостевого режима действует лимит 20 запросов в сутки.':'Choose a sign-in method to start chatting. Guest access is limited to 20 requests per day.',
+'Mini App открывается через Telegram. Сервер проверяет подписанные данные Telegram перед доступом к личным функциям.':'The Mini App opens through Telegram. The server verifies signed Telegram data before allowing access to personal features.',
+'Профиль может храниться в аккаунте Google или гостевой сессии. В Telegram используется отдельная подтверждённая Telegram-сессия.':'The profile can be stored in a Google account or guest session. Telegram uses a separate verified Telegram session.',
+'Серверные API используют Supabase для профилей, истории чата и гостевого лимита. Применение миграций и проверка live-конфигурации ещё требуются.':'Server APIs use Supabase for profiles, chat history, and guest quotas. Applying migrations and checking the live configuration are still required.',
+'AI-чат работает через OpenRouter/free. Выбор конкретных моделей и запуск агентных задач ещё не доступны.':'AI chat works through OpenRouter/free. Selecting specific models and running agent tasks are not available yet.',
+'Автоматические проверки и CI настроены. Ручные проверки интерфейса и live-сервисов ещё предстоят.':'Automated checks and CI are configured. Manual interface and live-service checks are still pending.',
+'Завершить настройку серверного хранилища':'Complete server storage setup',
+'Проверить вход и синхронизацию данных':'Verify sign-in and data synchronization',
+'Довести адаптацию интерфейса':'Finish responsive interface work',
+'Финальное тестирование Mini App':'Final Mini App testing',
+'Применить подготовленные SQL-миграции и проверить серверные переменные.':'Apply the prepared SQL migrations and verify server environment variables.',
+'Проверить Telegram, Google и гостевой вход, профиль, историю чата и лимит запросов.':'Verify Telegram, Google, and guest sign-in, profile, chat history, and request limits.',
+'Проверить отображение и все основные сценарии на телефоне, компьютере и внутри Telegram.':'Check layout and core flows on mobile, desktop, and inside Telegram.',
+'Пройти регрессионные сценарии, проверить ошибки и подготовить приложение к передаче на этап Telegram-бота.':'Run regression scenarios, check errors, and prepare the app for the Telegram bot phase.',
+'Google- и гостевой вход используют отдельные аккаунты; Telegram Mini App использует подтверждённую Telegram-сессию. Серверная синхронизация зависит от настройки Supabase. Не вводите пароли, платёжные данные или секретные ключи.':'Google and guest access use separate accounts; the Telegram Mini App uses a verified Telegram session. Server synchronization depends on Supabase configuration. Do not enter passwords, payment details, or secret keys.',
+'Укажите имя и настройки отображения. Для входа через Google или гостевой режим профиль синхронизируется с аккаунтом при настроенном сервере; в Telegram используется ваш Telegram ID.':'Enter your name and preferences. Google and guest profiles sync when the server is configured; Telegram uses your Telegram ID.',
+'Завершить текущий сеанс ORVEX Agent на этом устройстве. Для продолжения потребуется снова войти.':'End the current ORVEX Agent session on this device. You will need to sign in again to continue.',
+'Данные профиля могут храниться локально или в аккаунте, в зависимости от выбранного способа входа и доступности сервера.':'Profile data may be stored locally or in your account, depending on your sign-in method and server availability.',
+'Порядок входа: Telegram, Google, затем гостевой режим. Гостям доступны бесплатные модели и 20 запросов в сутки без пополнения баланса.':'Sign-in order: Telegram, Google, then guest access. Guests can use free models for 20 requests per day without balance top-ups.',
+'Профиль и история чата сохраняются в вашем аккаунте ORVEX Agent.':'Your profile and chat history are saved in your ORVEX Agent account.',
+'Не удалось загрузить профиль с сервера. Проверьте настройки серверного хранилища.':'Could not load the profile from the server. Check server storage settings.',
+'Я подтверждаю сохранение указанных настроек в аккаунте ORVEX Agent.':'I confirm that these settings may be saved in my ORVEX Agent account.',
+'Серверное сохранение пока недоступно. Настройки не будут считаться сохранёнными.':'Server saving is not available yet. These settings will not be treated as saved.',
+'Профиль синхронизирован с аккаунтом ORVEX Agent.':'Profile synced with your ORVEX Agent account.',
+'Проверяем серверное хранилище аккаунта…':'Checking account server storage…',
+'Серверное хранилище аккаунта недоступно.':'Account server storage is unavailable.',
+'Без входа профиль сохраняется только на этом устройстве. Войдите через Google или откройте Telegram Mini App для синхронизации.':'Without signing in, your profile is saved only on this device. Sign in with Google or open the Telegram Mini App to sync it.',
+'Я понимаю, что без входа профиль сохраняется только в этом браузере.':'I understand that without signing in, my profile is saved only in this browser.',
+'Локальное сохранение. Войдите в аккаунт для серверной синхронизации.':'Saved locally. Sign in to sync your profile with the server.'
+});
+Object.assign(translations.de,{
+'ORVEX Agent объединяет AI-чат, профиль и персональные настройки. Новые инструменты и автоматизация будут добавляться по мере готовности.':'ORVEX Agent vereint AI-Chat, Profil und persönliche Einstellungen. Neue Werkzeuge und Automatisierungen kommen hinzu, sobald sie fertig sind.',
+'Войти можно через Telegram в Mini App, а также через Google или гостевой режим в браузере.':'Die Anmeldung ist über Telegram in der Mini App sowie über Google oder als Gast im Browser möglich.',
+'Добавление, просмотр и удаление заметок, предпочтений, фактов и целей. Сейчас раздел памяти доступен в подтверждённой Telegram-сессии.':'Notizen, Präferenzen, Fakten und Ziele hinzufügen, anzeigen und löschen. Der Erinnerungsbereich ist derzeit in einer bestätigten Telegram-Sitzung verfügbar.',
+'Профиль и история чата синхронизируются с аккаунтом Google или гостя после настройки серверного хранилища. Экспорт и удаление данных Telegram станут доступны после настройки серверного хранилища.':'Profil und Chatverlauf werden nach Einrichtung des Servers mit Google- oder Gastkonten synchronisiert. Der Export und die Löschung von Telegram-Daten werden nach Einrichtung des Servers verfügbar sein.',
+'AI-чат уже подключён через OpenRouter. Маршрутизатор openrouter/free выбирает доступную бесплатную модель для запроса.':'Der AI-Chat ist über OpenRouter verbunden. Der Router openrouter/free wählt für jede Anfrage ein verfügbares kostenloses Modell.',
+'Сейчас можно отправлять запросы через openrouter/free. Ручной выбор отдельных моделей и агентные сценарии ещё не реализованы.':'Anfragen können über openrouter/free gesendet werden. Die manuelle Modellauswahl und Agentenabläufe sind noch nicht implementiert.',
+'Выберите способ входа, заполните профиль и попробуйте AI-чат. Гостевой режим включает до 20 запросов в сутки и не поддерживает пополнение баланса.':'Wählen Sie eine Anmeldemethode, vervollständigen Sie Ihr Profil und testen Sie den AI-Chat. Gäste erhalten 20 Anfragen pro Tag ohne Guthabenaufladung.',
+'Выберите способ входа, чтобы начать диалог. Для гостевого режима действует лимит 20 запросов в сутки.':'Wählen Sie eine Anmeldemethode, um den Chat zu starten. Für Gäste gilt ein Limit von 20 Anfragen pro Tag.',
+'Mini App открывается через Telegram. Сервер проверяет подписанные данные Telegram перед доступом к личным функциям.':'Die Mini App wird über Telegram geöffnet. Der Server prüft signierte Telegram-Daten vor dem Zugriff auf persönliche Funktionen.',
+'Профиль может храниться в аккаунте Google или гостевой сессии. В Telegram используется отдельная подтверждённая Telegram-сессия.':'Das Profil kann in einem Google-Konto oder einer Gastsitzung gespeichert werden. Telegram verwendet eine separate bestätigte Telegram-Sitzung.',
+'Серверные API используют Supabase для профилей, истории чата и гостевого лимита. Применение миграций и проверка live-конфигурации ещё требуются.':'Server-APIs verwenden Supabase für Profile, Chatverlauf und Gastlimits. Migrationen und Live-Konfiguration müssen noch geprüft werden.',
+'AI-чат работает через OpenRouter/free. Выбор конкретных моделей и запуск агентных задач ещё не доступны.':'Der AI-Chat läuft über OpenRouter/free. Die Auswahl einzelner Modelle und Agentenaufgaben sind noch nicht verfügbar.',
+'Автоматические проверки и CI настроены. Ручные проверки интерфейса и live-сервисов ещё предстоят.':'Automatisierte Prüfungen und CI sind eingerichtet. Manuelle Tests der Oberfläche und Live-Dienste stehen noch aus.',
+'Завершить настройку серверного хранилища':'Server-Speicher fertig einrichten',
+'Проверить вход и синхронизацию данных':'Anmeldung und Datensynchronisierung prüfen',
+'Довести адаптацию интерфейса':'Responsive Oberfläche fertigstellen',
+'Финальное тестирование Mini App':'Abschließende Mini-App-Tests',
+'Применить подготовленные SQL-миграции и проверить серверные переменные.':'Die vorbereiteten SQL-Migrationen anwenden und die Servervariablen prüfen.',
+'Проверить Telegram, Google и гостевой вход, профиль, историю чата и лимит запросов.':'Telegram-, Google- und Gastanmeldung, Profil, Chatverlauf und Anfrage-Limits prüfen.',
+'Проверить отображение и все основные сценарии на телефоне, компьютере и внутри Telegram.':'Layout und Kernabläufe auf Smartphone, Desktop und in Telegram prüfen.',
+'Пройти регрессионные сценарии, проверить ошибки и подготовить приложение к передаче на этап Telegram-бота.':'Regressionstests durchführen, Fehler prüfen und die App auf die Telegram-Bot-Phase vorbereiten.',
+'Google- и гостевой вход используют отдельные аккаунты; Telegram Mini App использует подтверждённую Telegram-сессию. Серверная синхронизация зависит от настройки Supabase. Не вводите пароли, платёжные данные или секретные ключи.':'Google- und Gastzugang verwenden separate Konten; die Telegram Mini App verwendet eine bestätigte Telegram-Sitzung. Die Serversynchronisierung hängt von der Supabase-Konfiguration ab. Geben Sie keine Passwörter, Zahlungsdaten oder geheimen Schlüssel ein.',
+'Укажите имя и настройки отображения. Для входа через Google или гостевой режим профиль синхронизируется с аккаунтом при настроенном сервере; в Telegram используется ваш Telegram ID.':'Geben Sie Ihren Namen und Ihre Einstellungen ein. Google- und Gastprofile werden bei eingerichteter Serververbindung synchronisiert; Telegram verwendet Ihre Telegram-ID.',
+'Завершить текущий сеанс ORVEX Agent на этом устройстве. Для продолжения потребуется снова войти.':'Beenden Sie die aktuelle ORVEX-Agent-Sitzung auf diesem Gerät. Für die weitere Nutzung müssen Sie sich erneut anmelden.',
+'Данные профиля могут храниться локально или в аккаунте, в зависимости от выбранного способа входа и доступности сервера.':'Profildaten werden je nach Anmeldemethode und Serververfügbarkeit lokal oder im Konto gespeichert.',
+'Порядок входа: Telegram, Google, затем гостевой режим. Гостям доступны бесплатные модели и 20 запросов в сутки без пополнения баланса.':'Anmeldereihenfolge: Telegram, Google, dann Gastzugang. Gäste können kostenlose Modelle mit 20 Anfragen pro Tag ohne Aufladung nutzen.',
+'Профиль и история чата сохраняются в вашем аккаунте ORVEX Agent.':'Ihr Profil und Chatverlauf werden in Ihrem ORVEX-Agent-Konto gespeichert.',
+'Не удалось загрузить профиль с сервера. Проверьте настройки серверного хранилища.':'Das Profil konnte nicht vom Server geladen werden. Prüfen Sie die Server-Speichereinstellungen.',
+'Я подтверждаю сохранение указанных настроек в аккаунте ORVEX Agent.':'Ich bestätige, dass diese Einstellungen in meinem ORVEX-Agent-Konto gespeichert werden dürfen.',
+'Серверное сохранение пока недоступно. Настройки не будут считаться сохранёнными.':'Das Speichern auf dem Server ist noch nicht verfügbar. Diese Einstellungen gelten nicht als gespeichert.',
+'Профиль синхронизирован с аккаунтом ORVEX Agent.':'Profil mit Ihrem ORVEX-Agent-Konto synchronisiert.',
+'Проверяем серверное хранилище аккаунта…':'Kontospeicher auf dem Server wird geprüft…',
+'Серверное хранилище аккаунта недоступно.':'Der Kontospeicher auf dem Server ist nicht verfügbar.',
+'Без входа профиль сохраняется только на этом устройстве. Войдите через Google или откройте Telegram Mini App для синхронизации.':'Ohne Anmeldung wird Ihr Profil nur auf diesem Gerät gespeichert. Melden Sie sich mit Google an oder öffnen Sie die Telegram Mini App zur Synchronisierung.',
+'Я понимаю, что без входа профиль сохраняется только в этом браузере.':'Ich verstehe, dass mein Profil ohne Anmeldung nur in diesem Browser gespeichert wird.',
+'Локальное сохранение. Войдите в аккаунт для серверной синхронизации.':'Lokal gespeichert. Melden Sie sich für die Serversynchronisierung an.'
+});
+Object.assign(translations.en,{
+'ORVEX Agent объединяет AI-чат, персональный профиль и настройки. Сейчас завершаем синхронизацию аккаунтов и адаптацию интерфейса, затем перейдём к основному Telegram-боту.':'ORVEX Agent brings together AI chat, a personal profile, and settings. We are finishing account synchronization and responsive layouts before moving on to the main Telegram bot.',
+'Без входа профиль хранится локально. После входа используется отдельная серверная сессия Google, гостя или Telegram.':'Without signing in, the profile is stored locally. After sign-in, a separate Google, guest, or Telegram server session is used.',
+'Сохраняйте заметки, предпочтения и цели в Telegram Mini App после подтверждения сессии и настройки Supabase.':'Save notes, preferences, and goals in the Telegram Mini App after session verification and Supabase setup.',
+'Частично':'Partially',
+'Основной Telegram-бот':'Main Telegram bot',
+'Подключить AI-диалоги, профиль и память после завершения Mini App.':'Connect AI conversations, profiles, and memory after the Mini App is complete.',
+'После Mini App':'After the Mini App',
+'Бот поддержки':'Support bot',
+'Создать отдельного бота для вопросов пользователей и обращений в поддержку.':'Create a separate bot for user questions and support requests.',
+'Финальный этап':'Final phase',
+'Административная панель':'Admin panel',
+'Добавить защищённое управление пользователями, настройками и диагностикой.':'Add secure management for users, settings, and diagnostics.'
+});
+Object.assign(translations.de,{
+'ORVEX Agent объединяет AI-чат, персональный профиль и настройки. Сейчас завершаем синхронизацию аккаунтов и адаптацию интерфейса, затем перейдём к основному Telegram-боту.':'ORVEX Agent vereint AI-Chat, persönliches Profil und Einstellungen. Wir schließen die Kontosynchronisierung und die responsive Oberfläche ab, bevor wir mit dem Haupt-Telegram-Bot beginnen.',
+'Без входа профиль хранится локально. После входа используется отдельная серверная сессия Google, гостя или Telegram.':'Ohne Anmeldung wird das Profil lokal gespeichert. Nach der Anmeldung wird eine separate Google-, Gast- oder Telegram-Serversitzung verwendet.',
+'Сохраняйте заметки, предпочтения и цели в Telegram Mini App после подтверждения сессии и настройки Supabase.':'Speichern Sie Notizen, Präferenzen und Ziele in der Telegram Mini App nach Sitzungsprüfung und Supabase-Einrichtung.',
+'Частично':'Teilweise',
+'Основной Telegram-бот':'Haupt-Telegram-Bot',
+'Подключить AI-диалоги, профиль и память после завершения Mini App.':'AI-Dialoge, Profil und Erinnerungen nach Fertigstellung der Mini App verbinden.',
+'После Mini App':'Nach der Mini App',
+'Бот поддержки':'Support-Bot',
+'Создать отдельного бота для вопросов пользователей и обращений в поддержку.':'Einen separaten Bot für Benutzerfragen und Supportanfragen erstellen.',
+'Финальный этап':'Abschlussphase',
+'Административная панель':'Admin-Panel',
+'Добавить защищённое управление пользователями, настройками и диагностикой.':'Eine sichere Verwaltung für Benutzer, Einstellungen und Diagnose hinzufügen.'
+});
+Object.assign(translations.en,{'Перейти к содержимому':'Skip to content'});
+Object.assign(translations.de,{'Перейти к содержимому':'Zum Inhalt springen'});
 const originalTextNodes=new WeakMap(),originalAttributes=new WeakMap();
 let activeInterfaceLanguage='ru';
 function canonicalTranslation(value){
@@ -1303,6 +1721,8 @@ function canonicalTranslation(value){
  }
  return clean;
 }
+
+
 function translateTextNode(node,dictionary){
  const current=node.nodeValue;
  let state=originalTextNodes.get(node);
@@ -1370,7 +1790,7 @@ const interfaceLanguageObserver=new MutationObserver(records=>{
  });
 });
 interfaceLanguageObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','aria-label','title']});
-function updateHeaderAction(){const button=$('#profileOpen');button.textContent=profile?'Мой профиль':'Начать';const remove=$('#openDeleteConfirm');if(remove)remove.disabled=!(telegramMiniApp&&telegramProfileSession);applyInterfaceLanguage((profile&&profile.preferences&&profile.preferences.language)||localStorage.getItem('orvex_agent_language')||'ru')}
+function updateHeaderAction(){const button=$('#profileOpen');button.textContent=externalAuthSession?'Аккаунт':(!telegramMiniApp&&profile?'Войти':(profile?'Мой профиль':'Начать'));const canUseTelegramAccount=telegramMiniApp&&telegramProfileSession;const remove=$('#openDeleteConfirm');if(remove){remove.disabled=!canUseTelegramAccount;const deleteSection=$('#telegramDeleteSection');if(deleteSection)deleteSection.hidden=!canUseTelegramAccount}const balanceAdd=$('#balanceAdd');if(balanceAdd)balanceAdd.disabled=!(telegramMiniApp&&telegramProfileSession);const balanceWidget=$('#balanceWidget');if(balanceWidget)balanceWidget.hidden=!canUseTelegramAccount;updateAuthOptions();applyInterfaceLanguage((profile&&profile.preferences&&profile.preferences.language)||localStorage.getItem('orvex_agent_language')||'ru')}
 const tg=window.Telegram&&window.Telegram.WebApp;
 const telegramBack=tg&&tg.BackButton;
 function syncTelegramViewport(){
@@ -1380,7 +1800,7 @@ function syncTelegramViewport(){
 }
 function showTelegramBack(){try{if(telegramBack)telegramBack.show()}catch(e){}}
 function hideTelegramBack(){try{if(telegramBack)telegramBack.hide()}catch(e){}}
-function handleTelegramBack(){if(topupModal.classList.contains('open'))closeTopup();else if(onboarding.classList.contains('open'))closeOnboarding();else if(modal.classList.contains('open'))closeModal()}
+function handleTelegramBack(){if(topupModal.classList.contains('open'))closeTopup();else if(deleteModal.classList.contains('open'))closeDeleteConfirmation();else if(authModal.classList.contains('open'))closeAuthModal();else if(onboarding.classList.contains('open'))closeOnboarding();else if(modal.classList.contains('open'))closeModal()}
 try{if(telegramBack&&telegramBack.onClick)telegramBack.onClick(handleTelegramBack)}catch(e){}
 try{
  if(tg){
@@ -1453,10 +1873,20 @@ function setProfileStatus(label,message,ready){
    :label==='Проверка…'
     ?'Проверяем доступность серверного профиля…'
     :'Серверный профиль недоступен. Локальная копия не считается серверным сохранением.';
+ }else if(externalAuthSession){
+  if(profileModalIntro)profileModalIntro.textContent=ready
+   ?'Профиль и история чата сохраняются в вашем аккаунте ORVEX Agent.'
+   :'Не удалось загрузить профиль с сервера. Проверьте настройки серверного хранилища.';
+  if(profileConsentText)profileConsentText.textContent=ready
+   ?'Я подтверждаю сохранение указанных настроек в аккаунте ORVEX Agent.'
+   :'Серверное сохранение пока недоступно. Настройки не будут считаться сохранёнными.';
+  if(profileStorageNote)profileStorageNote.textContent=ready
+   ?'Профиль синхронизирован с аккаунтом ORVEX Agent.'
+   :label==='Проверка…'?'Проверяем серверное хранилище аккаунта…':'Серверное хранилище аккаунта недоступно.';
  }else{
-  if(profileModalIntro)profileModalIntro.textContent='В обычном браузере профиль сохраняется только на этом устройстве. Для единого профиля откройте ORVEX Agent через Telegram.';
-  if(profileConsentText)profileConsentText.textContent='Я понимаю, что профиль сохраняется только в этом браузере и не отправляется на сервер.';
-  if(profileStorageNote)profileStorageNote.textContent='Локальное сохранение. Серверной регистрации пока нет.';
+  if(profileModalIntro)profileModalIntro.textContent='Без входа профиль сохраняется только на этом устройстве. Войдите через Google или откройте Telegram Mini App для синхронизации.';
+  if(profileConsentText)profileConsentText.textContent='Я понимаю, что без входа профиль сохраняется только в этом браузере.';
+  if(profileStorageNote)profileStorageNote.textContent='Локальное сохранение. Войдите в аккаунт для серверной синхронизации.';
  }
 }
 try{
@@ -1495,9 +1925,14 @@ function saveLocal(key,value){try{localStorage.setItem(key,typeof value==='strin
 function toast(message){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=message;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 
 const deleteModal=$('#deleteConfirmModal'),deletePhrase=$('#deletePhrase'),deletePhraseField=$('#deletePhraseField'),deleteProceed=$('#proceedDelete');
-let deleteConfirmStep=1;
-function closeDeleteConfirmation(){deleteModal.classList.remove('open');deleteModal.setAttribute('aria-hidden','true')}
+let deleteConfirmStep=1,deleteModalReturnFocus=null;
+function closeDeleteConfirmation(){
+ deleteModal.classList.remove('open');deleteModal.setAttribute('aria-hidden','true');
+ const returnFocus=deleteModalReturnFocus;deleteModalReturnFocus=null;
+ if(returnFocus&&typeof returnFocus.focus==='function'&&returnFocus.isConnected)returnFocus.focus();
+}
 function openDeleteConfirmation(){
+ deleteModalReturnFocus=document.activeElement;
  deleteConfirmStep=1;$('#deleteConfirmTitle').textContent='Вы действительно хотите удалить аккаунт?';
  $('#deleteConfirmText').textContent='Будут безвозвратно удалены ваш профиль и все записи персональной памяти. Экспортируйте данные заранее, если хотите сохранить копию.';
  deletePhraseField.hidden=true;deletePhrase.value='';deleteProceed.textContent='Продолжить';deleteProceed.disabled=false;
@@ -1530,11 +1965,12 @@ deleteProceed.addEventListener('click',async()=>{
   deleteProceed.disabled=false;$('#cancelDelete').disabled=false;
  }
 });
-$('#logoutAccount').addEventListener('click',()=>{
+$('#logoutAccount').addEventListener('click',async()=>{
  try{localStorage.removeItem('orvex_agent_profile')}catch(error){}
- profile=null;updateHeaderAction();closeModal();
+ if(supabaseClient&&externalAuthSession){try{await supabaseClient.auth.signOut()}catch(error){}externalAuthSession=null;authMode='';if(guestQuotaResetTimer)clearTimeout(guestQuotaResetTimer);guestQuota=null;guestQuotaReady=false;delete document.body.dataset.authMode}
+ profile=null;chatHistory=[];if(aiChatMessages)aiChatMessages.replaceChildren();updateHeaderAction();closeModal();
  if(telegramMiniApp&&tg&&typeof tg.close==='function'){tg.close();return}
- openOnboarding();toast('Вы вышли из локального профиля');
+ openAuthModal();initChatWorkspace();toast('Вы вышли из аккаунта');
 });
 
 const balanceWidget=$('#balanceWidget'),balanceRub=$('#balanceRub'),balanceUsd=$('#balanceUsd'),balanceValues=$('#balanceValues');
@@ -1609,9 +2045,9 @@ document.addEventListener('keydown',event=>{
  else if(!event.shiftKey&&(document.activeElement===last||!topupModal.contains(document.activeElement))){event.preventDefault();first.focus()}
 });
 
-$('#profileOpen').addEventListener('click',()=>profile?openModal():openOnboarding());
+$('#profileOpen').addEventListener('click',()=>{if(!telegramMiniApp&&!externalAuthSession){openAuthModal();return}if(profile||externalAuthSession)openModal();else openOnboarding()});
 onboardingBackButton.addEventListener('click',()=>changeOnboardingStep(onboardingStep-1,'back'));
-onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)return;if(onboardingStep<onboardingSlides.length-1)changeOnboardingStep(onboardingStep+1,'forward');else{closeOnboarding();openModal()}});
+onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)return;if(onboardingStep<onboardingSlides.length-1)changeOnboardingStep(onboardingStep+1,'forward');else{closeOnboarding();if((telegramMiniApp&&telegramProfileSession)||externalAuthSession)openModal();else openAuthModal()}});
 $('#heroProfile').addEventListener('click',openModal);
 $('#profileClose').addEventListener('click',closeModal);
 
@@ -1629,16 +2065,49 @@ document.querySelectorAll('.language-option').forEach(button=>button.addEventLis
   try{
    const response=await fetch('/api/profile',{method:'PUT',headers:{Authorization:'tma '+tg.initData,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({name:profile.name,email:profile.email||'',interest:profile.interest||'Личный ИИ-помощник',preferences:profile.preferences||{}})});
    if(!response.ok)throw new Error('language_sync_failed');
-   const result=await response.json();profile=result.profile||profile;saveLocal('orvex_agent_profile',profile);
+   const result=await response.json();
+   if(languageGeneration!==authGeneration||!externalAuthSession||!externalAuthSession.user||externalAuthSession.user.id!==languageUserId)return;
+   profile=result.profile||profile;saveLocal('orvex_agent_profile',profile);
    toast(language==='ru'?'Язык интерфейса сохранён в профиле':language==='en'?'Interface language saved to your profile':'Spracheinstellung im Profil gespeichert');
   }catch(error){toast(language==='ru'?'Язык изменён на устройстве, но не синхронизирован с сервером':language==='en'?'Language changed on this device but not synced to the server':'Sprache auf diesem Gerät geändert, aber nicht mit dem Server synchronisiert')}
+ }else if(externalAuthSession&&profile&&profile.name){
+  const languageGeneration=authGeneration,languageUserId=externalAuthSession.user&&externalAuthSession.user.id;
+  try{
+   const response=await fetch('/api/user-data',{method:'PUT',headers:{Authorization:'Bearer '+externalAuthSession.access_token,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({name:profile.name,email:profile.email||'',interest:profile.interest||'Личный ИИ-помощник',preferences:profile.preferences||{}})});
+   if(!response.ok)throw new Error('language_sync_failed');
+   const result=await response.json();profile=result.profile||profile;saveLocal('orvex_agent_profile',profile);
+   toast(language==='ru'?'Язык интерфейса сохранён в профиле':language==='en'?'Interface language saved to your profile':'Spracheinstellung im Profil gespeichert');
+  }catch(error){if(languageGeneration===authGeneration)toast(language==='ru'?'Язык изменён, но не синхронизирован с сервером':language==='en'?'Language changed but not synced to the server':'Sprache geändert, aber nicht mit dem Server synchronisiert')}
  }else toast(language==='ru'?'Язык интерфейса изменён':language==='en'?'Interface language changed':'Oberflächensprache geändert');
  languageOptions.hidden=true;languageCurrent.setAttribute('aria-expanded','false');
  renderBalance();
 }));
 $('#replayOnboarding').addEventListener('click',()=>{closeModal();openOnboarding()});
 modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
-document.addEventListener('keydown',e=>{
+document.addEventListener('keydown',e=>{ 
+  if(onboarding.classList.contains('open')){
+   if(e.key==='Escape'){closeOnboarding();return}
+   if(e.key==='Tab'){
+    const focusable=onboarding.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])');
+    if(!focusable.length)return;
+    const first=focusable[0],last=focusable[focusable.length-1];
+    if(e.shiftKey&&(document.activeElement===first||!onboarding.contains(document.activeElement))){e.preventDefault();last.focus()}
+    else if(!e.shiftKey&&(document.activeElement===last||!onboarding.contains(document.activeElement))){e.preventDefault();first.focus()}
+   }
+   return;
+  }
+  if(authModal.classList.contains('open')){
+   if(e.key==='Escape'){closeAuthModal();return}
+   if(e.key==='Tab'){
+    const focusable=authModal.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])');
+    if(!focusable.length){e.preventDefault();authModal.querySelector('.auth-panel').focus();return}
+    const first=focusable[0],last=focusable[focusable.length-1];
+    if(e.shiftKey&&(document.activeElement===first||!authModal.contains(document.activeElement))){e.preventDefault();last.focus()}
+    else if(!e.shiftKey&&(document.activeElement===last||!authModal.contains(document.activeElement))){e.preventDefault();first.focus()}
+   }
+   return;
+  }
+
  if(deleteModal.classList.contains('open')){
   if(e.key==='Escape'){closeDeleteConfirmation();return}
   if(e.key==='Tab'){
@@ -1697,6 +2166,24 @@ form.addEventListener('submit',async e=>{
   finally{submitButton.disabled=false}
   return;
  }
+ if(externalAuthSession){
+  const saveGeneration=authGeneration;
+   const submitButton=form.querySelector('button[type="submit"]');
+  submitButton.disabled=true;
+  try{
+   const response=await fetch('/api/user-data',{method:'PUT',headers:{Authorization:'Bearer '+externalAuthSession.access_token,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)});
+   if(!response.ok)throw new Error('profile_save_failed');
+   const result=await response.json();
+    if(saveGeneration!==authGeneration||!externalAuthSession)return;
+    profile=result.profile||data;
+   try{localStorage.setItem('orvex_agent_language',profile.preferences&&profile.preferences.language||'ru')}catch(error){}
+   saveLocal('orvex_agent_profile',profile);updateHeaderAction();
+   setProfileStatus('Синхронизирован','Профиль сохранён в вашем аккаунте ORVEX Agent.',true);
+   closeModal();toast('Профиль синхронизирован с сервером');
+  }catch(error){if(saveGeneration===authGeneration){setProfileStatus('Ошибка синхронизации','Не удалось сохранить профиль на сервере. Попробуйте ещё раз.',false);toast('Не удалось сохранить профиль на сервере.')}}
+  finally{submitButton.disabled=false}
+  return;
+ }
  try{
   localStorage.setItem('orvex_agent_profile',JSON.stringify(data));profile=data;updateHeaderAction();
   setProfileStatus('Локально','Профиль сохранён в этом браузере. Для синхронизации откройте Mini App через Telegram после настройки сервера.',false);
@@ -1706,8 +2193,23 @@ form.addEventListener('submit',async e=>{
 
 async function initProfileWorkspace(){
  if(!telegramMiniApp){
-  setProfileStatus('Локально','Профиль хранится в этом браузере. Откройте Mini App через Telegram, чтобы использовать единый профиль.',false);
-  if(!profile)openOnboarding();
+  if(externalAuthSession){
+   const profileGeneration=authGeneration;
+   setProfileStatus('Проверка…','Загружаем профиль вашего аккаунта.',false);
+   try{
+    const response=await fetch('/api/user-data',{headers:{Authorization:'Bearer '+externalAuthSession.access_token,Accept:'application/json'},cache:'no-store'});
+    if(!response.ok)throw new Error('user_data_unavailable');
+    const data=await response.json();
+    if(profileGeneration!==authGeneration||!externalAuthSession)return;
+    profile=data.profile||null;
+    if(profile){saveLocal('orvex_agent_profile',profile);applyInterfaceLanguage(profile.preferences&&profile.preferences.language||'ru')}
+    else{try{localStorage.removeItem('orvex_agent_profile')}catch(error){}}
+    setProfileStatus('Синхронизирован','Профиль привязан к вашему аккаунту и хранится на сервере ORVEX Agent.',true);
+   }catch(error){if(profileGeneration===authGeneration)setProfileStatus('Требует настройки','Не удалось загрузить профиль с сервера.',false)}
+  }else{
+   setProfileStatus('Локально','Профиль хранится в этом браузере. Войдите через Google или Telegram для серверной синхронизации.',false);
+   if(!profile)openOnboarding();
+  }
   updateHeaderAction();
   return;
  }
@@ -1746,7 +2248,138 @@ async function initProfileWorkspace(){
    :'Не удалось загрузить серверный профиль. Локальные данные не будут выданы за синхронизированные.';
   setProfileStatus('Требует настройки',message,false);
   updateHeaderAction();
-  if(!profile)openModal();
+  if(!profile)openAuthModal();
+ }
+}
+
+
+const aiChatForm=$('#aiChatForm');
+const aiChatInput=aiChatForm&&aiChatForm.elements.message;
+const aiChatSend=$('#aiChatSend');
+const aiChatMessages=$('#aiChatMessages');
+const aiChatStatus=$('#aiChatStatus');
+const aiChatQuotaLabel=$('#chatQuotaLabel');
+const aiChatQuotaValue=$('#chatQuotaValue');
+let chatWorkspaceInitialized=false,chatBusy=false,chatHistory=[],guestQuota=null,guestQuotaReady=false,guestQuotaResetTimer=null,chatHistoryLoadedFor='';
+function chatAuthorization(){
+ if(telegramMiniApp&&tg&&tg.initData)return 'tma '+tg.initData;
+ if(externalAuthSession&&typeof externalAuthSession.access_token==='string')return 'Bearer '+externalAuthSession.access_token;
+ return null;
+}
+function renderChatMessage(role,content){
+ const empty=$('#chatEmpty');if(empty)empty.remove();
+ const item=document.createElement('article');item.className='chat-message '+(role==='user'?'user':'assistant');
+ const label=document.createElement('span');label.className='chat-message-label';label.textContent=role==='user'?'Вы':'ORVEX';
+ const body=document.createElement('p');body.textContent=content;
+ item.append(label,body);aiChatMessages.append(item);aiChatMessages.scrollTop=aiChatMessages.scrollHeight;
+}
+function updateChatQuota(){
+ if(!aiChatQuotaLabel||!aiChatQuotaValue)return;
+ const resetLabel=$('#chatQuotaReset');
+ if(resetLabel)resetLabel.hidden=authMode!=='guest';
+ if(authMode==='guest'&&guestQuota){
+  aiChatQuotaLabel.textContent='Гостевой лимит:';
+  aiChatQuotaValue.textContent=guestQuota.remaining+'/'+guestQuota.dailyLimit;
+ }else if(telegramMiniApp){
+  aiChatQuotaLabel.textContent='Доступ Telegram';aiChatQuotaValue.textContent='';
+ }else if(externalAuthSession){
+  aiChatQuotaLabel.textContent='Гостевой лимит не применяется.';aiChatQuotaValue.textContent='';
+ }else{
+  aiChatQuotaLabel.textContent='Гостевой лимит:';aiChatQuotaValue.textContent='—';
+ }
+}
+function updateChatControls(){
+ if(!aiChatInput||!aiChatSend)return;
+ const authorized=Boolean(chatAuthorization());
+ const quotaAllows=authMode!=='guest'||(guestQuotaReady&&guestQuota&&guestQuota.remaining>0);
+ aiChatInput.disabled=!authorized||!quotaAllows||chatBusy;
+ aiChatSend.disabled=!authorized||!quotaAllows||chatBusy||!aiChatInput.value.trim();
+}
+async function refreshGuestQuota(){
+ if(authMode!=='guest'||!externalAuthSession||!externalAuthSession.access_token)return;
+ const quotaGeneration=authGeneration,quotaUserId=externalAuthSession.user&&externalAuthSession.user.id;
+ guestQuotaReady=false;guestQuota=null;updateChatQuota();updateChatControls();
+ try{
+  const response=await fetch('/api/guest-quota',{headers:{Authorization:'Bearer '+externalAuthSession.access_token,Accept:'application/json'},cache:'no-store'});
+  if(!response.ok)throw new Error('guest_quota_unavailable');
+  const data=await response.json();
+  if(quotaGeneration!==authGeneration||authMode!=='guest'||!externalAuthSession||!externalAuthSession.user||externalAuthSession.user.id!==quotaUserId)return;
+  if(!data.quota||!Number.isInteger(data.quota.remaining)||!Number.isInteger(data.quota.dailyLimit))throw new Error('guest_quota_invalid');
+  guestQuota=data.quota;guestQuotaReady=true;updateChatQuota();
+  if(guestQuotaResetTimer)clearTimeout(guestQuotaResetTimer);
+  const resetAt=Date.parse(guestQuota.resetsAt);
+  if(Number.isFinite(resetAt)){const delay=Math.max(1000,Math.min(86400000,resetAt-Date.now()+1500));guestQuotaResetTimer=window.setTimeout(()=>refreshGuestQuota(),delay)}
+  if(guestQuota.remaining===0)aiChatStatus.textContent='Лимит гостевого режима исчерпан. Войдите через Telegram или Google, чтобы продолжить.';
+ }catch(error){
+  if(quotaGeneration===authGeneration)aiChatStatus.textContent='Не удалось проверить гостевой лимит. Настройте базу данных Supabase.';
+ }finally{updateChatControls()}
+}
+async function initChatWorkspace(){
+ if(!aiChatForm||!aiChatInput||!aiChatMessages)return;
+ if(!chatWorkspaceInitialized){
+  chatWorkspaceInitialized=true;
+  aiChatInput.addEventListener('input',updateChatControls);
+  window.addEventListener('focus',()=>{if(authMode==='guest')refreshGuestQuota()});
+  aiChatForm.addEventListener('submit',async event=>{
+   event.preventDefault();
+   const content=aiChatInput.value.trim(),authorization=chatAuthorization(),requestGeneration=authGeneration;
+   if(!content||!authorization||chatBusy)return;
+   if(authMode==='guest'&&(!guestQuotaReady||!guestQuota||guestQuota.remaining<1))return;
+   chatHistory.push({role:'user',content});
+   renderChatMessage('user',content);aiChatInput.value='';chatBusy=true;
+   aiChatStatus.textContent='Отправляем запрос…';updateChatControls();
+   try{
+    const response=await fetch('/api/ai-chat',{
+     method:'POST',
+     headers:{Authorization:authorization,'Content-Type':'application/json',Accept:'application/json'},
+     body:JSON.stringify({model:'openrouter/free',messages:chatHistory.slice(-12)})
+    });
+    const data=await response.json();
+    if(requestGeneration!==authGeneration)return;
+    if(data.quota){guestQuota=data.quota;guestQuotaReady=true;updateChatQuota()}
+    if(response.status===429){
+     aiChatStatus.textContent='Лимит гостевого режима исчерпан. Войдите через Telegram или Google, чтобы продолжить.';
+     return;
+    }
+    if(!response.ok){
+     if(data.error==='ai_service_not_configured')aiChatStatus.textContent='Сервер AI пока не настроен. Добавьте OPENROUTER_API_KEY в Vercel.';
+     else if(data.error==='guest_quota_unavailable'||data.error==='guest_quota_invalid')aiChatStatus.textContent='Не удалось проверить гостевой лимит. Настройте базу данных Supabase.';
+     else if(data.error==='free_model_temporarily_limited')aiChatStatus.textContent='Бесплатная модель временно недоступна. Попробуйте позже.';
+     else aiChatStatus.textContent='Сообщение не отправлено. Попробуйте ещё раз.';
+     return;
+    }
+    if(typeof data.message!=='string'||!data.message.trim())throw new Error('empty_ai_response');
+    chatHistory.push({role:'assistant',content:data.message.trim()});
+    renderChatMessage('assistant',data.message.trim());
+    aiChatStatus.textContent=data.historySaved===false?'Ответ получен, но история не сохранилась.':(data.historySaved===true?'Готово. История сохранена.':'Готово.');
+   }catch(error){if(requestGeneration===authGeneration)aiChatStatus.textContent='Проверьте подключение и настройки AI-сервера.'}
+   finally{chatBusy=false;updateChatControls();if(authMode==='guest'&&guestQuotaReady)updateChatQuota()}
+  });
+ }
+ const authorization=chatAuthorization();
+ if(!authorization){
+  aiChatStatus.textContent='Войдите или продолжите как гость, чтобы отправить сообщение. История этого чата хранится только до перезагрузки страницы.';
+  updateChatQuota();updateChatControls();return;
+ }
+ if(externalAuthSession){
+  const ownerId=externalAuthSession.user&&externalAuthSession.user.id,historyGeneration=authGeneration;
+  if(ownerId&&chatHistoryLoadedFor!==ownerId){
+   try{
+    const historyResponse=await fetch('/api/user-data',{headers:{Authorization:'Bearer '+externalAuthSession.access_token,Accept:'application/json'},cache:'no-store'});
+    if(!historyResponse.ok)throw new Error('chat_history_load_failed');
+    const stored=await historyResponse.json();
+    if(historyGeneration!==authGeneration||!externalAuthSession||!externalAuthSession.user||externalAuthSession.user.id!==ownerId)return;
+    chatHistory=Array.isArray(stored.messages)?stored.messages.filter(item=>item&&['user','assistant'].includes(item.role)&&typeof item.content==='string').map(item=>({role:item.role,content:item.content})): [];
+    aiChatMessages.replaceChildren();
+    if(chatHistory.length)chatHistory.forEach(item=>renderChatMessage(item.role,item.content));
+    chatHistoryLoadedFor=ownerId;
+   }catch(error){if(historyGeneration===authGeneration&&externalAuthSession&&externalAuthSession.user&&externalAuthSession.user.id===ownerId)aiChatStatus.textContent='Не удалось загрузить историю чата с сервера.'}
+  }
+ }
+ if(authMode==='guest')await refreshGuestQuota();
+ else{
+  guestQuotaReady=true;guestQuota=null;updateChatQuota();updateChatControls();
+  if(!aiChatStatus.textContent||aiChatStatus.textContent==='Выберите способ входа, чтобы начать диалог.')aiChatStatus.textContent='История чата синхронизируется с вашим аккаунтом.';
  }
 }
 
@@ -1857,7 +2490,7 @@ async function initMemoryWorkspace(){
 }
 applyInterfaceLanguage(localStorage.getItem('orvex_agent_language')||'ru');
 initMemoryWorkspace();
-initProfileWorkspace();
+initAuthWorkspace().finally(async()=>{await initProfileWorkspace();await initChatWorkspace()});
 loadBalance();
 })();
 </script>

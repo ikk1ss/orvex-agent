@@ -42,6 +42,23 @@ These are source-level and unit checks. They do not prove that Supabase credenti
 - Corrupt or remove the `orvex_agent_profile` localStorage entry and confirm invalid saved data does not bypass first-time profile setup.
 - Inside Telegram, confirm the profile loads from `/api/profile`, and that an existing local profile is migrated when no server profile exists. Confirm profile changes are sent to the server and remain after reopening the Mini App. Outside Telegram, confirm the profile is clearly labelled as local-only.
 
+
+## ORVEX Agent interface and account scenarios
+
+- Check the onboarding flow from the first screen through the final action. Confirm that the copy matches the current AI chat, sign-in methods, guest limit, and available memory features.
+- Switch the interface between Russian, English, and German. Check the onboarding, authentication dialog, profile dialog, chat status, quota status, and roadmap for untranslated or stale text.
+- In a normal browser, verify that sign-in methods appear in this order: Telegram, Google, guest. Confirm Google and guest buttons remain disabled when Supabase auth configuration is unavailable.
+- Confirm guest mode shows the remaining count out of 20 and the UTC reset time. Confirm the chat remains disabled while quota status is loading and after the daily limit is reached.
+- Confirm guest mode cannot open balance top-up or Telegram-only account deletion controls.
+- Confirm the onboarding warns that anonymous guest sessions cannot be recovered after sign-out or clearing browser data, and recommends Google for cross-device history access.
+- Sign in with Google and guest mode separately. Confirm profile and chat history never appear across accounts.
+- Start a chat request, then sign out or switch accounts before it completes. Confirm the old response, history, or quota result does not appear in the new session.
+- Refresh the page after sign-in and confirm the current account session, profile, and saved chat history are restored when server storage is configured.
+- Without signing in, confirm the profile is clearly labelled as local-only and the interface does not claim server synchronization.
+- Test responsive layout at 320, 375, 620, 768, 1024, and 1440 CSS pixels. Check horizontal overflow, clipped dialogs, buttons, chat input, quota label, and navigation.
+- Test mobile portrait and landscape, browser zoom at 200%, keyboard-only navigation, visible focus, and reduced-motion settings.
+- In Telegram, test Mini App viewport resizing, safe-area padding, Telegram Back button behavior for each dialog, and chat/profile layout inside the Telegram webview.
+
 ## Current implementation boundary
 
 The repository contains a static `index.html` plus Vercel Node.js API routes for backend health, Telegram session verification, profile storage, and personal memory. The memory UI is available only inside an authenticated Telegram Mini App session and requires the Supabase table plus three server-side Vercel environment variables. The Telegram Mini App profile now reads and writes through `/api/profile`; local storage is retained as a cache and for browser-only use. AI provider requests and agent execution are not implemented. Do not enter API keys or bot tokens into browser code.

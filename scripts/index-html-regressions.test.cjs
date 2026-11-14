@@ -19,7 +19,7 @@ test("server profile responses never depend on unguarded localStorage writes", (
 test("translation dictionaries do not mix languages", () => {
   const start = html.indexOf("const translations={");
   const end = html.indexOf("const originalTextNodes");
-  const translations = new Function(html.slice(start, end).replace(/function isDeletePhrase[\s\S]*$/, "") + "\nreturn translations;")();
+  const translations = new Function(html.slice(start, end) + "\nreturn translations;")();
   const latin = (v) => /[A-Za-z]/.test(v);
   // English values must not be German-only and vice versa for known markers.
   assert.equal(translations.de["Персональные функции"], "Persönliche Funktionen");
@@ -36,7 +36,7 @@ test("translation dictionaries do not mix languages", () => {
 test("every Russian UI string used by the script has an English and German translation", () => {
   const start = html.indexOf("const translations={");
   const end = html.indexOf("const originalTextNodes");
-  const translations = new Function(html.slice(start, end).replace(/function isDeletePhrase[\s\S]*$/, "") + "\nreturn translations;")();
+  const translations = new Function(html.slice(start, end) + "\nreturn translations;")();
   const script = html.slice(html.indexOf("<script>"), html.indexOf("const translations={")) +
     html.slice(html.indexOf("const originalTextNodes"), html.indexOf("</script>", html.indexOf("const originalTextNodes")));
   const missing = [];
@@ -57,4 +57,162 @@ test("balance widget loads real data and does not ship demo numbers", () => {
   const markup = html.slice(html.indexOf('id="balanceWidget"'), html.indexOf('id="balanceWidget"') + 600);
   assert.ok(!/\d{2,}/.test(markup.replace(/id="[^"]*"|aria-[a-z]+="[^"]*"/g, "")), "no hardcoded balance in markup");
   assert.ok(html.includes('id="topupPay" type="button" disabled'), "payment button stays disabled until payments exist");
+});
+
+test("authentication dialog retains focus when all sign-in methods are unavailable", () => {
+  assert.ok(html.includes("if(!focusable.length){e.preventDefault();authModal.querySelector"));
+});
+test("authentication dialog moves focus inside and restores it after closing", () => {
+  assert.ok(html.includes('class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle" tabindex="-1"'));
+  assert.ok(html.includes("authModalReturnFocus=document.activeElement"));
+  assert.ok(html.includes("firstAvailable||authModal.querySelector"));
+  assert.ok(html.includes("returnFocus.isConnected)returnFocus.focus()"));
+});
+test("authentication methods appear in the requested order", () => {
+  const telegram = html.indexOf('id="authTelegram"');
+  const google = html.indexOf('id="authGoogle"');
+  const guest = html.indexOf('id="authGuest"');
+  assert.ok(telegram >= 0 && google > telegram && guest > google);
+  assert.ok(html.includes('id="authModal"'));
+  assert.ok(html.includes("signInAnonymously()"));
+  assert.ok(html.includes("signInWithOAuth"));
+  assert.ok(html.includes("is_anonymous"));
+  assert.ok(html.includes("fetch('/api/auth-config'"));
+});
+
+test("authentication options display a matching app icon on the left", () => {
+  const telegram = html.slice(html.indexOf('id="authTelegram"'), html.indexOf('id="authGoogle"'));
+  const google = html.slice(html.indexOf('id="authGoogle"'), html.indexOf('id="authGuest"'));
+  const guest = html.slice(html.indexOf('id="authGuest"'), html.indexOf('</div>', html.indexOf('id="authGuest"')));
+  for (const button of [telegram, google, guest]) {
+    assert.ok(button.includes('class="auth-method-icon"'));
+    assert.ok(button.includes('<svg'));
+    assert.ok(button.includes('</svg>'));
+    assert.ok(button.includes('<span>'));
+  }
+  assert.ok(google.includes('fill="#EA4335"'), "Google button uses the Google brand mark");
+});
+
+test("external auth refresh keeps the latest token and clears chat on identity changes", () => {
+  assert.ok(html.includes("supabaseClient.auth.onAuthStateChange("));
+  assert.ok(html.includes("externalAuthSession=session||null"));
+  assert.ok(html.includes("const identityChanged=Boolean(observedAuthUserId&&nextUserId!==observedAuthUserId)"));
+  assert.ok(html.includes("chatHistoryLoadedFor=''"));
+  assert.ok(html.includes("guestQuotaReady=false"));
+});
+
+test("guest chat is connected only to the OpenRouter free router", () => {
+  assert.ok(html.includes('id="aiChatForm"'));
+  assert.ok(html.includes("model:'openrouter/free'"));
+  assert.ok(html.includes("fetch('/api/ai-chat'"));
+  assert.ok(html.includes("fetch('/api/guest-quota'"));
+  assert.ok(html.includes("guestQuota.remaining>0"));
+  assert.ok(html.includes("authGoogleButton.disabled=!supabaseClient||telegramMiniApp"));
+  assert.ok(html.includes("authGuestButton.disabled=!supabaseClient||telegramMiniApp"));
+  assert.ok(html.includes("balanceAdd.disabled=!(telegramMiniApp&&telegramProfileSession)"));
+});
+
+
+test("onboarding and status copy describe the current AI and sign-in features", () => {
+  const markup = html.slice(html.indexOf("</head>"), html.indexOf("<script>"));
+  assert.ok(markup.includes("AI-чат уже подключён через OpenRouter."));
+  assert.ok(html.includes("openrouter/free"));
+  assert.ok(markup.includes("Порядок входа: Telegram, Google, затем гостевой режим."));
+  assert.ok(markup.includes("20 запросов в сутки"));
+  assert.ok(!markup.includes("реальные AI-запросы и выбор моделей в интерфейсе ещё не подключены"));
+  assert.ok(!markup.includes("История этого чата хранится только до перезагрузки страницы"));
+});
+
+test("profile copy distinguishes external account storage from local-only mode", () => {
+  assert.ok(html.includes("Профиль и история чата сохраняются в вашем аккаунте ORVEX Agent."));
+  assert.ok(html.includes("Без входа профиль сохраняется только на этом устройстве."));
+  assert.ok(html.includes("Серверное хранилище аккаунта недоступно."));
+});
+
+test("late chat, history, and quota responses are ignored after account changes", () => {
+  assert.ok(html.includes("authGeneration++"));
+  assert.ok(html.includes("requestGeneration!==authGeneration"));
+  assert.ok(html.includes("historyGeneration!==authGeneration"));
+  assert.ok(html.includes("quotaGeneration!==authGeneration"));
+});
+
+
+test("onboarding dialog restores focus to its opener, with a safe fallback", () => {
+  assert.ok(html.includes("let onboardingReturnFocus=null"));
+  assert.ok(html.includes("onboardingReturnFocus=document.activeElement"));
+  assert.ok(html.includes("returnFocus!==document.body?returnFocus:document.getElementById"));
+  assert.ok(html.includes("target.focus()"));
+});
+test("onboarding and sign-in dialogs support keyboard focus trapping and Escape", () => {
+  assert.ok(html.includes("onboarding.querySelectorAll('button:not([disabled])"));
+  assert.ok(html.includes("authModal.querySelectorAll('button:not([disabled])"));
+  assert.ok(html.includes("if(e.key==='Escape'){closeOnboarding();return}"));
+  assert.ok(html.includes("if(e.key==='Escape'){closeAuthModal();return}"));
+  assert.ok(html.includes("onboardingNextButton.focus()"));
+});
+
+test("mobile dialogs respect device safe areas and short Telegram viewports", () => {
+  assert.ok(html.includes("env(safe-area-inset-top)"));
+  assert.ok(html.includes("var(--tg-viewport-height,100dvh)"));
+  assert.ok(html.includes(".auth-panel,.delete-confirm-card"));
+  assert.ok(html.includes("@media(max-width:370px)"));
+});
+
+
+test("browser guests do not see Telegram-only balance and account deletion controls", () => {
+  assert.ok(html.includes('id="balanceWidget" aria-live="polite" hidden'));
+  assert.ok(html.includes('id="telegramDeleteSection" hidden'));
+  assert.ok(html.includes("deleteSection.hidden=!canUseTelegramAccount"));
+  assert.ok(html.includes("balanceWidget.hidden=!canUseTelegramAccount"));
+  assert.ok(html.includes("balanceAdd.disabled=!(telegramMiniApp&&telegramProfileSession)"));
+});
+
+
+test("profile language sync cannot overwrite a newly selected account", () => {
+  assert.ok(html.includes("languageGeneration=authGeneration"));
+  assert.ok(html.includes("languageGeneration!==authGeneration"));
+  assert.ok(html.includes("languageUserId=externalAuthSession.user&&externalAuthSession.user.id"));
+});
+
+
+test("the roadmap lists all seven phases in the agreed order", () => {
+  const roadmapStart = html.indexOf('<section class="roadmap" id="roadmap">');
+  const roadmapEnd = html.indexOf("</section>", roadmapStart);
+  const roadmap = html.slice(roadmapStart, roadmapEnd);
+  const stages = [...roadmap.matchAll(/roadmap-num">([0-9]{2})/g)].map(match => match[1]);
+  assert.deepEqual(stages, ["01", "02", "03", "04", "05", "06", "07"]);
+  assert.ok(roadmap.indexOf("Основной Telegram-бот") < roadmap.indexOf("Бот поддержки"));
+  assert.ok(roadmap.indexOf("Бот поддержки") < roadmap.indexOf("Административная панель"));
+  assert.ok(roadmap.includes("Финальный этап"));
+});
+
+
+test("Telegram Back closes the topmost account deletion confirmation", () => {
+  assert.ok(html.includes("else if(deleteModal.classList.contains('open'))closeDeleteConfirmation()"));
+});
+
+
+
+test("account deletion dialog restores keyboard focus to its opener", () => {
+  assert.ok(html.includes("let deleteConfirmStep=1,deleteModalReturnFocus=null"));
+  assert.ok(html.includes("deleteModalReturnFocus=document.activeElement"));
+  assert.ok(html.includes("returnFocus.isConnected)returnFocus.focus()"));
+});
+
+
+test("guest onboarding explains the non-recoverable anonymous session", () => {
+  assert.ok(html.includes("Гостевой аккаунт не восстанавливается после выхода или очистки данных браузера."));
+  assert.ok(html.includes("После настройки сервера используйте Google для сохранения истории между устройствами."));
+});
+
+
+test("the interface provides a keyboard skip link to the main content", () => {
+  assert.ok(html.includes('class="skip-link" href="#home"'));
+  assert.ok(html.includes('<main class="wrap" id="home" tabindex="-1">'));
+  assert.ok(html.includes("Перейти к содержимому"));
+});
+
+test("stale chat history load failures are ignored after account changes", () => {
+  const guardedFailure = "catch(error){if(historyGeneration===authGeneration&&externalAuthSession&&externalAuthSession.user&&externalAuthSession.user.id===ownerId)aiChatStatus.textContent='Не удалось загрузить историю чата с сервера.'}";
+  assert.ok(html.includes(guardedFailure));
 });

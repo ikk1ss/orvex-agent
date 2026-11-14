@@ -13,8 +13,6 @@ function getSupabaseHeaders(serviceKey) {
     apikey: serviceKey,
     "Content-Type": "application/json"
   };
-  // Supabase sb_secret keys are opaque API keys, not JWTs. Do not send
-  // them as Bearer tokens; the Supabase API gateway handles them via apikey.
   if (!serviceKey.startsWith("sb_secret_")) {
     headers.Authorization = "Bearer " + serviceKey;
   }
@@ -82,8 +80,6 @@ module.exports = async function accountHandler(req, res) {
       const pageSize = 500;
       const maxMemories = 10000;
 
-      // PostgREST may apply a default row limit. Fetch deterministic pages so
-      // an export never silently omits older memory records.
       for (let offset = 0; offset <= maxMemories; offset += pageSize) {
         const memoryQuery = new URLSearchParams({
           select: "id,content,category,created_at",
@@ -112,12 +108,32 @@ module.exports = async function accountHandler(req, res) {
         memories.push(...page);
         if (page.length < pageSize) break;
       }
+
+      const conversationQuery = new URLSearchParams({
+        select: "role,content,created_at",
+        telegram_id: "eq." + telegramId,
+        order: "created_at.asc,id.asc",
+        limit: "100"
+      });
+      const conversationResponse = await fetch(
+        root + "/orvex_chat_messages?" + conversationQuery.toString(),
+        { headers }
+      );
+      if (!conversationResponse.ok) {
+        return reply(res, 502, { error: "account_export_unavailable" });
+      }
+      const conversationHistory = await conversationResponse.json();
+      if (!Array.isArray(conversationHistory)) {
+        return reply(res, 502, { error: "account_export_unavailable" });
+      }
+
       return reply(res, 200, {
-        schemaVersion: 1,
+        schemaVersion: 2,
         exportedAt: new Date().toISOString(),
         telegramUserId: telegramId,
         profile: profiles[0] || null,
-        memories
+        memories,
+        conversationHistory
       });
     }
 
