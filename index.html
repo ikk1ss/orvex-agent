@@ -1038,6 +1038,36 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .chat-status{margin:12px 2px 0;color:#8291a8;font-size:11px;line-height:1.6}
 @media(max-width:620px){.chat-panel{padding:13px}.chat-messages{min-height:190px;max-height:55vh}.chat-message{max-width:94%}.chat-form{grid-template-columns:1fr}.chat-form button{width:100%}}
 
+
+/* Final viewport pass: safe areas and short-screen dialog scrolling */
+#onboarding,#authModal,#profileModal,#topupModal,#deleteConfirmModal{
+ max-height:var(--tg-viewport-height,100dvh);
+ padding-top:max(12px,env(safe-area-inset-top));
+ padding-right:max(12px,env(safe-area-inset-right));
+ padding-bottom:max(12px,env(safe-area-inset-bottom));
+ padding-left:max(12px,env(safe-area-inset-left));
+}
+#authModal,#deleteConfirmModal{overflow-y:auto;overscroll-behavior:contain}
+.auth-panel,.delete-confirm-card{
+ max-height:calc(var(--tg-viewport-height,100dvh) - 32px);
+ overflow:auto;
+ overscroll-behavior:contain;
+}
+@media(max-width:620px){
+ #onboarding{padding: max(15px,env(safe-area-inset-top)) max(15px,env(safe-area-inset-right)) max(15px,env(safe-area-inset-bottom)) max(15px,env(safe-area-inset-left))}
+ #authModal,#deleteConfirmModal{padding: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+ .auth-panel{padding:20px}
+ .delete-confirm-card{padding:19px}
+}
+@media(max-width:370px){
+ .delete-confirm-actions{grid-template-columns:1fr}
+ .chat-toolbar{align-items:flex-start}
+ .chat-quota{max-width:100%;overflow-wrap:anywhere}
+}
+@supports(height:100dvh){
+ #profileModal .modal{max-height:min(calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)),850px)}
+ .topup-card{max-height:calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+}
 </style>
 </head>
 <body class="orvex-booting">
