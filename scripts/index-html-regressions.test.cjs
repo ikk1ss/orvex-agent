@@ -151,3 +151,10 @@ test("browser guests do not see Telegram-only balance and account deletion contr
   assert.ok(html.includes("balanceWidget.hidden=!canUseTelegramAccount"));
   assert.ok(html.includes("balanceAdd.disabled=!(telegramMiniApp&&telegramProfileSession)"));
 });
+
+
+test("profile language sync cannot overwrite a newly selected account", () => {
+  assert.ok(html.includes("languageGeneration=authGeneration"));
+  assert.ok(html.includes("languageGeneration!==authGeneration"));
+  assert.ok(html.includes("languageUserId=externalAuthSession.user&&externalAuthSession.user.id"));
+});
