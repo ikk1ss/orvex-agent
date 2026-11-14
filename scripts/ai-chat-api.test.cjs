@@ -101,6 +101,14 @@ test("guest requests use the free router and consume one daily request", async (
         assert.equal(body.messages[1].content, "Привет");
         assert.equal(init.headers.Authorization, "Bearer test-openrouter-key");
         return ok({ model: "provider/model:free", choices: [{ message: { content: "Здравствуйте!" } }] });
+      }],
+      ["https://example.supabase.co/rest/v1/orvex_auth_chat_messages", (url, init) => {
+        assert.equal(init.method, "POST");
+        const rows = JSON.parse(init.body);
+        assert.deepEqual(rows.map(row => row.role), ["user", "assistant"]);
+        assert.equal(rows[0].user_id, guestId);
+        assert.equal(rows[1].content, "Здравствуйте!");
+        return { ok: true, status: 201, json: async () => [] };
       }]
     ]);
     try {
@@ -113,7 +121,8 @@ test("guest requests use the free router and consume one daily request", async (
       assert.equal(res.statusCode, 200);
       assert.equal(res.payload.message, "Здравствуйте!");
       assert.equal(res.payload.quota.remaining, 19);
-      assert.equal(mock.calls.length, 3);
+      assert.equal(res.payload.historySaved, true);
+      assert.equal(mock.calls.length, 4);
     } finally { mock.restore(); }
   });
 });
@@ -145,7 +154,14 @@ test("Google-authenticated users can use the free router without the guest quota
     const mock = mockFetch([
       ["https://example.supabase.co/auth/v1/user", () => ok({ id: guestId, is_anonymous: false })],
       ["https://openrouter.ai/api/v1/chat/completions", () =>
-        ok({ model: "provider/model:free", choices: [{ message: { content: "Ответ" } }] })]
+        ok({ model: "provider/model:free", choices: [{ message: { content: "Ответ" } }] })],
+      ["https://example.supabase.co/rest/v1/orvex_auth_chat_messages", () => {
+        throw new Error("Telegram conversations must not use external account storage");
+      }],
+      ["https://example.supabase.co/rest/v1/orvex_auth_chat_messages", (url, init) => {
+        assert.equal(JSON.parse(init.body)[0].user_id, guestId);
+        return { ok: true, status: 201, json: async () => [] };
+      }]
     ]);
     try {
       const res = response();
@@ -156,7 +172,8 @@ test("Google-authenticated users can use the free router without the guest quota
       }, res);
       assert.equal(res.statusCode, 200);
       assert.equal(res.payload.quota, null);
-      assert.equal(mock.calls.length, 2);
+      assert.equal(res.payload.historySaved, true);
+      assert.equal(mock.calls.length, 3);
     } finally { mock.restore(); }
   });
 });
