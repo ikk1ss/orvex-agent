@@ -1366,11 +1366,36 @@ async function initAuthWorkspace(){
   const result=await supabaseClient.auth.getSession();
   if(result.error)throw result.error;
   externalAuthSession=result.data&&result.data.session||null;
+  let observedAuthUserId=externalAuthSession&&externalAuthSession.user?externalAuthSession.user.id:'';
   if(externalAuthSession){
    const user=externalAuthSession.user||{};
    authMode=user.is_anonymous?'guest':'google';
    document.body.dataset.authMode=authMode;
   }
+  // Keep API requests on the current access token after Supabase refreshes it.
+  // Also clear in-memory chat data when the authenticated identity changes.
+  supabaseClient.auth.onAuthStateChange((event,session)=>{
+   const nextUserId=session&&session.user?session.user.id:'';
+   const identityChanged=Boolean(observedAuthUserId&&nextUserId!==observedAuthUserId);
+   observedAuthUserId=nextUserId;
+   externalAuthSession=session||null;
+   authMode=session?(session.user&&session.user.is_anonymous?'guest':'google'):'';
+   if(session)document.body.dataset.authMode=authMode;
+   else delete document.body.dataset.authMode;
+   if(identityChanged||!session){
+    chatHistory=[];
+    chatHistoryLoadedFor='';
+    guestQuota=null;
+    guestQuotaReady=false;
+    if(guestQuotaResetTimer)clearTimeout(guestQuotaResetTimer);
+    if(aiChatMessages)aiChatMessages.replaceChildren();
+    profile=null;
+    try{localStorage.removeItem('orvex_agent_profile')}catch(storageError){}
+   }
+   updateHeaderAction();
+   updateChatQuota();
+   updateChatControls();
+  });
  }catch(error){
   supabaseClient=null;
   externalAuthSession=null;
