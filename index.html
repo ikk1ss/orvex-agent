@@ -1039,6 +1039,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:620px){.chat-panel{padding:13px}.chat-messages{min-height:190px;max-height:55vh}.chat-message{max-width:94%}.chat-form{grid-template-columns:1fr}.chat-form button{width:100%}}
 
 
+.skip-link{position:fixed;top:12px;left:12px;z-index:10000;padding:12px 16px;border-radius:10px;background:var(--text);color:var(--bg);font-weight:700;transform:translateY(-160%);transition:transform .18s ease}.skip-link:focus{transform:translateY(0)}
 /* Final viewport pass: safe areas and short-screen dialog scrolling */
 #balanceWidget[hidden],#telegramDeleteSection[hidden]{display:none!important}
 #onboarding,#authModal,#profileModal,#topupModal,#deleteConfirmModal{
@@ -1072,6 +1073,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 </style>
 </head>
 <body class="orvex-booting">
+<a class="skip-link" href="#home">Перейти к содержимому</a>
 <div class="orvex-entry-loader" id="orvexEntryLoader" role="status" aria-live="polite" aria-label="Загрузка ORVEX Agent">
  <div class="entry-loader-glow"></div>
  <div class="entry-loader-mark"><span></span><i></i></div>
@@ -1091,7 +1093,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <button class="profile-btn" id="profileOpen" type="button">Начать</button>
 </div>
 </header>
-<main class="wrap" id="home">
+<main class="wrap" id="home" tabindex="-1">
 <section class="hero">
 <div>
 <div class="eyebrow">Персональная AI-платформа</div>
@@ -1698,6 +1700,8 @@ Object.assign(translations.de,{
 'Административная панель':'Admin-Panel',
 'Добавить защищённое управление пользователями, настройками и диагностикой.':'Eine sichere Verwaltung für Benutzer, Einstellungen und Diagnose hinzufügen.'
 });
+Object.assign(translations.en,{'Перейти к содержимому':'Skip to content'});
+Object.assign(translations.de,{'Перейти к содержимому':'Zum Inhalt springen'});
 const originalTextNodes=new WeakMap(),originalAttributes=new WeakMap();
 let activeInterfaceLanguage='ru';
 function canonicalTranslation(value){
