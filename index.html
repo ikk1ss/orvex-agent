@@ -1095,7 +1095,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
    <textarea name="message" maxlength="4000" rows="2" placeholder="Введите сообщение..." aria-label="Сообщение для ORVEX" disabled required></textarea>
    <button id="aiChatSend" type="submit" disabled>Отправить</button>
   </form>
-  <p class="chat-status" id="aiChatStatus" role="status">Войдите или продолжите как гость, чтобы отправить сообщение. История этого чата хранится только до перезагрузки страницы.</p>
+  <p class="chat-status" id="aiChatStatus" role="status">Выберите способ входа, чтобы начать диалог. Для гостевого режима действует лимит 20 запросов в сутки.</p>
  </div>
 </section>
 
@@ -1103,11 +1103,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="section-head"><div><div class="kicker">Состояние разработки</div><h2 class="section-title">Что уже готово</h2></div><div class="section-sub">Актуальные статусы без вымышленных показателей и функций.</div></div>
 <div class="status-grid">
 <article class="status-card"><div class="status-top"><span class="status-icon">◈</span><span class="pill ready">Опубликован</span></div><h3>Веб-интерфейс</h3><p>Сайт опубликован и открывается по защищённому HTTPS-адресу.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">⌘</span><span class="pill ready">Настроено</span></div><h3>Запуск в Telegram</h3><p id="telegramAuthNote">Кнопка Mini App настроена через BotFather. Серверная проверка пользователя требует настройки.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">◎</span><span class="pill partial" id="profileStatus">Локально</span></div><h3>Профиль пользователя</h3><p id="profileStatusText">В браузере доступен локальный профиль. В Telegram профиль будет привязан к вашему Telegram ID после настройки серверного хранилища.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">⌁</span><span class="pill pending" id="backendStatus">Требует настройки</span></div><h3>Сервер и база данных</h3><p>API для Telegram, профилей и персональной памяти подготовлен. Для запуска нужны база Supabase и серверные настройки Vercel.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">✳</span><span class="pill pending">В планах</span></div><h3>AI-модели и агенты</h3><p>Реальные AI-запросы и запуск агентных задач из интерфейса ещё не реализованы.</p></article>
-<article class="status-card"><div class="status-top"><span class="status-icon">⌕</span><span class="pill pending">В планах</span></div><h3>Тестирование и мониторинг</h3><p>Автоматические проверки, журналы ошибок и уведомления ещё предстоит настроить.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">⌘</span><span class="pill ready">Настроено</span></div><h3>Запуск в Telegram</h3><p id="telegramAuthNote">Mini App открывается через Telegram. Сервер проверяет подписанные данные Telegram перед доступом к личным функциям.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">◎</span><span class="pill partial" id="profileStatus">Локально</span></div><h3>Профиль пользователя</h3><p id="profileStatusText">Профиль может храниться в аккаунте Google или гостевой сессии. В Telegram используется отдельная подтверждённая Telegram-сессия.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">⌁</span><span class="pill pending" id="backendStatus">Требует настройки</span></div><h3>Сервер и база данных</h3><p>Серверные API используют Supabase для профилей, истории чата и гостевого лимита. Применение миграций и проверка live-конфигурации ещё требуются.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">✳</span><span class="pill pending">В планах</span></div><h3>AI-модели и агенты</h3><p>AI-чат работает через OpenRouter/free. Выбор конкретных моделей и запуск агентных задач ещё не доступны.</p></article>
+<article class="status-card"><div class="status-top"><span class="status-icon">⌕</span><span class="pill pending">В планах</span></div><h3>Тестирование и мониторинг</h3><p>Автоматические проверки и CI настроены. Ручные проверки интерфейса и live-сервисов ещё предстоят.</p></article>
 </div>
 </section>
 
@@ -1132,14 +1132,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="roadmap-layout">
 <div class="roadmap-intro"><div class="kicker">Дорожная карта</div><h2 class="section-title">Следующие шаги</h2><p>Развиваем платформу последовательно. Каждый новый модуль появится в интерфейсе после его реальной реализации и проверки.</p></div>
 <div class="roadmap-list">
-<div class="roadmap-item"><span class="roadmap-num">01</span><div><b>Настроить сервер и базу</b><small>Создать проект Supabase и добавить серверные переменные в Vercel.</small></div><span class="roadmap-label">Ожидает настройки</span></div>
-<div class="roadmap-item"><span class="roadmap-num">02</span><div><b>Подключить персональную память</b><small>Проверить сохранение, загрузку и удаление личных записей.</small></div><span class="roadmap-label">После настройки сервера</span></div>
-<div class="roadmap-item"><span class="roadmap-num">03</span><div><b>AI-чат и выбор модели</b><small>Подключить провайдера, диалоги и работу с контекстом памяти.</small></div><span class="roadmap-label">Следующий этап</span></div>
-<div class="roadmap-item"><span class="roadmap-num">04</span><div><b>Проверка и диагностика</b><small>Проверить работу на компьютере, телефоне и внутри Telegram.</small></div><span class="roadmap-label">После интеграции</span></div>
+<div class="roadmap-item"><span class="roadmap-num">01</span><div><b>Завершить настройку серверного хранилища</b><small>Применить подготовленные SQL-миграции и проверить серверные переменные.</small></div><span class="roadmap-label">Ожидает настройки</span></div>
+<div class="roadmap-item"><span class="roadmap-num">02</span><div><b>Проверить вход и синхронизацию данных</b><small>Проверить Telegram, Google и гостевой вход, профиль, историю чата и лимит запросов.</small></div><span class="roadmap-label">После настройки сервера</span></div>
+<div class="roadmap-item"><span class="roadmap-num">03</span><div><b>Довести адаптацию интерфейса</b><small>Проверить отображение и все основные сценарии на телефоне, компьютере и внутри Telegram.</small></div><span class="roadmap-label">Следующий этап</span></div>
+<div class="roadmap-item"><span class="roadmap-num">04</span><div><b>Финальное тестирование Mini App</b><small>Пройти регрессионные сценарии, проверить ошибки и подготовить приложение к передаче на этап Telegram-бота.</small></div><span class="roadmap-label">После интеграции</span></div>
 </div>
 </div>
 </section>
-<div class="notice"><b>О профиле.</b> Сейчас имя и выбранные настройки сохраняются только в этом браузере. Это не полноценная регистрация, данные не отправляются на сервер. Не вводите пароли, платёжные данные или секретные ключи.</div>
+<div class="notice"><b>О профиле.</b> Google- и гостевой вход используют отдельные аккаунты; Telegram Mini App использует подтверждённую Telegram-сессию. Серверная синхронизация зависит от настройки Supabase. Не вводите пароли, платёжные данные или секретные ключи.</div>
 </main>
 <footer class="footer wrap"><span class="footer-brand">ORVEX AGENT</span><span>Персональное пространство на базе искусственного интеллекта</span><span>© 2026 ORVEX Agent</span></footer>
 
@@ -1176,22 +1176,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
    <div class="onboarding-slide" data-onboarding-step="0">
     <div class="onboarding-kicker">Добро пожаловать</div>
     <h1 id="onboardingTitle">Одно пространство для работы с AI.</h1>
-    <p>ORVEX Agent создаётся как персональное рабочее пространство, в котором будут собраны ИИ-помощник, инструменты и автоматизация. Сейчас мы знакомим вас с уже работающими функциями и тем, что находится в разработке.</p>
-    <div class="onboarding-points"><div class="onboarding-point"><b>Ваше пространство</b><span>Профиль и персональные настройки, привязанные к вашему Telegram-аккаунту.</span></div><div class="onboarding-point"><b>Развитие по этапам</b><span>Новые функции будут появляться постепенно, а их статус будет указан прямо в приложении.</span></div></div>
+    <p>ORVEX Agent объединяет AI-чат, профиль и персональные настройки. Новые инструменты и автоматизация будут добавляться по мере готовности.</p>
+    <div class="onboarding-points"><div class="onboarding-point"><b>Ваше пространство</b><span>Войти можно через Telegram в Mini App, а также через Google или гостевой режим в браузере.</span></div><div class="onboarding-point"><b>Развитие по этапам</b><span>Новые функции будут появляться постепенно, а их статус будет указан прямо в приложении.</span></div></div>
    </div>
    <div class="onboarding-slide" data-onboarding-step="1" hidden>
     <div class="onboarding-kicker">Персональные функции</div><h1>Настройки и память под вашим контролем.</h1>
     <p>В ORVEX Agent уже подготовлены функции персонального пространства:</p>
-    <div class="onboarding-points"><div class="onboarding-point"><b>Профиль</b><span>Редактирование личных сведений, интересов, языка, длины и формата ответов, а также собственных инструкций.</span></div><div class="onboarding-point"><b>Персональная память</b><span>Добавление, просмотр и удаление заметок, предпочтений, фактов и целей.</span></div><div class="onboarding-point"><b>Ваши данные</b><span>Можно экспортировать данные или удалить профиль вместе с записями памяти. Настройки стиля ответов начнут влиять на ИИ после подключения чата.</span></div></div>
+    <div class="onboarding-points"><div class="onboarding-point"><b>Профиль</b><span>Редактирование личных сведений, интересов, языка, длины и формата ответов, а также собственных инструкций.</span></div><div class="onboarding-point"><b>Персональная память</b><span>Добавление, просмотр и удаление заметок, предпочтений, фактов и целей. Сейчас раздел памяти доступен в подтверждённой Telegram-сессии.</span></div><div class="onboarding-point"><b>Ваши данные</b><span>Профиль и история чата синхронизируются с аккаунтом Google или гостя после настройки серверного хранилища. Экспорт и удаление данных Telegram-аккаунта доступны в соответствующем разделе.</span></div></div>
    </div>
    <div class="onboarding-slide" data-onboarding-step="2" hidden>
     <div class="onboarding-kicker">Модели искусственного интеллекта</div><h1>Вы сможете выбирать модель под задачу.</h1>
-    <p>В планах подключить несколько ИИ-моделей с разными сильными сторонами: для повседневных вопросов, анализа, программирования и сложных задач.</p>
-    <div class="onboarding-points"><div class="onboarding-point"><b>Сравнение моделей</b><span>Будут указаны особенности, ограничения и подходящие сценарии каждой модели.</span></div><div class="onboarding-point"><b>Честный статус</b><span>На данный момент реальные AI-запросы и выбор моделей в интерфейсе ещё не подключены. Список появится после интеграции и проверки.</span></div></div>
+    <p>AI-чат уже подключён через OpenRouter. Маршрутизатор openrouter/free выбирает доступную бесплатную модель для запроса.</p>
+    <div class="onboarding-points"><div class="onboarding-point"><b>Сравнение моделей</b><span>Каталог с выбором конкретной модели, её ограничениями и подходящими задачами появится после проверки каждой модели.</span></div><div class="onboarding-point"><b>Честный статус</b><span>Сейчас можно отправлять запросы через openrouter/free. Ручной выбор отдельных моделей и агентные сценарии ещё не реализованы.</span></div></div>
    </div>
    <div class="onboarding-slide" data-onboarding-step="3" hidden>
     <div class="onboarding-kicker">Что дальше</div><h1>Начните с персонального профиля.</h1>
-    <p>После знакомства вы сможете создать профиль. По мере развития ORVEX Agent это описание будет обновляться вместе с доступными моделями, инструментами и возможностями.</p>
+    <p>Выберите способ входа, заполните профиль и попробуйте AI-чат. Гостевой режим включает до 20 запросов в сутки и не поддерживает пополнение баланса.</p>
     <div class="onboarding-points"><div class="onboarding-point"><b>Без фиктивных обещаний</b><span>В ознакомлении показываются только подтверждённые функции и явно обозначенные планы.</span></div></div>
    </div>
    <div class="onboarding-actions"><button class="onboarding-back" id="onboardingBack" type="button" disabled>Назад</button><button class="onboarding-next" id="onboardingNext" type="button">Далее</button></div>
@@ -1204,7 +1204,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div id="authModal" aria-hidden="true">
  <section class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
   <h2 id="authTitle">Выберите способ входа</h2>
-  <p>Войдите через Telegram или Google. Если хотите сначала ознакомиться с ORVEX, продолжите как гость.</p>
+  <p>Порядок входа: Telegram, Google, затем гостевой режим. Гостям доступны бесплатные модели и 20 запросов в сутки без пополнения баланса.</p>
   <div class="auth-methods">
    <button class="auth-method auth-method-primary" id="authTelegram" type="button"><span class="auth-method-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.7 3.3 18.5 20c-.24 1.18-.87 1.47-1.77.92l-4.9-3.61-2.36 2.27c-.26.26-.48.48-.98.48l.35-4.99 9.08-8.2c.4-.35-.09-.55-.62-.2L6.07 13.9l-4.77-1.5c-1.04-.33-1.06-1.04.22-1.55L20.17 3.1c.87-.32 1.63.2 1.53.2Z"/></svg></span><span>Войти через Telegram</span></button>
    <button class="auth-method" id="authGoogle" type="button" disabled><span class="auth-method-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.72 7.18l7.62 5.91c4.45-4.1 7.14-10.15 7.14-17.56Z"/><path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.53 2.56 10.78l7.97-6.19Z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.89l-7.62-5.91c-2.12 1.42-4.84 2.26-8.28 2.26-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"/></svg></span><span>Войти через Google</span></button>
@@ -1217,7 +1217,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <div id="profileModal" aria-hidden="true">
 <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 <div class="modal-head"><h2 id="modalTitle">Ваш профиль</h2><button class="close" id="profileClose" type="button" aria-label="Закрыть">×</button></div>
-<p class="modal-intro" id="profileModalIntro">Укажите имя и настройки отображения. В обычном браузере они сохраняются локально, а в Telegram могут синхронизироваться с вашей учётной записью.</p>
+<p class="modal-intro" id="profileModalIntro">Укажите имя и настройки отображения. Для входа через Google или гостевой режим профиль синхронизируется с аккаунтом при настроенном сервере; в Telegram используется ваш Telegram ID.</p>
 <div class="profile-avatar-row"><div class="profile-avatar" id="profileAvatar" aria-label="Аватар профиля"><span id="profileAvatarInitials">OR</span><img id="profileAvatarImage" alt="" hidden></div><div class="profile-avatar-copy"><b id="profileDisplayName">Ваш профиль</b><span id="profileAvatarHint">Фото профиля из Telegram появится здесь, если оно доступно.</span></div></div>
 <form id="profileForm">
 <label class="field">Как к вам обращаться?<input name="name" type="text" maxlength="60" autocomplete="name" placeholder="Ваше имя" required></label>
@@ -1238,10 +1238,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <button class="profile-onboarding-replay" id="replayOnboarding" type="button">Посмотреть ознакомление ещё раз</button>
 </form>
 <div class="profile-account-actions">
- <section class="profile-account-section"><h3>Сеанс приложения</h3><p>Закрыть ORVEX Agent на этом устройстве. Telegram-аккаунт останется подключён.</p><button class="profile-account-button" id="logoutAccount" type="button">Выйти</button></section>
+ <section class="profile-account-section"><h3>Сеанс приложения</h3><p>Завершить текущий сеанс ORVEX Agent на этом устройстве. Для продолжения потребуется снова войти.</p><button class="profile-account-button" id="logoutAccount" type="button">Выйти</button></section>
  <section class="profile-account-section danger"><h3>Удаление аккаунта</h3><p>Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.</p><button class="profile-account-button" id="openDeleteConfirm" type="button">Удалить аккаунт</button></section>
 </div>
-<p class="local-note">Локальное сохранение. Серверной регистрации пока нет.</p>
+<p class="local-note">Данные профиля могут храниться локально или в аккаунте, в зависимости от выбранного способа входа и доступности сервера.</p>
 </section>
 </div>
 <div id="topupModal" role="dialog" aria-modal="true" aria-labelledby="topupTitle" aria-hidden="true">
@@ -1271,7 +1271,7 @@ const $=s=>document.querySelector(s);
 const modal=$('#profileModal'),form=$('#profileForm');
 const authModal=$('#authModal');
 const authTelegramButton=$('#authTelegram'),authGoogleButton=$('#authGoogle'),authGuestButton=$('#authGuest'),authNote=$('#authNote');
-let authConfig=null,supabaseClient=null,externalAuthSession=null,authMode='';
+let authConfig=null,supabaseClient=null,externalAuthSession=null,authMode='',authGeneration=0;
 const onboarding=$('#onboarding');
 const onboardingSlides=[...document.querySelectorAll('[data-onboarding-step]')];
 let onboardingStep=0;
@@ -1383,6 +1383,7 @@ async function initAuthWorkspace(){
    if(session)document.body.dataset.authMode=authMode;
    else delete document.body.dataset.authMode;
    if(identityChanged||!session){
+    authGeneration++;
     chatHistory=[];
     chatHistoryLoadedFor='';
     guestQuota=null;
@@ -1555,6 +1556,82 @@ Object.assign(translations.de,{
  'Не удалось загрузить историю чата с сервера.':'Der Chatverlauf konnte nicht vom Server geladen werden.',
  'История чата синхронизируется с вашим аккаунтом.':'Der Chatverlauf wird mit Ihrem Konto synchronisiert.'
 });
+Object.assign(translations.en,{
+'ORVEX Agent объединяет AI-чат, профиль и персональные настройки. Новые инструменты и автоматизация будут добавляться по мере готовности.':'ORVEX Agent brings together AI chat, a profile, and personal settings. New tools and automation will be added as they are completed.',
+'Войти можно через Telegram в Mini App, а также через Google или гостевой режим в браузере.':'Sign in through Telegram in the Mini App, or use Google or guest access in a browser.',
+'Добавление, просмотр и удаление заметок, предпочтений, фактов и целей. Сейчас раздел памяти доступен в подтверждённой Telegram-сессии.':'Add, view, and delete notes, preferences, facts, and goals. The memory section is currently available in a verified Telegram session.',
+'Профиль и история чата синхронизируются с аккаунтом Google или гостя после настройки серверного хранилища. Экспорт и удаление данных Telegram-аккаунта доступны в соответствующем разделе.':'Profile and chat history sync with Google or guest accounts once server storage is configured. Telegram account data export and deletion are available in the relevant section.',
+'AI-чат уже подключён через OpenRouter. Маршрутизатор openrouter/free выбирает доступную бесплатную модель для запроса.':'AI chat is connected through OpenRouter. The openrouter/free router selects an available free model for each request.',
+'Сейчас можно отправлять запросы через openrouter/free. Ручной выбор отдельных моделей и агентные сценарии ещё не реализованы.':'You can send requests through openrouter/free. Manual model selection and agent workflows are not implemented yet.',
+'Выберите способ входа, заполните профиль и попробуйте AI-чат. Гостевой режим включает до 20 запросов в сутки и не поддерживает пополнение баланса.':'Choose a sign-in method, complete your profile, and try AI chat. Guest access includes up to 20 requests per day and does not support balance top-ups.',
+'Выберите способ входа, чтобы начать диалог. Для гостевого режима действует лимит 20 запросов в сутки.':'Choose a sign-in method to start chatting. Guest access is limited to 20 requests per day.',
+'Mini App открывается через Telegram. Сервер проверяет подписанные данные Telegram перед доступом к личным функциям.':'The Mini App opens through Telegram. The server verifies signed Telegram data before allowing access to personal features.',
+'Профиль может храниться в аккаунте Google или гостевой сессии. В Telegram используется отдельная подтверждённая Telegram-сессия.':'The profile can be stored in a Google account or guest session. Telegram uses a separate verified Telegram session.',
+'Серверные API используют Supabase для профилей, истории чата и гостевого лимита. Применение миграций и проверка live-конфигурации ещё требуются.':'Server APIs use Supabase for profiles, chat history, and guest quotas. Applying migrations and checking the live configuration are still required.',
+'AI-чат работает через OpenRouter/free. Выбор конкретных моделей и запуск агентных задач ещё не доступны.':'AI chat works through OpenRouter/free. Selecting specific models and running agent tasks are not available yet.',
+'Автоматические проверки и CI настроены. Ручные проверки интерфейса и live-сервисов ещё предстоят.':'Automated checks and CI are configured. Manual interface and live-service checks are still pending.',
+'Завершить настройку серверного хранилища':'Complete server storage setup',
+'Проверить вход и синхронизацию данных':'Verify sign-in and data synchronization',
+'Довести адаптацию интерфейса':'Finish responsive interface work',
+'Финальное тестирование Mini App':'Final Mini App testing',
+'Применить подготовленные SQL-миграции и проверить серверные переменные.':'Apply the prepared SQL migrations and verify server environment variables.',
+'Проверить Telegram, Google и гостевой вход, профиль, историю чата и лимит запросов.':'Verify Telegram, Google, and guest sign-in, profile, chat history, and request limits.',
+'Проверить отображение и все основные сценарии на телефоне, компьютере и внутри Telegram.':'Check layout and core flows on mobile, desktop, and inside Telegram.',
+'Пройти регрессионные сценарии, проверить ошибки и подготовить приложение к передаче на этап Telegram-бота.':'Run regression scenarios, check errors, and prepare the app for the Telegram bot phase.',
+'Google- и гостевой вход используют отдельные аккаунты; Telegram Mini App использует подтверждённую Telegram-сессию. Серверная синхронизация зависит от настройки Supabase. Не вводите пароли, платёжные данные или секретные ключи.':'Google and guest access use separate accounts; the Telegram Mini App uses a verified Telegram session. Server synchronization depends on Supabase configuration. Do not enter passwords, payment details, or secret keys.',
+'Укажите имя и настройки отображения. Для входа через Google или гостевой режим профиль синхронизируется с аккаунтом при настроенном сервере; в Telegram используется ваш Telegram ID.':'Enter your name and preferences. Google and guest profiles sync when the server is configured; Telegram uses your Telegram ID.',
+'Завершить текущий сеанс ORVEX Agent на этом устройстве. Для продолжения потребуется снова войти.':'End the current ORVEX Agent session on this device. You will need to sign in again to continue.',
+'Данные профиля могут храниться локально или в аккаунте, в зависимости от выбранного способа входа и доступности сервера.':'Profile data may be stored locally or in your account, depending on your sign-in method and server availability.',
+'Порядок входа: Telegram, Google, затем гостевой режим. Гостям доступны бесплатные модели и 20 запросов в сутки без пополнения баланса.':'Sign-in order: Telegram, Google, then guest access. Guests can use free models for 20 requests per day without balance top-ups.',
+'Профиль и история чата сохраняются в вашем аккаунте ORVEX Agent.':'Your profile and chat history are saved in your ORVEX Agent account.',
+'Не удалось загрузить профиль с сервера. Проверьте настройки серверного хранилища.':'Could not load the profile from the server. Check server storage settings.',
+'Я подтверждаю сохранение указанных настроек в аккаунте ORVEX Agent.':'I confirm that these settings may be saved in my ORVEX Agent account.',
+'Серверное сохранение пока недоступно. Настройки не будут считаться сохранёнными.':'Server saving is not available yet. These settings will not be treated as saved.',
+'Профиль синхронизирован с аккаунтом ORVEX Agent.':'Profile synced with your ORVEX Agent account.',
+'Проверяем серверное хранилище аккаунта…':'Checking account server storage…',
+'Серверное хранилище аккаунта недоступно.':'Account server storage is unavailable.',
+'Без входа профиль сохраняется только на этом устройстве. Войдите через Google или откройте Telegram Mini App для синхронизации.':'Without signing in, your profile is saved only on this device. Sign in with Google or open the Telegram Mini App to sync it.',
+'Я понимаю, что без входа профиль сохраняется только в этом браузере.':'I understand that without signing in, my profile is saved only in this browser.',
+'Локальное сохранение. Войдите в аккаунт для серверной синхронизации.':'Saved locally. Sign in to sync your profile with the server.'
+});
+Object.assign(translations.de,{
+'ORVEX Agent объединяет AI-чат, профиль и персональные настройки. Новые инструменты и автоматизация будут добавляться по мере готовности.':'ORVEX Agent vereint AI-Chat, Profil und persönliche Einstellungen. Neue Werkzeuge und Automatisierungen kommen hinzu, sobald sie fertig sind.',
+'Войти можно через Telegram в Mini App, а также через Google или гостевой режим в браузере.':'Die Anmeldung ist über Telegram in der Mini App sowie über Google oder als Gast im Browser möglich.',
+'Добавление, просмотр и удаление заметок, предпочтений, фактов и целей. Сейчас раздел памяти доступен в подтверждённой Telegram-сессии.':'Notizen, Präferenzen, Fakten und Ziele hinzufügen, anzeigen und löschen. Der Erinnerungsbereich ist derzeit in einer bestätigten Telegram-Sitzung verfügbar.',
+'Профиль и история чата синхронизируются с аккаунтом Google или гостя после настройки серверного хранилища. Экспорт и удаление данных Telegram-аккаунта доступны в соответствующем разделе.':'Profil und Chatverlauf werden nach Einrichtung des Servers mit Google- oder Gastkonten synchronisiert. Der Export und die Löschung von Telegram-Kontodaten sind im entsprechenden Bereich verfügbar.',
+'AI-чат уже подключён через OpenRouter. Маршрутизатор openrouter/free выбирает доступную бесплатную модель для запроса.':'Der AI-Chat ist über OpenRouter verbunden. Der Router openrouter/free wählt für jede Anfrage ein verfügbares kostenloses Modell.',
+'Сейчас можно отправлять запросы через openrouter/free. Ручной выбор отдельных моделей и агентные сценарии ещё не реализованы.':'Anfragen können über openrouter/free gesendet werden. Die manuelle Modellauswahl und Agentenabläufe sind noch nicht implementiert.',
+'Выберите способ входа, заполните профиль и попробуйте AI-чат. Гостевой режим включает до 20 запросов в сутки и не поддерживает пополнение баланса.':'Wählen Sie eine Anmeldemethode, vervollständigen Sie Ihr Profil und testen Sie den AI-Chat. Gäste erhalten 20 Anfragen pro Tag ohne Guthabenaufladung.',
+'Выберите способ входа, чтобы начать диалог. Для гостевого режима действует лимит 20 запросов в сутки.':'Wählen Sie eine Anmeldemethode, um den Chat zu starten. Für Gäste gilt ein Limit von 20 Anfragen pro Tag.',
+'Mini App открывается через Telegram. Сервер проверяет подписанные данные Telegram перед доступом к личным функциям.':'Die Mini App wird über Telegram geöffnet. Der Server prüft signierte Telegram-Daten vor dem Zugriff auf persönliche Funktionen.',
+'Профиль может храниться в аккаунте Google или гостевой сессии. В Telegram используется отдельная подтверждённая Telegram-сессия.':'Das Profil kann in einem Google-Konto oder einer Gastsitzung gespeichert werden. Telegram verwendet eine separate bestätigte Telegram-Sitzung.',
+'Серверные API используют Supabase для профилей, истории чата и гостевого лимита. Применение миграций и проверка live-конфигурации ещё требуются.':'Server-APIs verwenden Supabase für Profile, Chatverlauf und Gastlimits. Migrationen und Live-Konfiguration müssen noch geprüft werden.',
+'AI-чат работает через OpenRouter/free. Выбор конкретных моделей и запуск агентных задач ещё не доступны.':'Der AI-Chat läuft über OpenRouter/free. Die Auswahl einzelner Modelle und Agentenaufgaben sind noch nicht verfügbar.',
+'Автоматические проверки и CI настроены. Ручные проверки интерфейса и live-сервисов ещё предстоят.':'Automatisierte Prüfungen und CI sind eingerichtet. Manuelle Tests der Oberfläche und Live-Dienste stehen noch aus.',
+'Завершить настройку серверного хранилища':'Server-Speicher fertig einrichten',
+'Проверить вход и синхронизацию данных':'Anmeldung und Datensynchronisierung prüfen',
+'Довести адаптацию интерфейса':'Responsive Oberfläche fertigstellen',
+'Финальное тестирование Mini App':'Abschließende Mini-App-Tests',
+'Применить подготовленные SQL-миграции и проверить серверные переменные.':'Die vorbereiteten SQL-Migrationen anwenden und die Servervariablen prüfen.',
+'Проверить Telegram, Google и гостевой вход, профиль, историю чата и лимит запросов.':'Telegram-, Google- und Gastanmeldung, Profil, Chatverlauf und Anfrage-Limits prüfen.',
+'Проверить отображение и все основные сценарии на телефоне, компьютере и внутри Telegram.':'Layout und Kernabläufe auf Smartphone, Desktop und in Telegram prüfen.',
+'Пройти регрессионные сценарии, проверить ошибки и подготовить приложение к передаче на этап Telegram-бота.':'Regressionstests durchführen, Fehler prüfen und die App auf die Telegram-Bot-Phase vorbereiten.',
+'Google- и гостевой вход используют отдельные аккаунты; Telegram Mini App использует подтверждённую Telegram-сессию. Серверная синхронизация зависит от настройки Supabase. Не вводите пароли, платёжные данные или секретные ключи.':'Google- und Gastzugang verwenden separate Konten; die Telegram Mini App verwendet eine bestätigte Telegram-Sitzung. Die Serversynchronisierung hängt von der Supabase-Konfiguration ab. Geben Sie keine Passwörter, Zahlungsdaten oder geheimen Schlüssel ein.',
+'Укажите имя и настройки отображения. Для входа через Google или гостевой режим профиль синхронизируется с аккаунтом при настроенном сервере; в Telegram используется ваш Telegram ID.':'Geben Sie Ihren Namen und Ihre Einstellungen ein. Google- und Gastprofile werden bei eingerichteter Serververbindung synchronisiert; Telegram verwendet Ihre Telegram-ID.',
+'Завершить текущий сеанс ORVEX Agent на этом устройстве. Для продолжения потребуется снова войти.':'Beenden Sie die aktuelle ORVEX-Agent-Sitzung auf diesem Gerät. Für die weitere Nutzung müssen Sie sich erneut anmelden.',
+'Данные профиля могут храниться локально или в аккаунте, в зависимости от выбранного способа входа и доступности сервера.':'Profildaten werden je nach Anmeldemethode und Serververfügbarkeit lokal oder im Konto gespeichert.',
+'Порядок входа: Telegram, Google, затем гостевой режим. Гостям доступны бесплатные модели и 20 запросов в сутки без пополнения баланса.':'Anmeldereihenfolge: Telegram, Google, dann Gastzugang. Gäste können kostenlose Modelle mit 20 Anfragen pro Tag ohne Aufladung nutzen.',
+'Профиль и история чата сохраняются в вашем аккаунте ORVEX Agent.':'Ihr Profil und Chatverlauf werden in Ihrem ORVEX-Agent-Konto gespeichert.',
+'Не удалось загрузить профиль с сервера. Проверьте настройки серверного хранилища.':'Das Profil konnte nicht vom Server geladen werden. Prüfen Sie die Server-Speichereinstellungen.',
+'Я подтверждаю сохранение указанных настроек в аккаунте ORVEX Agent.':'Ich bestätige, dass diese Einstellungen in meinem ORVEX-Agent-Konto gespeichert werden dürfen.',
+'Серверное сохранение пока недоступно. Настройки не будут считаться сохранёнными.':'Das Speichern auf dem Server ist noch nicht verfügbar. Diese Einstellungen gelten nicht als gespeichert.',
+'Профиль синхронизирован с аккаунтом ORVEX Agent.':'Profil mit Ihrem ORVEX-Agent-Konto synchronisiert.',
+'Проверяем серверное хранилище аккаунта…':'Kontospeicher auf dem Server wird geprüft…',
+'Серверное хранилище аккаунта недоступно.':'Der Kontospeicher auf dem Server ist nicht verfügbar.',
+'Без входа профиль сохраняется только на этом устройстве. Войдите через Google или откройте Telegram Mini App для синхронизации.':'Ohne Anmeldung wird Ihr Profil nur auf diesem Gerät gespeichert. Melden Sie sich mit Google an oder öffnen Sie die Telegram Mini App zur Synchronisierung.',
+'Я понимаю, что без входа профиль сохраняется только в этом браузере.':'Ich verstehe, dass mein Profil ohne Anmeldung nur in diesem Browser gespeichert wird.',
+'Локальное сохранение. Войдите в аккаунт для серверной синхронизации.':'Lokal gespeichert. Melden Sie sich für die Serversynchronisierung an.'
+});
 const originalTextNodes=new WeakMap(),originalAttributes=new WeakMap();
 let activeInterfaceLanguage='ru';
 function canonicalTranslation(value){
@@ -1719,10 +1796,20 @@ function setProfileStatus(label,message,ready){
    :label==='Проверка…'
     ?'Проверяем доступность серверного профиля…'
     :'Серверный профиль недоступен. Локальная копия не считается серверным сохранением.';
+ }else if(externalAuthSession){
+  if(profileModalIntro)profileModalIntro.textContent=ready
+   ?'Профиль и история чата сохраняются в вашем аккаунте ORVEX Agent.'
+   :'Не удалось загрузить профиль с сервера. Проверьте настройки серверного хранилища.';
+  if(profileConsentText)profileConsentText.textContent=ready
+   ?'Я подтверждаю сохранение указанных настроек в аккаунте ORVEX Agent.'
+   :'Серверное сохранение пока недоступно. Настройки не будут считаться сохранёнными.';
+  if(profileStorageNote)profileStorageNote.textContent=ready
+   ?'Профиль синхронизирован с аккаунтом ORVEX Agent.'
+   :label==='Проверка…'?'Проверяем серверное хранилище аккаунта…':'Серверное хранилище аккаунта недоступно.';
  }else{
-  if(profileModalIntro)profileModalIntro.textContent='В обычном браузере профиль сохраняется только на этом устройстве. Для единого профиля откройте ORVEX Agent через Telegram.';
-  if(profileConsentText)profileConsentText.textContent='Я понимаю, что профиль сохраняется только в этом браузере и не отправляется на сервер.';
-  if(profileStorageNote)profileStorageNote.textContent='Локальное сохранение. Серверной регистрации пока нет.';
+  if(profileModalIntro)profileModalIntro.textContent='Без входа профиль сохраняется только на этом устройстве. Войдите через Google или откройте Telegram Mini App для синхронизации.';
+  if(profileConsentText)profileConsentText.textContent='Я понимаю, что без входа профиль сохраняется только в этом браузере.';
+  if(profileStorageNote)profileStorageNote.textContent='Локальное сохранение. Войдите в аккаунт для серверной синхронизации.';
  }
 }
 try{
@@ -2097,11 +2184,13 @@ function updateChatControls(){
 }
 async function refreshGuestQuota(){
  if(authMode!=='guest'||!externalAuthSession||!externalAuthSession.access_token)return;
+ const quotaGeneration=authGeneration,quotaUserId=externalAuthSession.user&&externalAuthSession.user.id;
  guestQuotaReady=false;guestQuota=null;updateChatQuota();updateChatControls();
  try{
   const response=await fetch('/api/guest-quota',{headers:{Authorization:'Bearer '+externalAuthSession.access_token,Accept:'application/json'},cache:'no-store'});
   if(!response.ok)throw new Error('guest_quota_unavailable');
   const data=await response.json();
+  if(quotaGeneration!==authGeneration||authMode!=='guest'||!externalAuthSession||!externalAuthSession.user||externalAuthSession.user.id!==quotaUserId)return;
   if(!data.quota||!Number.isInteger(data.quota.remaining)||!Number.isInteger(data.quota.dailyLimit))throw new Error('guest_quota_invalid');
   guestQuota=data.quota;guestQuotaReady=true;updateChatQuota();
   if(guestQuotaResetTimer)clearTimeout(guestQuotaResetTimer);
@@ -2109,7 +2198,7 @@ async function refreshGuestQuota(){
   if(Number.isFinite(resetAt)){const delay=Math.max(1000,Math.min(86400000,resetAt-Date.now()+1500));guestQuotaResetTimer=window.setTimeout(()=>refreshGuestQuota(),delay)}
   if(guestQuota.remaining===0)aiChatStatus.textContent='Лимит гостевого режима исчерпан. Войдите через Telegram или Google, чтобы продолжить.';
  }catch(error){
-  aiChatStatus.textContent='Не удалось проверить гостевой лимит. Настройте базу данных Supabase.';
+  if(quotaGeneration===authGeneration)aiChatStatus.textContent='Не удалось проверить гостевой лимит. Настройте базу данных Supabase.';
  }finally{updateChatControls()}
 }
 async function initChatWorkspace(){
@@ -2120,7 +2209,7 @@ async function initChatWorkspace(){
   window.addEventListener('focus',()=>{if(authMode==='guest')refreshGuestQuota()});
   aiChatForm.addEventListener('submit',async event=>{
    event.preventDefault();
-   const content=aiChatInput.value.trim(),authorization=chatAuthorization();
+   const content=aiChatInput.value.trim(),authorization=chatAuthorization(),requestGeneration=authGeneration;
    if(!content||!authorization||chatBusy)return;
    if(authMode==='guest'&&(!guestQuotaReady||!guestQuota||guestQuota.remaining<1))return;
    chatHistory.push({role:'user',content});
@@ -2149,7 +2238,7 @@ async function initChatWorkspace(){
     chatHistory.push({role:'assistant',content:data.message.trim()});
     renderChatMessage('assistant',data.message.trim());
     aiChatStatus.textContent=data.historySaved===false?'Ответ получен, но история не сохранилась.':(data.historySaved===true?'Готово. История сохранена.':'Готово.');
-   }catch(error){aiChatStatus.textContent='Проверьте подключение и настройки AI-сервера.'}
+   }catch(error){if(requestGeneration===authGeneration)aiChatStatus.textContent='Проверьте подключение и настройки AI-сервера.'}
    finally{chatBusy=false;updateChatControls();if(authMode==='guest'&&guestQuotaReady)updateChatQuota()}
   });
  }
@@ -2175,7 +2264,7 @@ async function initChatWorkspace(){
  if(authMode==='guest')await refreshGuestQuota();
  else{
   guestQuotaReady=true;guestQuota=null;updateChatQuota();updateChatControls();
-  if(!aiChatStatus.textContent||aiChatStatus.textContent==='История этого чата хранится только до перезагрузки страницы.')aiChatStatus.textContent='История чата синхронизируется с вашим аккаунтом.';
+  if(!aiChatStatus.textContent||aiChatStatus.textContent==='Выберите способ входа, чтобы начать диалог.')aiChatStatus.textContent='История чата синхронизируется с вашим аккаунтом.';
  }
 }
 
