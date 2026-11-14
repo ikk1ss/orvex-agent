@@ -46,7 +46,9 @@ The current Telegram profile, memory and balance APIs still use verified Telegra
 - `GET /api/health`: reports Telegram-auth and profile-storage configuration separately. It never returns secret values.
 - `GET /api/auth-config`: returns the Supabase project URL and publishable key for browser authentication, plus the optional public Telegram bot link. It never returns server-side secrets.
 - `GET /api/guest-quota`: returns the authenticated anonymous user's remaining daily AI requests. It accepts only a verified Supabase anonymous session.
-- `POST /api/ai-chat`: verifies Telegram `initData` or a Supabase access token, allows only `openrouter/free`, calls OpenRouter server-side, enforces the guest quota and stores successful Google/guest chat exchanges.\n- `GET /api/user-data`: verifies a Google or guest Supabase session and returns only that user's profile and latest 100 chat messages.\n- `PUT /api/user-data`: validates and stores the profile under the authenticated Supabase Auth UUID.
+- `POST /api/ai-chat`: verifies Telegram `initData` or a Supabase access token, allows only `openrouter/free`, calls OpenRouter server-side, enforces the guest quota and stores successful Google/guest chat exchanges.
+- `GET /api/user-data`: verifies a Google or guest Supabase session and returns only that user's profile and latest 100 chat messages.
+- `PUT /api/user-data`: validates and stores the profile under the authenticated Supabase Auth UUID.
 - `GET /api/session`: verifies the current Telegram Mini App session and returns a minimal user identity without storing it.
 - `GET /api/profile`: verifies Telegram Web App `initData` and returns the authenticated Telegram user's profile.
 - `PUT /api/profile`: verifies Telegram Web App `initData`, validates the submitted profile, and upserts it by Telegram user ID.
