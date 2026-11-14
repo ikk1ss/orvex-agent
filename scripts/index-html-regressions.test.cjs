@@ -181,3 +181,10 @@ test("guest onboarding explains the non-recoverable anonymous session", () => {
   assert.ok(html.includes("Гостевой аккаунт не восстанавливается после выхода или очистки данных браузера."));
   assert.ok(html.includes("После настройки сервера используйте Google для сохранения истории между устройствами."));
 });
+
+
+test("the interface provides a keyboard skip link to the main content", () => {
+  assert.ok(html.includes('class="skip-link" href="#home"'));
+  assert.ok(html.includes('<main class="wrap" id="home" tabindex="-1">'));
+  assert.ok(html.includes("Перейти к содержимому"));
+});
