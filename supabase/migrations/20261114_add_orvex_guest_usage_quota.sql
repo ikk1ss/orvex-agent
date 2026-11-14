@@ -65,7 +65,7 @@ begin
   end if;
 
   return query
-    select v_count < 20,
+    select case when p_consume then v_count <= 20 else v_count < 20 end,
            v_count,
            greatest(20 - v_count, 0),
            ((v_usage_date + 1)::timestamp at time zone 'UTC');
