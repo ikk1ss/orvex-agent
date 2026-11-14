@@ -1363,8 +1363,9 @@ async function changeOnboardingStep(nextStep,direction){
  onboardingTransitioning=false;
  syncOnboardingControls();
 }
-function openOnboarding(){onboardingStep=0;onboardingTransitioning=false;renderOnboarding();onboarding.classList.add('open');onboarding.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack();onboardingNextButton.focus()}
-function closeOnboarding(){onboarding.classList.remove('open');onboarding.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();$('#profileOpen').focus()}
+let onboardingReturnFocus=null;
+function openOnboarding(){onboardingReturnFocus=document.activeElement;onboardingStep=0;onboardingTransitioning=false;renderOnboarding();onboarding.classList.add('open');onboarding.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack();onboardingNextButton.focus()}
+function closeOnboarding(){onboarding.classList.remove('open');onboarding.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();const returnFocus=onboardingReturnFocus;onboardingReturnFocus=null;const target=returnFocus&&returnFocus.isConnected&&returnFocus!==document.body?returnFocus:document.getElementById('profileOpen');target.focus()}
 
 let authModalReturnFocus=null;
 function openAuthModal(){
