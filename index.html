@@ -1491,6 +1491,33 @@ function canonicalTranslation(value){
  }
  return clean;
 }
+Object.assign(translations.en,{
+ 'Профиль сохранён в вашем аккаунте ORVEX Agent.':'Profile saved to your ORVEX Agent account.',
+ 'Не удалось сохранить профиль на сервере. Попробуйте ещё раз.':'Could not save the profile on the server. Please try again.',
+ 'Не удалось сохранить профиль на сервере.':'Could not save the profile on the server.',
+ 'Загружаем профиль вашего аккаунта.':'Loading your account profile.',
+ 'Профиль привязан к вашему аккаунту и хранится на сервере ORVEX Agent.':'Your profile is linked to your account and stored on the ORVEX Agent server.',
+ 'Не удалось загрузить профиль с сервера.':'Could not load your profile from the server.',
+ 'Профиль хранится в этом браузере. Войдите через Google или Telegram для серверной синхронизации.':'The profile is stored in this browser. Sign in with Google or Telegram to sync it with the server.',
+ 'Ответ получен, но история не сохранилась.':'The reply was received, but chat history was not saved.',
+ 'Готово. История сохранена.':'Done. Chat history saved.',
+ 'Не удалось загрузить историю чата с сервера.':'Could not load chat history from the server.',
+ 'История чата синхронизируется с вашим аккаунтом.':'Chat history is synced with your account.'
+});
+Object.assign(translations.de,{
+ 'Профиль сохранён в вашем аккаунте ORVEX Agent.':'Profil in Ihrem ORVEX-Agent-Konto gespeichert.',
+ 'Не удалось сохранить профиль на сервере. Попробуйте ещё раз.':'Das Profil konnte nicht auf dem Server gespeichert werden. Bitte versuchen Sie es erneut.',
+ 'Не удалось сохранить профиль на сервере.':'Das Profil konnte nicht auf dem Server gespeichert werden.',
+ 'Загружаем профиль вашего аккаунта.':'Ihr Kontoprofil wird geladen.',
+ 'Профиль привязан к вашему аккаунту и хранится на сервере ORVEX Agent.':'Ihr Profil ist mit Ihrem Konto verknüpft und wird auf dem ORVEX-Agent-Server gespeichert.',
+ 'Не удалось загрузить профиль с сервера.':'Ihr Profil konnte nicht vom Server geladen werden.',
+ 'Профиль хранится в этом браузере. Войдите через Google или Telegram для серверной синхронизации.':'Das Profil wird in diesem Browser gespeichert. Melden Sie sich mit Google oder Telegram an, um es mit dem Server zu synchronisieren.',
+ 'Ответ получен, но история не сохранилась.':'Die Antwort wurde empfangen, aber der Chatverlauf wurde nicht gespeichert.',
+ 'Готово. История сохранена.':'Fertig. Chatverlauf gespeichert.',
+ 'Не удалось загрузить историю чата с сервера.':'Der Chatverlauf konnte nicht vom Server geladen werden.',
+ 'История чата синхронизируется с вашим аккаунтом.':'Der Chatverlauf wird mit Ihrem Konto synchronisiert.'
+});
+
 function translateTextNode(node,dictionary){
  const current=node.nodeValue;
  let state=originalTextNodes.get(node);
