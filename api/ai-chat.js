@@ -81,9 +81,11 @@ async function consumeGuestQuota(config, userId) {
   const rows = await response.json();
   if (!Array.isArray(rows) || !rows[0] ||
       typeof rows[0].allowed !== "boolean" ||
-      !Number.isInteger(rows[0].used) ||
-      !Number.isInteger(rows[0].remaining) ||
-      typeof rows[0].resets_at !== "string") throw new Error("guest_quota_invalid");
+      !Number.isInteger(rows[0].used) || rows[0].used < 0 || rows[0].used > DAILY_GUEST_LIMIT ||
+      !Number.isInteger(rows[0].remaining) || rows[0].remaining < 0 || rows[0].remaining > DAILY_GUEST_LIMIT ||
+      rows[0].used + rows[0].remaining !== DAILY_GUEST_LIMIT ||
+      rows[0].allowed !== (rows[0].remaining > 0) ||
+      typeof rows[0].resets_at !== "string" || !Number.isFinite(Date.parse(rows[0].resets_at))) throw new Error("guest_quota_invalid");
   return {
     allowed: rows[0].allowed,
     used: rows[0].used,
@@ -195,6 +197,8 @@ module.exports = async function aiChatHandler(req, res) {
     });
     return reply(res, 502, { error: error && error.message === "guest_quota_unavailable"
       ? "guest_quota_unavailable"
-      : "ai_request_failed" });
+      : error && error.message === "guest_quota_invalid"
+        ? "guest_quota_invalid"
+        : "ai_request_failed" });
   }
 };
