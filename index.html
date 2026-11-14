@@ -1238,7 +1238,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 
 
 <div id="authModal" aria-hidden="true">
- <section class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+ <section class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle" tabindex="-1">
   <h2 id="authTitle">Выберите способ входа</h2>
   <p>Порядок входа: Telegram, Google, затем гостевой режим. Гостям доступны бесплатные модели и 20 запросов в сутки без пополнения баланса. Гостевой аккаунт не восстанавливается после выхода или очистки данных браузера. После настройки сервера используйте Google для сохранения истории между устройствами.</p>
   <div class="auth-methods">
@@ -1366,18 +1366,24 @@ async function changeOnboardingStep(nextStep,direction){
 function openOnboarding(){onboardingStep=0;onboardingTransitioning=false;renderOnboarding();onboarding.classList.add('open');onboarding.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack();onboardingNextButton.focus()}
 function closeOnboarding(){onboarding.classList.remove('open');onboarding.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();$('#profileOpen').focus()}
 
+let authModalReturnFocus=null;
 function openAuthModal(){
  if(externalAuthSession)return;
+ authModalReturnFocus=document.activeElement;
  authModal.classList.add('open');
  authModal.setAttribute('aria-hidden','false');
  document.body.style.overflow='hidden';
  showTelegramBack();
+ const firstAvailable=authModal.querySelector('button:not([disabled])');
+ (firstAvailable||authModal.querySelector('.auth-panel')).focus();
 }
 function closeAuthModal(){
  authModal.classList.remove('open');
  authModal.setAttribute('aria-hidden','true');
  document.body.style.overflow='';
  hideTelegramBack();
+ const returnFocus=authModalReturnFocus;authModalReturnFocus=null;
+ if(returnFocus&&typeof returnFocus.focus==='function'&&returnFocus.isConnected)returnFocus.focus();
 }
 function updateAuthOptions(){
  if(authGoogleButton)authGoogleButton.disabled=!supabaseClient||telegramMiniApp;
