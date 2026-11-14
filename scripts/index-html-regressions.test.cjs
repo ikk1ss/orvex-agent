@@ -59,6 +59,9 @@ test("balance widget loads real data and does not ship demo numbers", () => {
   assert.ok(html.includes('id="topupPay" type="button" disabled'), "payment button stays disabled until payments exist");
 });
 
+test("authentication dialog retains focus when all sign-in methods are unavailable", () => {
+  assert.ok(html.includes("if(!focusable.length){e.preventDefault();authModal.querySelector"));
+});
 test("authentication dialog moves focus inside and restores it after closing", () => {
   assert.ok(html.includes('class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle" tabindex="-1"'));
   assert.ok(html.includes("authModalReturnFocus=document.activeElement"));
