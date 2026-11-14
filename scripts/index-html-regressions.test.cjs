@@ -126,3 +126,19 @@ test("late chat, history, and quota responses are ignored after account changes"
   assert.ok(html.includes("historyGeneration!==authGeneration"));
   assert.ok(html.includes("quotaGeneration!==authGeneration"));
 });
+
+
+test("onboarding and sign-in dialogs support keyboard focus trapping and Escape", () => {
+  assert.ok(html.includes("onboarding.querySelectorAll('button:not([disabled])"));
+  assert.ok(html.includes("authModal.querySelectorAll('button:not([disabled])"));
+  assert.ok(html.includes("if(e.key==='Escape'){closeOnboarding();return}"));
+  assert.ok(html.includes("if(e.key==='Escape'){closeAuthModal();return}"));
+  assert.ok(html.includes("onboardingNextButton.focus()"));
+});
+
+test("mobile dialogs respect device safe areas and short Telegram viewports", () => {
+  assert.ok(html.includes("env(safe-area-inset-top)"));
+  assert.ok(html.includes("var(--tg-viewport-height,100dvh)"));
+  assert.ok(html.includes(".auth-panel,.delete-confirm-card"));
+  assert.ok(html.includes("@media(max-width:370px)"));
+});
