@@ -102,3 +102,26 @@ test("guest chat is connected only to the OpenRouter free router", () => {
   assert.ok(html.includes("authGuestButton.disabled=!supabaseClient||telegramMiniApp"));
   assert.ok(html.includes("balanceAdd.disabled=!(telegramMiniApp&&telegramProfileSession)"));
 });
+
+
+test("onboarding and status copy describe the current AI and sign-in features", () => {
+  assert.ok(html.includes("AI-чат уже подключён через OpenRouter."));
+  assert.ok(html.includes("openrouter/free"));
+  assert.ok(html.includes("Порядок входа: Telegram, Google, затем гостевой режим."));
+  assert.ok(html.includes("20 запросов в сутки"));
+  assert.ok(!html.includes("реальные AI-запросы и выбор моделей в интерфейсе ещё не подключены"));
+  assert.ok(!html.includes("История этого чата хранится только до перезагрузки страницы"));
+});
+
+test("profile copy distinguishes external account storage from local-only mode", () => {
+  assert.ok(html.includes("Профиль и история чата сохраняются в вашем аккаунте ORVEX Agent."));
+  assert.ok(html.includes("Без входа профиль сохраняется только на этом устройстве."));
+  assert.ok(html.includes("Серверное хранилище аккаунта недоступно."));
+});
+
+test("late chat, history, and quota responses are ignored after account changes", () => {
+  assert.ok(html.includes("authGeneration++"));
+  assert.ok(html.includes("requestGeneration!==authGeneration"));
+  assert.ok(html.includes("historyGeneration!==authGeneration"));
+  assert.ok(html.includes("quotaGeneration!==authGeneration"));
+});
