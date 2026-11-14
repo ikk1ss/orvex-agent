@@ -179,5 +179,5 @@ test("Telegram Back closes the topmost account deletion confirmation", () => {
 
 test("guest onboarding explains the non-recoverable anonymous session", () => {
   assert.ok(html.includes("Гостевой аккаунт не восстанавливается после выхода или очистки данных браузера."));
-  assert.ok(html.includes("Для доступа к истории с разных устройств используйте Google."));
+  assert.ok(html.includes("После настройки сервера используйте Google для сохранения истории между устройствами."));
 });
