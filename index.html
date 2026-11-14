@@ -1269,7 +1269,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 </form>
 <div class="profile-account-actions">
  <section class="profile-account-section"><h3>Сеанс приложения</h3><p>Завершить текущий сеанс ORVEX Agent на этом устройстве. Для продолжения потребуется снова войти.</p><button class="profile-account-button" id="logoutAccount" type="button">Выйти</button></section>
- <section class="profile-account-section danger"><h3>Удаление аккаунта</h3><p>Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.</p><button class="profile-account-button" id="openDeleteConfirm" type="button">Удалить аккаунт</button></section>
+ <section class="profile-account-section danger" id="telegramDeleteSection" hidden><h3>Удаление аккаунта</h3><p>Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.</p><button class="profile-account-button" id="openDeleteConfirm" type="button">Удалить аккаунт</button></section>
 </div>
 <p class="local-note">Данные профиля могут храниться локально или в аккаунте, в зависимости от выбранного способа входа и доступности сервера.</p>
 </section>
@@ -1745,7 +1745,7 @@ const interfaceLanguageObserver=new MutationObserver(records=>{
  });
 });
 interfaceLanguageObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['placeholder','aria-label','title']});
-function updateHeaderAction(){const button=$('#profileOpen');button.textContent=externalAuthSession?'Аккаунт':(!telegramMiniApp&&profile?'Войти':(profile?'Мой профиль':'Начать'));const remove=$('#openDeleteConfirm');if(remove)remove.disabled=!(telegramMiniApp&&telegramProfileSession);const balanceAdd=$('#balanceAdd');if(balanceAdd)balanceAdd.disabled=!(telegramMiniApp&&telegramProfileSession);updateAuthOptions();applyInterfaceLanguage((profile&&profile.preferences&&profile.preferences.language)||localStorage.getItem('orvex_agent_language')||'ru')}
+function updateHeaderAction(){const button=$('#profileOpen');button.textContent=externalAuthSession?'Аккаунт':(!telegramMiniApp&&profile?'Войти':(profile?'Мой профиль':'Начать'));const canUseTelegramAccount=telegramMiniApp&&telegramProfileSession;const remove=$('#openDeleteConfirm');if(remove){remove.disabled=!canUseTelegramAccount;const deleteSection=$('#telegramDeleteSection');if(deleteSection)deleteSection.hidden=!canUseTelegramAccount}const balanceAdd=$('#balanceAdd');if(balanceAdd)balanceAdd.disabled=!canUseTelegramAccount;const balanceWidget=$('#balanceWidget');if(balanceWidget)balanceWidget.hidden=!canUseTelegramAccount;updateAuthOptions();applyInterfaceLanguage((profile&&profile.preferences&&profile.preferences.language)||localStorage.getItem('orvex_agent_language')||'ru')}
 const tg=window.Telegram&&window.Telegram.WebApp;
 const telegramBack=tg&&tg.BackButton;
 function syncTelegramViewport(){
