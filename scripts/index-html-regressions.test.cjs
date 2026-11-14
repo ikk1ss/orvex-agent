@@ -142,3 +142,12 @@ test("mobile dialogs respect device safe areas and short Telegram viewports", ()
   assert.ok(html.includes(".auth-panel,.delete-confirm-card"));
   assert.ok(html.includes("@media(max-width:370px)"));
 });
+
+
+test("browser guests do not see Telegram-only balance and account deletion controls", () => {
+  assert.ok(html.includes('id="balanceWidget" aria-live="polite" hidden'));
+  assert.ok(html.includes('id="telegramDeleteSection" hidden'));
+  assert.ok(html.includes("deleteSection.hidden=!canUseTelegramAccount"));
+  assert.ok(html.includes("balanceWidget.hidden=!canUseTelegramAccount"));
+  assert.ok(html.includes("balanceAdd.disabled=!(telegramMiniApp&&telegramProfileSession)"));
+});
