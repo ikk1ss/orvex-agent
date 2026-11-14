@@ -113,3 +113,19 @@ test("fails closed when the quota RPC is unavailable", async () => {
     } finally { mock.restore(); }
   });
 });
+
+test("rejects inconsistent quota data from the database", async () => {
+  await withEnv(async () => {
+    const mock = mockFetch([
+      ["https://example.supabase.co/auth/v1/user", () => json({ id: userId, is_anonymous: true })],
+      ["https://example.supabase.co/rest/v1/rpc/orvex_guest_quota", () =>
+        json([{ allowed: true, used: 20, remaining: 1, resets_at: "2026-11-15T00:00:00Z" }])]
+    ]);
+    try {
+      const res = response();
+      await handler({ method: "GET", headers: { authorization: "Bearer " + token } }, res);
+      assert.equal(res.statusCode, 502);
+      assert.equal(res.payload.error, "guest_quota_invalid");
+    } finally { mock.restore(); }
+  });
+});
