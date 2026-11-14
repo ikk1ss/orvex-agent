@@ -173,8 +173,10 @@ module.exports = async function aiChatHandler(req, res) {
     }
     let historySaved = false;
     try {
-      await persistChatExchange(config, identity, messages[messages.length - 1].content, content.trim());
-      historySaved = true;
+      if (identity.kind !== "telegram") {
+        await persistChatExchange(config, identity, messages[messages.length - 1].content, content.trim());
+        historySaved = true;
+      }
     } catch (storageError) {
       console.error("[ORVEX AI] Chat history could not be saved", {
         identityType: identity.kind,
