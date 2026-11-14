@@ -211,3 +211,8 @@ test("the interface provides a keyboard skip link to the main content", () => {
   assert.ok(html.includes('<main class="wrap" id="home" tabindex="-1">'));
   assert.ok(html.includes("Перейти к содержимому"));
 });
+
+test("stale chat history load failures are ignored after account changes", () => {
+  const guardedFailure = "catch(error){if(historyGeneration===authGeneration&&externalAuthSession&&externalAuthSession.user&&externalAuthSession.user.id===ownerId)aiChatStatus.textContent='Не удалось загрузить историю чата с сервера.'}";
+  assert.ok(html.includes(guardedFailure));
+});
