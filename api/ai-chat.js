@@ -93,6 +93,26 @@ async function consumeGuestQuota(config, userId) {
   };
 }
 
+async function persistChatExchange(config, identity, userContent, assistantContent) {
+  const isTelegram = identity.kind === "telegram";
+  const endpoint = isTelegram
+    ? config.supabaseUrl + "/rest/v1/orvex_chat_messages"
+    : config.supabaseUrl + "/rest/v1/orvex_auth_chat_messages";
+  const owner = isTelegram ? { telegram_id: identity.telegramId } : { user_id: identity.userId };
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: getSupabaseHeaders(config.serviceKey, {
+      Prefer: "return=minimal"
+    }),
+    body: JSON.stringify([
+      { ...owner, role: "user", content: userContent },
+      { ...owner, role: "assistant", content: assistantContent }
+    ]),
+    signal: AbortSignal.timeout(8000)
+  });
+  if (!response.ok) throw new Error("chat_history_storage_failed");
+}
+
 module.exports = async function aiChatHandler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -153,10 +173,21 @@ module.exports = async function aiChatHandler(req, res) {
     if (typeof content !== "string" || !content.trim()) {
       return reply(res, 502, { error: "ai_provider_empty_response", quota });
     }
+    let historySaved = false;
+    try {
+      await persistChatExchange(config, identity, messages[messages.length - 1].content, content.trim());
+      historySaved = true;
+    } catch (storageError) {
+      console.error("[ORVEX AI] Chat history could not be saved", {
+        identityType: identity.kind,
+        errorName: storageError && typeof storageError.name === "string" ? storageError.name : "UnknownError"
+      });
+    }
     return reply(res, 200, {
       message: content.trim(),
       model: typeof data.model === "string" ? data.model : "openrouter/free",
-      quota
+      quota,
+      historySaved
     });
   } catch (error) {
     console.error("[ORVEX AI] Request failed", {
