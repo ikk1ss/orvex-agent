@@ -2063,7 +2063,7 @@ async function initChatWorkspace(){
     if(typeof data.message!=='string'||!data.message.trim())throw new Error('empty_ai_response');
     chatHistory.push({role:'assistant',content:data.message.trim()});
     renderChatMessage('assistant',data.message.trim());
-    aiChatStatus.textContent=data.historySaved===false?'Ответ получен, но история не сохранилась.':'Готово. История сохранена.';
+    aiChatStatus.textContent=data.historySaved===false?'Ответ получен, но история не сохранилась.':(data.historySaved===true?'Готово. История сохранена.':'Готово.');
    }catch(error){aiChatStatus.textContent='Проверьте подключение и настройки AI-сервера.'}
    finally{chatBusy=false;updateChatControls();if(authMode==='guest'&&guestQuotaReady)updateChatQuota()}
   });
