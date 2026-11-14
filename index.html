@@ -1479,18 +1479,6 @@ function patternTranslation(text,language){
  return null;
 }
 function isDeletePhrase(value){return ['УДАЛИТЬ','DELETE','LÖSCHEN'].includes(String(value).trim().toLocaleUpperCase('ru'))}
-const originalTextNodes=new WeakMap(),originalAttributes=new WeakMap();
-let activeInterfaceLanguage='ru';
-function canonicalTranslation(value){
- const clean=value.trim();
- if(/^(Memory connected\. Entries shown: |Erinnerungen verbunden\. Angezeigte Einträge: )/.test(clean)||/^(Note|Notiz|Preference|Präferenz|Fact|Fakt|Goal|Ziel|Instruction|Anweisung|Entry|Eintrag) · /.test(clean))return clean;
- for(const language of ['en','de']){
-  for(const [source,translated] of Object.entries(translations[language]||{})){
-   if(translated===clean)return source;
-  }
- }
- return clean;
-}
 Object.assign(translations.en,{
  'Профиль сохранён в вашем аккаунте ORVEX Agent.':'Profile saved to your ORVEX Agent account.',
  'Не удалось сохранить профиль на сервере. Попробуйте ещё раз.':'Could not save the profile on the server. Please try again.',
@@ -1517,6 +1505,19 @@ Object.assign(translations.de,{
  'Не удалось загрузить историю чата с сервера.':'Der Chatverlauf konnte nicht vom Server geladen werden.',
  'История чата синхронизируется с вашим аккаунтом.':'Der Chatverlauf wird mit Ihrem Konto synchronisiert.'
 });
+const originalTextNodes=new WeakMap(),originalAttributes=new WeakMap();
+let activeInterfaceLanguage='ru';
+function canonicalTranslation(value){
+ const clean=value.trim();
+ if(/^(Memory connected\. Entries shown: |Erinnerungen verbunden\. Angezeigte Einträge: )/.test(clean)||/^(Note|Notiz|Preference|Präferenz|Fact|Fakt|Goal|Ziel|Instruction|Anweisung|Entry|Eintrag) · /.test(clean))return clean;
+ for(const language of ['en','de']){
+  for(const [source,translated] of Object.entries(translations[language]||{})){
+   if(translated===clean)return source;
+  }
+ }
+ return clean;
+}
+
 
 function translateTextNode(node,dictionary){
  const current=node.nodeValue;
