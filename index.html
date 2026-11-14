@@ -1886,6 +1886,21 @@ form.addEventListener('submit',async e=>{
   finally{submitButton.disabled=false}
   return;
  }
+ if(externalAuthSession){
+  const submitButton=form.querySelector('button[type="submit"]');
+  submitButton.disabled=true;
+  try{
+   const response=await fetch('/api/user-data',{method:'PUT',headers:{Authorization:'Bearer '+externalAuthSession.access_token,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)});
+   if(!response.ok)throw new Error('profile_save_failed');
+   const result=await response.json();profile=result.profile||data;
+   try{localStorage.setItem('orvex_agent_language',profile.preferences&&profile.preferences.language||'ru')}catch(error){}
+   saveLocal('orvex_agent_profile',profile);updateHeaderAction();
+   setProfileStatus('Синхронизирован','Профиль сохранён в вашем аккаунте ORVEX Agent.',true);
+   closeModal();toast('Профиль синхронизирован с сервером');
+  }catch(error){setProfileStatus('Ошибка синхронизации','Не удалось сохранить профиль на сервере. Попробуйте ещё раз.',false);toast('Не удалось сохранить профиль на сервере.')}
+  finally{submitButton.disabled=false}
+  return;
+ }
  try{
   localStorage.setItem('orvex_agent_profile',JSON.stringify(data));profile=data;updateHeaderAction();
   setProfileStatus('Локально','Профиль сохранён в этом браузере. Для синхронизации откройте Mini App через Telegram после настройки сервера.',false);
@@ -1895,8 +1910,21 @@ form.addEventListener('submit',async e=>{
 
 async function initProfileWorkspace(){
  if(!telegramMiniApp){
-  setProfileStatus('Локально','Профиль хранится в этом браузере. Откройте Mini App через Telegram, чтобы использовать единый профиль.',false);
-  if(!profile&&!externalAuthSession)openOnboarding();
+  if(externalAuthSession){
+   setProfileStatus('Проверка…','Загружаем профиль вашего аккаунта.',false);
+   try{
+    const response=await fetch('/api/user-data',{headers:{Authorization:'Bearer '+externalAuthSession.access_token,Accept:'application/json'},cache:'no-store'});
+    if(!response.ok)throw new Error('user_data_unavailable');
+    const data=await response.json();
+    profile=data.profile||null;
+    if(profile){saveLocal('orvex_agent_profile',profile);applyInterfaceLanguage(profile.preferences&&profile.preferences.language||'ru')}
+    else{try{localStorage.removeItem('orvex_agent_profile')}catch(error){}}
+    setProfileStatus('Синхронизирован','Профиль привязан к вашему аккаунту и хранится на сервере ORVEX Agent.',true);
+   }catch(error){setProfileStatus('Требует настройки','Не удалось загрузить профиль с сервера.',false)}
+  }else{
+   setProfileStatus('Локально','Профиль хранится в этом браузере. Войдите через Google или Telegram для серверной синхронизации.',false);
+   if(!profile)openOnboarding();
+  }
   updateHeaderAction();
   return;
  }
