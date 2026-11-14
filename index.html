@@ -9,7 +9,31 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+(function(){
+ var themes={
+  aurora:{mode:'dark',bg:'#090c17',fonts:'family=Onest:wght@400;500;700&family=Unbounded:wght@500;700'},
+  navy:{mode:'dark',bg:'#0a1230',fonts:'family=Geologica:wght@500;700&family=Golos+Text:wght@400;500;700'},
+  mono:{mode:'dark',bg:'#101110',fonts:'family=IBM+Plex+Mono:wght@500;700&family=IBM+Plex+Sans:wght@400;500;700'},
+  cream:{mode:'light',bg:'#f3eee3',fonts:'family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Commissioner:wght@400;500;700'},
+  mint:{mode:'light',bg:'#f5f8f6',fonts:'family=Rubik:wght@400;500;600&family=Inter:wght@400;500;600'}
+ };
+ var name='aurora';
+ try{var saved=localStorage.getItem('orvex_agent_theme');if(saved&&themes[saved])name=saved}catch(e){}
+ var root=document.documentElement;
+ root.setAttribute('data-theme',name);root.setAttribute('data-mode',themes[name].mode);
+ if(name!=='aurora')root.classList.add('themed');
+ window.__orvexThemes=themes;window.__orvexFonts={};
+ function loadFonts(key){
+  if(window.__orvexFonts[key])return;window.__orvexFonts[key]=true;
+  var link=document.createElement('link');link.rel='stylesheet';
+  link.href='https://fonts.googleapis.com/css2?'+themes[key].fonts+'&display=swap';
+  document.head.appendChild(link);
+ }
+ window.__orvexLoadFonts=loadFonts;loadFonts(name);
+ var meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',themes[name].bg);
+})();
+</script>
 <style>
 :root{color-scheme:dark;--bg:#080b13;--surface:#101622;--surface2:#141d2b;--line:rgba(188,205,235,.12);--text:#f3f6fc;--muted:#98a5b9;--blue:#4d8dff;--silver:#c5d3e8;--green:#70d9ad;--amber:#e8bd78;--radius:22px}
 *{box-sizing:border-box}
@@ -999,6 +1023,137 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  .visual-glow{animation:none}
 }
 @media(prefers-reduced-transparency:reduce){.topup-card{backdrop-filter:none}}
+
+/* Themes: five switchable looks. Aurora is the default and keeps the base styles. */
+html[data-theme="aurora"]{--t-head:Unbounded,"Onest",sans-serif;--t-body:Onest,sans-serif;--t-h1:clamp(27px,7vw,54px);--t-h1-ls:-.03em}
+html[data-theme="navy"]{--t-head:Geologica,"Golos Text",sans-serif;--t-body:"Golos Text",sans-serif;--t-h1:clamp(36px,9.6vw,74px);--t-h1-ls:-.035em;--t-scheme:dark;
+ --t-bg:#0a1230;--t-bg-grad:linear-gradient(180deg,#0c1538 0%,#060a1e 100%);--t-card:#0f1745;--t-card2:#16215a;--t-border:#2a3770;--t-text:#f1f4ff;--t-muted:#a9b4dc;
+ --t-accent:#ffb020;--t-accent-text:#ffb020;--t-accent2:#ffc65a;--t-on-accent:#1a1200;--t-btn:#ffb020;--t-strong:#ffb020;--t-on-strong:#1a1200;--t-field:#0a1230;--t-overlay:rgba(3,6,20,.72)}
+html[data-theme="mono"]{--t-head:"IBM Plex Mono",monospace;--t-body:"IBM Plex Sans",sans-serif;--t-h1:clamp(25px,6.8vw,50px);--t-h1-ls:-.04em;--t-scheme:dark;
+ --t-bg:#101110;--t-bg-grad:#101110;--t-card:#171916;--t-card2:#1d201b;--t-border:#2c2f2a;--t-text:#ecefe6;--t-muted:#aab1a2;
+ --t-accent:#c6f432;--t-accent-text:#c6f432;--t-accent2:#d8f870;--t-on-accent:#101110;--t-btn:#c6f432;--t-strong:#c6f432;--t-on-strong:#101110;--t-field:#101110;--t-overlay:rgba(5,6,5,.78)}
+html[data-theme="cream"]{--t-head:"Playfair Display",Georgia,serif;--t-body:Commissioner,sans-serif;--t-h1:clamp(36px,9.6vw,68px);--t-h1-ls:-.025em;--t-scheme:light;
+ --t-bg:#f3eee3;--t-bg-grad:#f3eee3;--t-card:#faf6ec;--t-card2:#e9e1d0;--t-border:#d8ceb9;--t-text:#1d1a16;--t-muted:#5b5348;
+ --t-accent:#b8400f;--t-accent-text:#b8400f;--t-accent2:#d9622b;--t-on-accent:#f3eee3;--t-btn:#b8400f;--t-strong:#1d1a16;--t-on-strong:#f3eee3;--t-field:#fffdf8;--t-overlay:rgba(29,26,22,.5)}
+html[data-theme="mint"]{--t-head:Rubik,Inter,sans-serif;--t-body:Inter,sans-serif;--t-h1:clamp(36px,9.6vw,72px);--t-h1-ls:-.03em;--t-scheme:light;
+ --t-bg:#F5F8F6;--t-bg-grad:#F5F8F6;--t-card:#FFFFFF;--t-card2:#EEF4F0;--t-border:#E1EAE4;--t-text:#17231E;--t-muted:#5f6e66;
+ --t-accent:#20B889;--t-accent-text:#0f6b4d;--t-accent2:#65D6AD;--t-on-accent:#14221D;--t-btn:#20B889;--t-strong:#14221D;--t-on-strong:#F5F8F6;--t-field:#FFFFFF;--t-overlay:rgba(20,34,29,.45)}
+html[data-theme] :is(h1,h2,h3,.section-title,.brand,.brand>span,.status-card h3,.roadmap-item b,.roadmap-num,.balance-rub,.topup-current b,.topup-summary b,.topup-card h2,.modal h2,.onboarding-card h1,.onboarding-brand,.footer-brand,.profile-account-section h3,.profile-avatar,.entry-loader-name,.delete-confirm-card h2,.balance-add){font-family:var(--t-head)}
+html[data-theme] body{font-family:var(--t-body)}
+html[data-theme] .hero h1{font-size:var(--t-h1);letter-spacing:var(--t-h1-ls);line-height:1.12}
+html[data-theme="aurora"] .brand>span{font-size:13px;letter-spacing:.1em}
+html[data-theme="mono"] .brand>span{font-size:14px;letter-spacing:.08em}
+html[data-theme="aurora"] .section-title,html[data-theme="mono"] .section-title{font-size:22px}
+html[data-theme="aurora"] .balance-rub{font-size:14px}
+@media(max-width:620px){html[data-theme="aurora"] .brand>span,html[data-theme="mono"] .brand>span{font-size:11px}html[data-theme="aurora"] .section-title,html[data-theme="mono"] .section-title{font-size:19px}}
+
+/* Themed colors (not applied to the default Aurora theme) */
+html.themed{color-scheme:var(--t-scheme)}
+html.themed body{background:var(--t-bg-grad);color:var(--t-text)}
+html.themed body:before{background:radial-gradient(ellipse at 15% 0%,color-mix(in srgb,var(--t-accent) 13%,transparent),transparent 46%),var(--t-bg-grad)}
+html.themed body:after,html.themed .ambient-scene,html.themed .onboarding-ambient{display:none}
+html.themed .header{background:var(--t-card);border-color:var(--t-border);backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
+html.themed :is(h1,h2,h3,.section-title,.brand>span,.status-card h3,.roadmap-item b,.modal h2,.topup-card h2,.onboarding-card h1,.onboarding-brand,.profile-account-section h3,.delete-confirm-card h2,.memory-content,.profile-avatar-copy b,.entry-loader-name,.balance-rub,.topup-current b,.topup-summary b,.onboarding-point b){color:var(--t-text)}
+html.themed .brand>span b,html.themed .entry-loader-name b{color:var(--t-muted)}
+html.themed :is(.hero-copy,.hero-footnote,.section-sub,.status-card p,.roadmap-intro p,.roadmap-item small,.roadmap-label,.notice,.footer,.footer-brand,.memory-state,.memory-empty,.memory-meta,.memory-warning,.field,.consent,.modal-intro,.local-note,.nav a,.float-chip small,.onboarding-card p,.onboarding-point span,.onboarding-note,.onboarding-top,.profile-account-section p,.delete-confirm-card p,.topup-current span,.topup-current small,.topup-summary,.topup-label,.topup-note,.balance-usd,.profile-avatar-copy span,.entry-loader-caption,.memory-form label,.language-switcher-label){color:var(--t-muted)}
+html.themed .notice b,html.themed .topup-note b{color:var(--t-text)}
+html.themed :is(.eyebrow,.kicker,.onboarding-kicker,.balance-label,.profile-divider){color:var(--t-accent-text)}
+html.themed .eyebrow:before{background:var(--t-accent)}
+html.themed .hero h1 span{background:none;color:var(--t-accent);-webkit-text-fill-color:currentcolor}
+html.themed :is(.status-card,.roadmap-item,.notice,.memory-panel,.float-chip,.balance,.profile-avatar-row,.profile-account-section,.topup-current,.memory-item,.onboarding-point,.memory-empty){background:var(--t-card);border-color:var(--t-border);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+html.themed :is(.status-card,.roadmap-item):hover{background:var(--t-card2);border-color:var(--t-accent)}
+html.themed .balance{border-color:color-mix(in srgb,var(--t-accent) 45%,var(--t-border))}
+html.themed :is(.modal,.topup-card,.onboarding-card,.delete-confirm-card){background:var(--t-card);border-color:var(--t-border);box-shadow:0 24px 70px rgba(0,0,0,.28);backdrop-filter:none;-webkit-backdrop-filter:none}
+html.themed #profileModal .modal-head,html.themed .modal-head{background:var(--t-card)}
+html.themed :is(#profileModal,#topupModal,#deleteConfirmModal){background:var(--t-overlay);backdrop-filter:none;-webkit-backdrop-filter:none}
+html.themed #onboarding{background:var(--t-bg);backdrop-filter:none}
+html.themed .orvex-entry-loader{background:var(--t-bg)}
+html.themed .entry-loader-glow{background:color-mix(in srgb,var(--t-accent) 20%,transparent)}
+html.themed .entry-loader-mark{border-color:var(--t-accent);background:var(--t-card);box-shadow:none}
+html.themed .entry-loader-mark:before,html.themed .entry-loader-mark:after{border-color:var(--t-accent)}
+html.themed .entry-loader-track span{background:var(--t-accent)}
+html.themed .field input,html.themed .field select,html.themed .field textarea,html.themed .memory-form textarea,html.themed .memory-form select{background:var(--t-field);border-color:var(--t-border);color:var(--t-text)}
+html.themed .field input::placeholder,html.themed .field textarea::placeholder,html.themed .memory-form textarea::placeholder{color:color-mix(in srgb,var(--t-muted) 75%,transparent)}
+html.themed :is(.field input,.field select,.field textarea,.memory-form textarea,.memory-form select):focus{border-color:var(--t-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--t-accent) 22%,transparent)}
+html.themed :is(.primary-link,.primary,.memory-submit,.onboarding-next,.balance-add){background:var(--t-btn);color:var(--t-on-accent);box-shadow:none}
+html.themed :is(.outline-link,.profile-btn,.profile-onboarding-replay,.profile-account-button,.memory-export,.topup-chip,.memory-more,.onboarding-back,.delete-cancel,.close,.language-current){background:var(--t-card);border-color:var(--t-border);color:var(--t-text);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+html.themed :is(.profile-btn,.outline-link):hover,html.themed :is(.profile-onboarding-replay,.profile-account-button,.topup-chip,.language-current):hover{border-color:var(--t-accent);background:var(--t-card2)}
+html.themed .profile-btn{background:var(--t-strong);color:var(--t-on-strong);border-color:var(--t-strong)}
+html.themed .topup-chip[aria-pressed="true"],html.themed .language-option[aria-pressed="true"]{background:color-mix(in srgb,var(--t-accent) 20%,var(--t-card));border-color:var(--t-accent);color:var(--t-text)}
+html.themed .language-options{background:var(--t-card);border-color:var(--t-border)}
+html.themed .language-option{color:var(--t-muted)}
+html.themed .nav a:hover,html.themed .nav a[aria-current="location"]{color:var(--t-text)}
+html.themed .nav a:after{background:var(--t-accent)}
+html.themed .pill.pending{background:var(--t-card2);color:var(--t-muted)}
+html.themed[data-mode="light"] .pill.ready{background:#DDF4EA;color:#0f6b4d}
+html.themed[data-mode="light"] .pill.partial{background:#FBEFD6;color:#7a4a00}
+html.themed .status-icon,html.themed .roadmap-num{background:color-mix(in srgb,var(--t-accent) 14%,transparent);border-color:color-mix(in srgb,var(--t-accent) 30%,transparent);color:var(--t-accent-text)}
+html.themed .brand-symbol{background:var(--t-accent)!important;box-shadow:none!important}
+html.themed .brand-symbol:before,html.themed .brand-symbol:after{border-color:var(--t-on-accent)}
+html.themed .profile-avatar{background:var(--t-card2);border-color:var(--t-border);color:var(--t-text)}
+html.themed .visual-glow{background:color-mix(in srgb,var(--t-accent) 20%,transparent);box-shadow:none}
+html.themed .orbit{border-color:color-mix(in srgb,var(--t-accent) 45%,transparent)}
+html.themed .orbit:before{border-color:color-mix(in srgb,var(--t-accent) 28%,transparent)}
+html.themed .orbit:after,html.themed .signal{background:var(--t-accent);box-shadow:none}
+html.themed .core{background:var(--t-card);border-color:var(--t-accent);box-shadow:0 0 0 13px color-mix(in srgb,var(--t-accent) 9%,transparent)}
+html.themed .core-mark,html.themed .core-mark:before,html.themed .core-mark:after{border-color:var(--t-accent)}
+html.themed .core-mark{border-color:var(--t-text)}
+html.themed .float-chip{color:var(--t-text)}
+html.themed .onboarding-progress{background:var(--t-border)}
+html.themed .onboarding-progress span{background:var(--t-accent)}
+html.themed .topup-summary b{color:var(--t-text)}
+html.themed .topup-note{background:color-mix(in srgb,var(--t-accent) 9%,var(--t-card));border-color:color-mix(in srgb,var(--t-accent) 35%,var(--t-border))}
+html.themed .memory-delete{background:transparent;border-color:var(--t-border);color:var(--t-muted)}
+html.themed .profile-account-section.danger{background:var(--t-card);border-color:#c0504d}
+html.themed .profile-account-section.danger h3{color:#c0504d}
+html.themed[data-mode="dark"] .profile-account-section.danger h3{color:#ff8f8a}
+html.themed .profile-account-section.danger .profile-account-button{background:transparent;border-color:#c0504d;color:#c0504d}
+html.themed[data-mode="dark"] .profile-account-section.danger .profile-account-button{color:#ff8f8a;border-color:#ff8f8a}
+html.themed .delete-confirm-card h2{color:var(--t-text)}
+html.themed .delete-proceed{background:#b3261e;color:#fff;border-color:#b3261e}
+html.themed .toast{background:var(--t-strong);color:var(--t-on-strong);border-color:transparent;backdrop-filter:none}
+html.themed :is(button,a,input,select,textarea):focus-visible{outline-color:var(--t-accent)}
+
+/* Theme picker */
+.theme-picker{margin-top:20px}
+.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+.theme-option{display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04);color:inherit;font-size:13px;font-weight:600;text-align:left}
+.theme-option[aria-pressed="true"]{border-color:var(--accent-cyan,#72d8d0);box-shadow:0 0 0 2px rgba(114,216,208,.25)}
+.theme-swatch{flex:0 0 26px;width:26px;height:26px;border-radius:8px;border:1px solid rgba(128,128,128,.4)}
+html.themed .theme-option{background:var(--t-card);border-color:var(--t-border);color:var(--t-text)}
+html.themed .theme-option[aria-pressed="true"]{border-color:var(--t-accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--t-accent) 28%,transparent)}
+
+/* Motion v2: theme-aware polish. Heavy pointer effects only on fine pointers. */
+.scroll-progress{position:fixed;left:0;top:0;height:3px;width:100%;z-index:90;transform-origin:0 50%;transform:scaleX(var(--sp,0));background:linear-gradient(90deg,var(--t-accent,#4d8dff),var(--t-accent2,#c5d3e8));pointer-events:none}
+.section-title:after{content:"";display:block;height:3px;width:56px;margin-top:10px;border-radius:3px;background:linear-gradient(90deg,var(--t-accent,#5795ff),transparent);transition:width .8s .25s cubic-bezier(.2,.7,.2,1)}
+.motion-ready .motion-reveal:not(.is-visible) .section-title:after{width:0}
+html.theme-fade,html.theme-fade *{transition:background-color .45s ease,color .45s ease,border-color .45s ease,box-shadow .45s ease,fill .45s ease!important}
+@keyframes orvex-shimmer{to{background-position:-220% 0}}
+@keyframes orvex-pill-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,currentColor 38%,transparent)}70%,100%{box-shadow:0 0 0 8px transparent}}
+@keyframes orvex-num-pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+@keyframes orvex-modal-pop{from{opacity:0;transform:translate3d(0,18px,0) scale(.965)}to{opacity:1;transform:none}}
+@keyframes orvex-balance-flash{0%{transform:scale(1)}35%{transform:scale(1.12);filter:brightness(1.35)}100%{transform:scale(1)}}
+.balance-rub.flash,.balance-usd.flash{display:inline-block;animation:orvex-balance-flash .7s ease}
+.primary-link{position:relative;overflow:hidden}
+.primary-link:after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);transition:left .7s ease;pointer-events:none}
+.primary-link:hover:after{left:130%}
+.primary-link:active,.outline-link:active,.profile-btn:active,.balance-add:active{transform:scale(.97)}
+.status-icon{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.status-card:hover .status-icon{transform:rotate(-10deg) scale(1.14)}
+@media(prefers-reduced-motion:no-preference){
+ .hero h1 span{background-size:220% 100%;animation:orvex-shimmer 8s linear infinite}
+ html.themed .hero h1 span{background:linear-gradient(100deg,var(--t-accent),var(--t-accent2),var(--t-accent));background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+ .pill.ready{animation:orvex-pill-pulse 3s ease-out infinite}
+ .roadmap-item.is-visible .roadmap-num{animation:orvex-num-pop .6s .15s cubic-bezier(.2,.8,.2,1) both}
+ .modal,.topup-card{animation:orvex-modal-pop .35s cubic-bezier(.2,.8,.2,1)}
+}
+@media(hover:hover) and (pointer:fine){
+ .status-card,.roadmap-item{position:relative}
+ .status-card:after,.roadmap-item:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(320px circle at var(--sx,50%) var(--sy,50%),color-mix(in srgb,var(--t-accent,#4d8dff) 20%,transparent),transparent 62%)}
+ .status-card:hover:after,.roadmap-item:hover:after{opacity:1}
+ .visual{translate:var(--px,0) var(--py,0);transition:translate .4s ease-out}
+}
+@media(prefers-reduced-motion:reduce){.scroll-progress{display:none}.section-title:after{transition:none}}
 </style>
 </head>
 <body class="orvex-booting">
@@ -1162,6 +1317,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <button class="primary" type="submit">Сохранить профиль</button>
 <button class="profile-onboarding-replay" id="replayOnboarding" type="button">Посмотреть ознакомление ещё раз</button>
 </form>
+<section class="theme-picker" aria-labelledby="themeTitle"><div class="profile-divider"><span id="themeTitle">Тема оформления</span></div><div class="theme-grid" id="themeGrid" role="group" aria-labelledby="themeTitle"><button type="button" class="theme-option" data-theme-choice="aurora" aria-pressed="false"><span class="theme-swatch" style="background:linear-gradient(135deg,#090c17 55%,#72d8d0 55%)"></span><span>Аврора</span></button><button type="button" class="theme-option" data-theme-choice="navy" aria-pressed="false"><span class="theme-swatch" style="background:linear-gradient(135deg,#0c1538 55%,#ffb020 55%)"></span><span>Синий и янтарь</span></button><button type="button" class="theme-option" data-theme-choice="mono" aria-pressed="false"><span class="theme-swatch" style="background:linear-gradient(135deg,#101110 55%,#c6f432 55%)"></span><span>Графит и лайм</span></button><button type="button" class="theme-option" data-theme-choice="cream" aria-pressed="false"><span class="theme-swatch" style="background:linear-gradient(135deg,#f3eee3 55%,#b8400f 55%)"></span><span>Тёплая бумага</span></button><button type="button" class="theme-option" data-theme-choice="mint" aria-pressed="false"><span class="theme-swatch" style="background:linear-gradient(135deg,#F5F8F6 55%,#20B889 55%)"></span><span>Мята</span></button></div></section>
 <div class="profile-account-actions">
  <section class="profile-account-section"><h3>Сеанс приложения</h3><p>Закрыть ORVEX Agent на этом устройстве. Telegram-аккаунт останется подключён.</p><button class="profile-account-button" id="logoutAccount" type="button">Выйти</button></section>
  <section class="profile-account-section danger"><h3>Удаление аккаунта</h3><p>Удаление профиля и всех записей персональной памяти. Это действие нельзя отменить.</p><button class="profile-account-button" id="openDeleteConfirm" type="button">Удалить аккаунт</button></section>
@@ -1281,6 +1437,12 @@ Object.assign(translations.en,{
 });
 Object.assign(translations.de,{
  "Баланс":"Guthaben","Пополнить баланс":"Guthaben aufladen","Откройте в Telegram, чтобы увидеть баланс":"Öffnen Sie die App in Telegram, um Ihr Guthaben zu sehen","Пополнение баланса":"Guthaben aufladen","Сейчас на балансе":"Aktuelles Guthaben","Выберите сумму":"Betrag wählen","Или введите свою сумму, ₽":"Oder eigenen Betrag eingeben, ₽","Например, 750":"Zum Beispiel: 750","Будет зачислено":"Wird gutgeschrieben","Перейти к оплате":"Weiter zur Zahlung","Деньги не будут списаны. Кнопка станет активной, когда появится приём платежей.":"Es wird kein Geld abgebucht. Die Schaltfläche wird aktiv, sobald Zahlungen verfügbar sind.","Оплата пока не подключена.":"Zahlungen sind noch nicht verbunden.","Укажите сумму от 50 до 100 000 ₽":"Geben Sie einen Betrag von 50 bis 100.000 ₽ ein","Баланс недоступен":"Guthaben nicht verfügbar","по курсу ЦБ РФ":"zum Kurs der russischen Zentralbank"
+});
+Object.assign(translations.en,{
+ "Тема оформления":"Appearance","Аврора":"Aurora","Синий и янтарь":"Blue and amber","Графит и лайм":"Graphite and lime","Тёплая бумага":"Warm paper","Мята":"Mint","Тема изменена":"Theme changed"
+});
+Object.assign(translations.de,{
+ "Тема оформления":"Erscheinungsbild","Аврора":"Aurora","Синий и янтарь":"Blau und Bernstein","Графит и лайм":"Graphit und Limette","Тёплая бумага":"Warmes Papier","Мята":"Minze","Тема изменена":"Design geändert"
 });
 const translationPatterns=[
  {re:/^Память подключена\. Показано записей: (\d+)\.( Можно загрузить ещё\.)?$/,en:(m)=>'Memory connected. Entries shown: '+m[1]+'.'+(m[2]?' More can be loaded.':''),de:(m)=>'Erinnerungen verbunden. Angezeigte Einträge: '+m[1]+'.'+(m[2]?' Weitere können geladen werden.':'')},
@@ -1609,6 +1771,23 @@ document.addEventListener('keydown',event=>{
  else if(!event.shiftKey&&(document.activeElement===last||!topupModal.contains(document.activeElement))){event.preventDefault();first.focus()}
 });
 
+const themeButtons=[...document.querySelectorAll('[data-theme-choice]')];
+function currentTheme(){return document.documentElement.getAttribute('data-theme')||'aurora'}
+function applyTheme(name,persist){
+ const themes=window.__orvexThemes||{};
+ if(!themes[name])return;
+ const root=document.documentElement;
+ root.setAttribute('data-theme',name);root.setAttribute('data-mode',themes[name].mode);
+ root.classList.toggle('themed',name!=='aurora');
+ if(window.__orvexLoadFonts)window.__orvexLoadFonts(name);
+ const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',themes[name].bg);
+ try{if(tg){if(tg.setHeaderColor)tg.setHeaderColor(themes[name].bg);if(tg.setBackgroundColor)tg.setBackgroundColor(themes[name].bg)}}catch(error){}
+ themeButtons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.themeChoice===name)));
+ if(persist)try{localStorage.setItem('orvex_agent_theme',name)}catch(error){}
+}
+themeButtons.forEach(button=>button.addEventListener('click',()=>{applyTheme(button.dataset.themeChoice,true);toast('Тема изменена')}));
+applyTheme(currentTheme(),false);
+
 $('#profileOpen').addEventListener('click',()=>profile?openModal():openOnboarding());
 onboardingBackButton.addEventListener('click',()=>changeOnboardingStep(onboardingStep-1,'back'));
 onboardingNextButton.addEventListener('click',()=>{if(onboardingTransitioning)return;if(onboardingStep<onboardingSlides.length-1)changeOnboardingStep(onboardingStep+1,'forward');else{closeOnboarding();openModal()}});
@@ -1905,5 +2084,37 @@ loadBalance();
 })();
 </script>
 
+<script>
+(function(){
+ var root=document.documentElement;
+ var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ var bar=document.createElement('div');bar.className='scroll-progress';bar.setAttribute('aria-hidden','true');document.body.appendChild(bar);
+ var tick=false;
+ function progress(){tick=false;var h=root.scrollHeight-innerHeight;bar.style.setProperty('--sp',h>0?Math.min(1,scrollY/h).toFixed(4):0)}
+ addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(progress)}},{passive:true});progress();
+ // theme change: short colour cross-fade
+ document.addEventListener('click',function(e){
+  if(reduce||!e.target.closest('[data-theme-choice]'))return;
+  root.classList.add('theme-fade');clearTimeout(root._tf);root._tf=setTimeout(function(){root.classList.remove('theme-fade')},520);
+ });
+ // balance value flash on change
+ document.querySelectorAll('.balance-rub,.balance-usd').forEach(function(el){
+  var prev=el.textContent;
+  new MutationObserver(function(){var t=el.textContent;if(t!==prev&&!/^[—\s$₽]*$/.test(t)){el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}prev=t}).observe(el,{childList:true,characterData:true,subtree:true});
+ });
+ if(reduce||!window.matchMedia('(hover: hover) and (pointer: fine)').matches)return;
+ var raf=0,lx=0,ly=0,target=null;
+ addEventListener('pointermove',function(e){
+  lx=e.clientX;ly=e.clientY;target=e.target;
+  if(raf)return;
+  raf=requestAnimationFrame(function(){
+   raf=0;
+   var card=target&&target.closest&&target.closest('.status-card,.roadmap-item');
+   if(card){var r=card.getBoundingClientRect();card.style.setProperty('--sx',(lx-r.left)+'px');card.style.setProperty('--sy',(ly-r.top)+'px')}
+   if(innerWidth>820){var v=document.querySelector('.visual');if(v){v.style.setProperty('--px',((lx/innerWidth-.5)*-16).toFixed(1)+'px');v.style.setProperty('--py',((ly/innerHeight-.5)*-12).toFixed(1)+'px')}}
+  });
+ },{passive:true});
+})();
+</script>
 </body>
 </html>

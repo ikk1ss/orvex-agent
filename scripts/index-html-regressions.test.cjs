@@ -58,3 +58,19 @@ test("balance widget loads real data and does not ship demo numbers", () => {
   assert.ok(!/\d{2,}/.test(markup.replace(/id="[^"]*"|aria-[a-z]+="[^"]*"/g, "")), "no hardcoded balance in markup");
   assert.ok(html.includes('id="topupPay" type="button" disabled'), "payment button stays disabled until payments exist");
 });
+
+test("five themes are selectable and persisted", () => {
+  for (const name of ["aurora", "navy", "mono", "cream", "mint"]) {
+    assert.ok(html.includes(`data-theme-choice="${name}"`), `theme button ${name}`);
+    assert.ok(html.includes(`html[data-theme="${name}"]`) || name === "aurora", `theme css ${name}`);
+  }
+  assert.ok(html.includes("orvex_agent_theme"));
+  assert.ok(html.includes("function applyTheme"));
+});
+
+test("motion respects reduced motion and keeps heavy effects to fine pointers", () => {
+  assert.ok(html.includes("prefers-reduced-motion"));
+  const motion = html.slice(html.indexOf("Motion v2"));
+  assert.ok(motion.includes("(hover:hover) and (pointer:fine)"));
+  assert.ok(motion.includes("orvex-shimmer") && motion.includes("scroll-progress"));
+});
