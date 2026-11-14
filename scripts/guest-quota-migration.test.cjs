@@ -10,6 +10,7 @@ const sql = fs.readFileSync(path.join(__dirname, "..", "supabase", "migrations",
 test("guest quota is capped at 20 and uses UTC calendar days", () => {
   assert.match(sql, /request_count between 0 and 20/i);
   assert.match(sql, /request_count < 20/i);
+  assert.match(sql, /case when p_consume then v_count <= 20 else v_count < 20 end/i);
   assert.match(sql, /now\(\) at time zone 'UTC'/i);
   assert.match(sql, /\(v_usage_date \+ 1\)::timestamp at time zone 'UTC'/i);
 });
