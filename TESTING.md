@@ -50,6 +50,7 @@ These are source-level and unit checks. They do not prove that Supabase credenti
 - In a normal browser, verify that sign-in methods appear in this order: Telegram, Google, guest. Confirm Google and guest buttons remain disabled when Supabase auth configuration is unavailable.
 - Confirm guest mode shows the remaining count out of 20 and the UTC reset time. Confirm the chat remains disabled while quota status is loading and after the daily limit is reached.
 - Confirm guest mode cannot open balance top-up or Telegram-only account deletion controls.
+- Confirm the onboarding warns that anonymous guest sessions cannot be recovered after sign-out or clearing browser data, and recommends Google for cross-device history access.
 - Sign in with Google and guest mode separately. Confirm profile and chat history never appear across accounts.
 - Start a chat request, then sign out or switch accounts before it completes. Confirm the old response, history, or quota result does not appear in the new session.
 - Refresh the page after sign-in and confirm the current account session, profile, and saved chat history are restored when server storage is configured.
