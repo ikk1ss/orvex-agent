@@ -1975,7 +1975,7 @@ const aiChatMessages=$('#aiChatMessages');
 const aiChatStatus=$('#aiChatStatus');
 const aiChatQuotaLabel=$('#chatQuotaLabel');
 const aiChatQuotaValue=$('#chatQuotaValue');
-let chatWorkspaceInitialized=false,chatBusy=false,chatHistory=[],guestQuota=null,guestQuotaReady=false,guestQuotaResetTimer=null;
+let chatWorkspaceInitialized=false,chatBusy=false,chatHistory=[],guestQuota=null,guestQuotaReady=false,guestQuotaResetTimer=null,chatHistoryLoadedFor='';
 function chatAuthorization(){
  if(telegramMiniApp&&tg&&tg.initData)return 'tma '+tg.initData;
  if(externalAuthSession&&typeof externalAuthSession.access_token==='string')return 'Bearer '+externalAuthSession.access_token;
@@ -2063,7 +2063,7 @@ async function initChatWorkspace(){
     if(typeof data.message!=='string'||!data.message.trim())throw new Error('empty_ai_response');
     chatHistory.push({role:'assistant',content:data.message.trim()});
     renderChatMessage('assistant',data.message.trim());
-    aiChatStatus.textContent='Готово.';
+    aiChatStatus.textContent=data.historySaved===false?'Ответ получен, но история не сохранилась.':'Готово. История сохранена.';
    }catch(error){aiChatStatus.textContent='Проверьте подключение и настройки AI-сервера.'}
    finally{chatBusy=false;updateChatControls();if(authMode==='guest'&&guestQuotaReady)updateChatQuota()}
   });
@@ -2073,10 +2073,24 @@ async function initChatWorkspace(){
   aiChatStatus.textContent='Войдите или продолжите как гость, чтобы отправить сообщение. История этого чата хранится только до перезагрузки страницы.';
   updateChatQuota();updateChatControls();return;
  }
+ if(externalAuthSession){
+  const ownerId=externalAuthSession.user&&externalAuthSession.user.id;
+  if(ownerId&&chatHistoryLoadedFor!==ownerId){
+   try{
+    const historyResponse=await fetch('/api/user-data',{headers:{Authorization:'Bearer '+externalAuthSession.access_token,Accept:'application/json'},cache:'no-store'});
+    if(!historyResponse.ok)throw new Error('chat_history_load_failed');
+    const stored=await historyResponse.json();
+    chatHistory=Array.isArray(stored.messages)?stored.messages.filter(item=>item&&['user','assistant'].includes(item.role)&&typeof item.content==='string').map(item=>({role:item.role,content:item.content})): [];
+    aiChatMessages.replaceChildren();
+    if(chatHistory.length)chatHistory.forEach(item=>renderChatMessage(item.role,item.content));
+    chatHistoryLoadedFor=ownerId;
+   }catch(error){aiChatStatus.textContent='Не удалось загрузить историю чата с сервера.'}
+  }
+ }
  if(authMode==='guest')await refreshGuestQuota();
  else{
   guestQuotaReady=true;guestQuota=null;updateChatQuota();updateChatControls();
-  aiChatStatus.textContent='История этого чата хранится только до перезагрузки страницы.';
+  if(!aiChatStatus.textContent||aiChatStatus.textContent==='История этого чата хранится только до перезагрузки страницы.')aiChatStatus.textContent='История чата синхронизируется с вашим аккаунтом.';
  }
 }
 
