@@ -137,6 +137,12 @@ test("late chat, history, and quota responses are ignored after account changes"
 });
 
 
+test("onboarding dialog restores focus to its opener, with a safe fallback", () => {
+  assert.ok(html.includes("let onboardingReturnFocus=null"));
+  assert.ok(html.includes("onboardingReturnFocus=document.activeElement"));
+  assert.ok(html.includes("returnFocus!==document.body?returnFocus:document.getElementById"));
+  assert.ok(html.includes("target.focus()"));
+});
 test("onboarding and sign-in dialogs support keyboard focus trapping and Escape", () => {
   assert.ok(html.includes("onboarding.querySelectorAll('button:not([disabled])"));
   assert.ok(html.includes("authModal.querySelectorAll('button:not([disabled])"));
