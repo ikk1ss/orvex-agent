@@ -1040,6 +1040,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 
 
 /* Final viewport pass: safe areas and short-screen dialog scrolling */
+#balanceWidget[hidden],#telegramDeleteSection[hidden]{display:none!important}
 #onboarding,#authModal,#profileModal,#topupModal,#deleteConfirmModal{
  max-height:var(--tg-viewport-height,100dvh);
  padding-top:max(12px,env(safe-area-inset-top));
@@ -1083,7 +1084,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 <a class="brand" href="#home" aria-label="ORVEX Agent, на главную">
 <span class="brand-symbol" aria-hidden="true"></span>
 <span>ORVEX <b>AGENT</b></span></a>
-<div class="balance" id="balanceWidget" aria-live="polite"><div class="balance-values" id="balanceValues" title="Откройте в Telegram, чтобы увидеть баланс"><span class="balance-label">Баланс</span><b class="balance-rub" id="balanceRub">— ₽</b><span class="balance-usd" id="balanceUsd">— $</span></div><button class="balance-add" id="balanceAdd" type="button" aria-label="Пополнить баланс" aria-haspopup="dialog">+</button></div>
+<div class="balance" id="balanceWidget" aria-live="polite" hidden><div class="balance-values" id="balanceValues" title="Откройте в Telegram, чтобы увидеть баланс"><span class="balance-label">Баланс</span><b class="balance-rub" id="balanceRub">— ₽</b><span class="balance-usd" id="balanceUsd">— $</span></div><button class="balance-add" id="balanceAdd" type="button" aria-label="Пополнить баланс" aria-haspopup="dialog">+</button></div>
 <div class="header-right">
 <nav class="nav" aria-label="Основная навигация"><a href="#chat">AI-чат</a><a href="#status">Статус</a><a href="#memory">Память</a><a href="#roadmap">Планы</a></nav>
 <div class="language-menu" id="languageMenu"><button class="language-current" id="languageCurrent" type="button" aria-expanded="false" aria-controls="languageOptions">Русский <span aria-hidden="true">⌄</span></button><div class="language-options" id="languageOptions" role="group" aria-label="Язык интерфейса" hidden><button class="language-option" type="button" data-language="ru" aria-label="Русский" aria-pressed="false" title="Русский">Русский</button><button class="language-option" type="button" data-language="en" aria-label="English" aria-pressed="false" title="English">English</button><button class="language-option" type="button" data-language="de" aria-label="Deutsch" aria-pressed="false" title="Deutsch">Deutsch</button></div></div>
