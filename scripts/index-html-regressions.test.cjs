@@ -84,6 +84,14 @@ test("authentication options display a matching app icon on the left", () => {
   assert.ok(google.includes('fill="#EA4335"'), "Google button uses the Google brand mark");
 });
 
+test("external auth refresh keeps the latest token and clears chat on identity changes", () => {
+  assert.ok(html.includes("supabaseClient.auth.onAuthStateChange("));
+  assert.ok(html.includes("externalAuthSession=session||null"));
+  assert.ok(html.includes("const identityChanged=Boolean(observedAuthUserId&&nextUserId!==observedAuthUserId)"));
+  assert.ok(html.includes("chatHistoryLoadedFor=''"));
+  assert.ok(html.includes("guestQuotaReady=false"));
+});
+
 test("guest chat is connected only to the OpenRouter free router", () => {
   assert.ok(html.includes('id="aiChatForm"'));
   assert.ok(html.includes("model:'openrouter/free'"));
