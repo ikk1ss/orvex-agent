@@ -94,11 +94,9 @@ async function consumeGuestQuota(config, userId) {
 }
 
 async function persistChatExchange(config, identity, userContent, assistantContent) {
-  const isTelegram = identity.kind === "telegram";
-  const endpoint = isTelegram
-    ? config.supabaseUrl + "/rest/v1/orvex_chat_messages"
-    : config.supabaseUrl + "/rest/v1/orvex_auth_chat_messages";
-  const owner = isTelegram ? { telegram_id: identity.telegramId } : { user_id: identity.userId };
+  if (identity.kind === "telegram") return;
+  const endpoint = config.supabaseUrl + "/rest/v1/orvex_auth_chat_messages";
+  const owner = { user_id: identity.userId };
   const response = await fetch(endpoint, {
     method: "POST",
     headers: getSupabaseHeaders(config.serviceKey, {
