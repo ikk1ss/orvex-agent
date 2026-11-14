@@ -2006,12 +2006,15 @@ form.addEventListener('submit',async e=>{
   return;
  }
  if(externalAuthSession){
+  const saveGeneration=authGeneration;
   const submitButton=form.querySelector('button[type="submit"]');
   submitButton.disabled=true;
   try{
    const response=await fetch('/api/user-data',{method:'PUT',headers:{Authorization:'Bearer '+externalAuthSession.access_token,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)});
    if(!response.ok)throw new Error('profile_save_failed');
-   const result=await response.json();profile=result.profile||data;
+   const result=await response.json();
+   if(saveGeneration!==authGeneration||!externalAuthSession)return;
+   profile=result.profile||data;
    try{localStorage.setItem('orvex_agent_language',profile.preferences&&profile.preferences.language||'ru')}catch(error){}
    saveLocal('orvex_agent_profile',profile);updateHeaderAction();
    setProfileStatus('Синхронизирован','Профиль сохранён в вашем аккаунте ORVEX Agent.',true);
@@ -2030,16 +2033,18 @@ form.addEventListener('submit',async e=>{
 async function initProfileWorkspace(){
  if(!telegramMiniApp){
   if(externalAuthSession){
+   const profileGeneration=authGeneration;
    setProfileStatus('Проверка…','Загружаем профиль вашего аккаунта.',false);
    try{
     const response=await fetch('/api/user-data',{headers:{Authorization:'Bearer '+externalAuthSession.access_token,Accept:'application/json'},cache:'no-store'});
     if(!response.ok)throw new Error('user_data_unavailable');
     const data=await response.json();
+    if(profileGeneration!==authGeneration||!externalAuthSession)return;
     profile=data.profile||null;
     if(profile){saveLocal('orvex_agent_profile',profile);applyInterfaceLanguage(profile.preferences&&profile.preferences.language||'ru')}
     else{try{localStorage.removeItem('orvex_agent_profile')}catch(error){}}
     setProfileStatus('Синхронизирован','Профиль привязан к вашему аккаунту и хранится на сервере ORVEX Agent.',true);
-   }catch(error){setProfileStatus('Требует настройки','Не удалось загрузить профиль с сервера.',false)}
+   }catch(error){if(profileGeneration===authGeneration)setProfileStatus('Требует настройки','Не удалось загрузить профиль с сервера.',false)}
   }else{
    setProfileStatus('Локально','Профиль хранится в этом браузере. Войдите через Google или Telegram для серверной синхронизации.',false);
    if(!profile)openOnboarding();
@@ -2131,11 +2136,13 @@ function updateChatControls(){
 }
 async function refreshGuestQuota(){
  if(authMode!=='guest'||!externalAuthSession||!externalAuthSession.access_token)return;
+ const quotaGeneration=authGeneration,quotaUserId=externalAuthSession.user&&externalAuthSession.user.id;
  guestQuotaReady=false;guestQuota=null;updateChatQuota();updateChatControls();
  try{
   const response=await fetch('/api/guest-quota',{headers:{Authorization:'Bearer '+externalAuthSession.access_token,Accept:'application/json'},cache:'no-store'});
   if(!response.ok)throw new Error('guest_quota_unavailable');
   const data=await response.json();
+  if(quotaGeneration!==authGeneration||authMode!=='guest'||!externalAuthSession||externalAuthSession.user.id!==quotaUserId)return;
   if(!data.quota||!Number.isInteger(data.quota.remaining)||!Number.isInteger(data.quota.dailyLimit))throw new Error('guest_quota_invalid');
   guestQuota=data.quota;guestQuotaReady=true;updateChatQuota();
   if(guestQuotaResetTimer)clearTimeout(guestQuotaResetTimer);
