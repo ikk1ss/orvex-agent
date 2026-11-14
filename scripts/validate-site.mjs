@@ -59,7 +59,7 @@ assert(html.includes("setProfileStatus('Профиль не создан'") && h
 
 assert(html.includes("viewportChanged"), "Telegram viewport change handling is missing");
 assert(html.includes("viewportStableHeight"), "Telegram stable viewport height is not used");
-assert(html.includes("function handleTelegramBack(){if(topupModal.classList.contains('open'))closeTopup();else if(authModal.classList.contains('open'))closeAuthModal();else if(onboarding.classList.contains('open'))closeOnboarding();else if(modal.classList.contains('open'))closeModal()}") && html.includes("if(telegramBack&&telegramBack.onClick)telegramBack.onClick(handleTelegramBack)"), "Telegram BackButton must close the currently open top-up, auth, onboarding or profile dialog");
+assert(html.includes("function handleTelegramBack(){if(topupModal.classList.contains('open'))closeTopup();else if(deleteModal.classList.contains('open'))closeDeleteConfirmation();else if(authModal.classList.contains('open'))closeAuthModal();else if(onboarding.classList.contains('open'))closeOnboarding();else if(modal.classList.contains('open'))closeModal()}") && html.includes("if(telegramBack&&telegramBack.onClick)telegramBack.onClick(handleTelegramBack)"), "Telegram BackButton must close the topmost top-up, deletion, auth, onboarding or profile dialog");
 assert(html.includes("telegramBack.show()") && html.includes("telegramBack.hide()"), "Telegram BackButton visibility is not managed");
 
 const ids = [...html.matchAll(/\bid=["']([^"']+)["']/g)].map((match) => match[1]);
