@@ -170,3 +170,8 @@ test("the roadmap lists all seven phases in the agreed order", () => {
   assert.ok(roadmap.indexOf("Бот поддержки") < roadmap.indexOf("Административная панель"));
   assert.ok(roadmap.includes("Финальный этап"));
 });
+
+
+test("Telegram Back closes the topmost account deletion confirmation", () => {
+  assert.ok(html.includes("else if(deleteModal.classList.contains('open'))closeDeleteConfirmation()"));
+});
