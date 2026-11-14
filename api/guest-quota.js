@@ -63,9 +63,12 @@ module.exports = async function guestQuotaHandler(req, res) {
     if (!quotaResponse.ok) return reply(res, 503, { error: "guest_quota_unavailable" });
     const rows = await quotaResponse.json();
     if (!Array.isArray(rows) || !rows[0] ||
-        !Number.isInteger(rows[0].used) ||
-        !Number.isInteger(rows[0].remaining) ||
-        typeof rows[0].resets_at !== "string") {
+        typeof rows[0].allowed !== "boolean" ||
+        !Number.isInteger(rows[0].used) || rows[0].used < 0 || rows[0].used > DAILY_GUEST_LIMIT ||
+        !Number.isInteger(rows[0].remaining) || rows[0].remaining < 0 || rows[0].remaining > DAILY_GUEST_LIMIT ||
+        rows[0].used + rows[0].remaining !== DAILY_GUEST_LIMIT ||
+        rows[0].allowed !== (rows[0].remaining > 0) ||
+        typeof rows[0].resets_at !== "string" || !Number.isFinite(Date.parse(rows[0].resets_at))) {
       return reply(res, 502, { error: "guest_quota_invalid" });
     }
     return reply(res, 200, {
