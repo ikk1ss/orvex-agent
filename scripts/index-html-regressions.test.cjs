@@ -175,3 +175,9 @@ test("the roadmap lists all seven phases in the agreed order", () => {
 test("Telegram Back closes the topmost account deletion confirmation", () => {
   assert.ok(html.includes("else if(deleteModal.classList.contains('open'))closeDeleteConfirmation()"));
 });
+
+
+test("guest onboarding explains the non-recoverable anonymous session", () => {
+  assert.ok(html.includes("Гостевой аккаунт не восстанавливается после выхода или очистки данных браузера."));
+  assert.ok(html.includes("Для доступа к истории с разных устройств используйте Google."));
+});
