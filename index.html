@@ -1241,6 +1241,20 @@ html.theme-fade,html.theme-fade *{transition:background-color .45s ease,color .4
 @keyframes orvex-dock-in{from{opacity:0;transform:translate(-50%,40px)}to{opacity:1;transform:translate(-50%,0)}}
 @keyframes orvex-dock-pop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
 @media(max-width:620px) and (prefers-reduced-motion:reduce){.dock{animation:none}}
+
+/* Exit (reverse) animations, onboarding fixes */
+@keyframes orvex-overlay-out{to{opacity:0}}
+@keyframes orvex-card-out{to{opacity:0;transform:translate3d(0,22px,0) scale(.96);filter:blur(4px)}}
+#onboarding.is-closing,#profileModal.is-closing,#topupModal.is-closing{animation:orvex-overlay-out .3s ease forwards;pointer-events:none}
+#onboarding.is-closing .onboarding-shell,#profileModal.is-closing .modal,#topupModal.is-closing .topup-card{animation:orvex-card-out .3s cubic-bezier(.4,0,1,1) forwards}
+body.overlay-open .hero-grid,body.overlay-open .radar,body.overlay-open .core-ring,body.overlay-open .orbit,body.overlay-open .gm-track,body.overlay-open .visual *{animation-play-state:paused!important}
+body.overlay-open .cursor-glow{opacity:0!important}
+.onboarding-ambient-label{top:auto;bottom:3%;right:auto;left:50%;transform:translateX(-50%);white-space:nowrap}
+@media(max-width:620px){
+ .onboarding-ambient-label{display:none}
+ .onboarding-card{overflow:visible}
+ .onboarding-actions{position:sticky;bottom:8px;z-index:2;padding:10px 0 4px;background:linear-gradient(to bottom,transparent,var(--t-card,rgba(14,22,36,.96)) 38%)}
+}
 </style>
 </head>
 <body class="orvex-booting">
@@ -1469,6 +1483,7 @@ async function changeOnboardingStep(nextStep,direction){
  }
  onboardingTransitioning=true;
  syncOnboardingControls();
+ previewOnboardingMeta(nextStep);
  const oldHeight=onboardingCard.getBoundingClientRect().height;
  incoming.hidden=false;
  outgoing.classList.add('is-leaving');
@@ -1480,9 +1495,9 @@ async function changeOnboardingStep(nextStep,direction){
  const x=forward?24:-24;
  const easing='cubic-bezier(.22,1,.36,1)';
  const animations=[
-  outgoing.animate([{opacity:1,transform:'translate3d(0,0,0) scale(1)',filter:'blur(0)'},{opacity:0,transform:'translate3d('+(-x)+'px,0,0) scale(.985)',filter:'blur(5px)'}],{duration:520,easing,fill:'forwards'}),
-  incoming.animate([{opacity:0,transform:'translate3d('+x+'px,0,0) scale(.985)',filter:'blur(5px)'},{opacity:1,transform:'translate3d(0,0,0) scale(1)',filter:'blur(0)'}],{duration:680,easing,fill:'forwards'}),
-  onboardingCard.animate([{height:oldHeight+'px'},{height:newHeight+'px'}],{duration:620,easing,fill:'forwards'})
+  outgoing.animate([{opacity:1,transform:'translate3d(0,0,0) scale(1)',filter:'blur(0)'},{opacity:0,transform:'translate3d('+(-x)+'px,0,0) scale(.985)',filter:'blur(5px)'}],{duration:380,easing,fill:'forwards'}),
+  incoming.animate([{opacity:0,transform:'translate3d('+x+'px,0,0) scale(.985)',filter:'blur(5px)'},{opacity:1,transform:'translate3d(0,0,0) scale(1)',filter:'blur(0)'}],{duration:480,easing,fill:'forwards'}),
+  onboardingCard.animate([{height:oldHeight+'px'},{height:newHeight+'px'}],{duration:440,easing,fill:'forwards'})
  ];
  try{await Promise.all(animations.map(animation=>animation.finished))}catch(error){}
  outgoing.hidden=true;
@@ -1496,8 +1511,20 @@ async function changeOnboardingStep(nextStep,direction){
  onboardingTransitioning=false;
  syncOnboardingControls();
 }
+function overlaysOpen(){return [onboarding,modal,topupModal].some(el=>el&&el.classList.contains('open'))}
+function exitOverlay(el,done){
+ if(onboardingMotionReduced||!el||!el.classList.contains('open')){done();return}
+ if(el.classList.contains('is-closing'))return;
+ el.classList.add('is-closing');
+ setTimeout(()=>{el.classList.remove('is-closing');done()},300);
+}
+function previewOnboardingMeta(step){
+ $('#onboardingCounter').textContent=String(step+1).padStart(2,'0')+' / '+String(onboardingSlides.length).padStart(2,'0');
+ $('#onboardingProgress').style.width=((step+1)/onboardingSlides.length*100)+'%';
+ onboardingNextButton.textContent=step===onboardingSlides.length-1?'Начать':'Далее';
+}
 function openOnboarding(){onboardingStep=0;onboardingTransitioning=false;renderOnboarding();onboarding.classList.add('open');onboarding.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack()}
-function closeOnboarding(){onboarding.classList.remove('open');onboarding.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack()}
+function closeOnboarding(){exitOverlay(onboarding,()=>{onboarding.classList.remove('open');onboarding.setAttribute('aria-hidden','true');if(!overlaysOpen()){document.body.style.overflow='';hideTelegramBack()}})}
 
 const translations={
  en:{
@@ -1743,7 +1770,7 @@ function fillForm(){
  form.elements.instructions.value=p.instructions||'';
 }
 function openModal(){lastFocusedElement=document.activeElement;fillForm();modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showTelegramBack();setTimeout(()=>form.elements.name.focus(),80)}
-function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();if(lastFocusedElement&&typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();lastFocusedElement=null}
+function closeModal(){exitOverlay(modal,()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true');if(!overlaysOpen()){document.body.style.overflow='';hideTelegramBack()}if(lastFocusedElement&&typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();lastFocusedElement=null})}
 function saveLocal(key,value){try{localStorage.setItem(key,typeof value==='string'?value:JSON.stringify(value))}catch(error){}}
 function toast(message){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=message;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 
@@ -1843,8 +1870,10 @@ function openTopup(){
  setTimeout(()=>topupChips[0]&&topupChips[0].focus(),60);
 }
 function closeTopup(){
- topupModal.classList.remove('open');topupModal.setAttribute('aria-hidden','true');document.body.style.overflow='';hideTelegramBack();
- if(lastFocusedElement&&typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();lastFocusedElement=null;
+ exitOverlay(topupModal,()=>{
+  topupModal.classList.remove('open');topupModal.setAttribute('aria-hidden','true');if(!overlaysOpen()){document.body.style.overflow='';hideTelegramBack()}
+  if(lastFocusedElement&&typeof lastFocusedElement.focus==='function')lastFocusedElement.focus();lastFocusedElement=null;
+ });
 }
 $('#balanceAdd').addEventListener('click',openTopup);
 $('#topupClose').addEventListener('click',closeTopup);
@@ -2148,12 +2177,14 @@ loadBalance();
   window.addEventListener('load',()=>window.setTimeout(finishLoading,450),{once:true});
   window.setTimeout(finishLoading,2200);
  }
+ const revealReduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
  const revealItems=document.querySelectorAll('.section-head,.status-card,.memory-panel,.roadmap-intro,.roadmap-item,.notice');
  if('IntersectionObserver' in window){
   document.documentElement.classList.add('motion-ready');
   const revealObserver=new IntersectionObserver((entries,observer)=>{
    entries.forEach(entry=>{
-    if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target)}
+    if(entry.isIntersecting){entry.target.classList.add('is-visible')}
+    else if(!revealReduced&&entry.boundingClientRect.top>innerHeight){entry.target.classList.remove('is-visible')}
    });
   },{threshold:.12,rootMargin:'0px 0px -35px 0px'});
   revealItems.forEach(item=>{item.classList.add('motion-reveal');revealObserver.observe(item)});
@@ -2248,6 +2279,13 @@ loadBalance();
  Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el)});
  // home: clear active state near the top
  addEventListener('scroll',function(){if(scrollY<240)links.forEach(function(a){a.classList.remove('on')})},{passive:true});
+})();
+</script>
+<script>
+(function(){
+ var els=['onboarding','profileModal','topupModal'].map(function(id){return document.getElementById(id)}).filter(Boolean);
+ function sync(){document.body.classList.toggle('overlay-open',els.some(function(e){return e.classList.contains('open')}))}
+ els.forEach(function(e){new MutationObserver(sync).observe(e,{attributes:true,attributeFilter:['class']})});sync();
 })();
 </script>
 </body>

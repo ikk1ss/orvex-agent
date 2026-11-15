@@ -89,3 +89,13 @@ test("mobile dock reuses translated labels and stays below modals", () => {
   const translations = new Function(html.slice(start, end).replace(/function isDeletePhrase[\s\S]*$/, "") + "\nreturn translations;")();
   for (const label of ["Статус", "Память", "Планы"]) assert.ok(translations.en[label] && translations.de[label], label);
 });
+
+test("overlays animate out without leaving scroll lock or Telegram back button stuck", () => {
+  assert.ok(html.includes("function exitOverlay("));
+  assert.ok(html.includes("function overlaysOpen("));
+  assert.ok(/function closeOnboarding\(\)\{exitOverlay\(/.test(html));
+  assert.ok(/function closeModal\(\)\{exitOverlay\(/.test(html));
+  assert.ok(html.includes("if(!overlaysOpen()){document.body.style.overflow=''"));
+  assert.ok(html.includes("is-closing"));
+  assert.ok(html.includes("function previewOnboardingMeta("));
+});
