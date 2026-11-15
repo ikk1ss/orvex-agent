@@ -74,3 +74,10 @@ test("motion respects reduced motion and keeps heavy effects to fine pointers", 
   assert.ok(motion.includes("(hover:hover) and (pointer:fine)"));
   assert.ok(motion.includes("orvex-shimmer") && motion.includes("scroll-progress"));
 });
+
+test("motion v3 additions are decorative and gated", () => {
+  const v3 = html.slice(html.indexOf("Motion v3"));
+  assert.ok(v3.includes("glyph-marquee") && v3.includes("aria-hidden"));
+  assert.ok(v3.includes("(hover:hover) and (pointer:fine)"), "tilt/magnetic/cursor glow only on fine pointers");
+  assert.ok(v3.includes("prefers-reduced-motion:no-preference"), "animations opt in to motion");
+});

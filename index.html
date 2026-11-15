@@ -1154,9 +1154,62 @@ html.theme-fade,html.theme-fade *{transition:background-color .45s ease,color .4
  .visual{translate:var(--px,0) var(--py,0);transition:translate .4s ease-out}
 }
 @media(prefers-reduced-motion:reduce){.scroll-progress{display:none}.section-title:after{transition:none}}
+
+/* Motion v3: new life. Decorative only, no new text. */
+@property --ang{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes orvex-ang{to{--ang:360deg}}
+@keyframes orvex-grid-pan{to{transform:translate3d(0,48px,0)}}
+@keyframes orvex-blur-in{from{opacity:0;filter:blur(14px);transform:translate3d(0,18px,0)}to{opacity:1;filter:blur(0);transform:none}}
+@keyframes orvex-radar{0%{transform:scale(.45);opacity:.55}100%{transform:scale(1.35);opacity:0}}
+@keyframes orvex-orbit-rev{from{transform:rotate(360deg)}to{transform:rotate(0)}}
+@keyframes orvex-gm{to{transform:translate3d(-50%,0,0)}}
+@keyframes orvex-ripple{to{transform:scale(3.2);opacity:0}}
+.hero{position:relative}
+.hero>*{position:relative;z-index:1}
+.hero>.hero-grid{position:absolute;z-index:0;inset:-48px -24px -24px;pointer-events:none;background-image:linear-gradient(color-mix(in srgb,var(--t-accent,#4d8dff) 16%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--t-accent,#4d8dff) 16%,transparent) 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:radial-gradient(ellipse 70% 65% at 55% 45%,#000 10%,transparent 75%);mask-image:radial-gradient(ellipse 70% 65% at 55% 45%,#000 10%,transparent 75%);opacity:.55}
+.radar{position:absolute;width:330px;height:330px;border-radius:50%;border:1px solid color-mix(in srgb,var(--t-accent,#6aa7ff) 45%,transparent);pointer-events:none}
+.core-ring{position:absolute;width:210px;height:210px;border-radius:50%;pointer-events:none;padding:2px;background:conic-gradient(from var(--ang),transparent 0 55%,var(--t-accent,#6aa7ff) 80%,var(--t-accent2,#c5d3e8) 95%,transparent);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.9}
+.orbit-b{width:370px;height:370px;border-style:dashed;border-color:color-mix(in srgb,var(--t-accent,#4d8dff) 28%,transparent)}
+.orbit-b:before{display:none}
+.orbit-b:after{top:auto;right:auto;left:30px;bottom:56px;background:var(--t-accent,#6aa7ff);box-shadow:0 0 22px var(--t-accent,#6aa7ff)}
+.glyph-marquee{position:relative;overflow:hidden;margin:6px 0 4px;padding:14px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);border-block:1px solid color-mix(in srgb,var(--t-accent,#4d8dff) 14%,transparent)}
+.gm-track{display:flex;width:max-content}
+.gm-track span{flex:none;width:92px;text-align:center;font-size:22px;line-height:1;color:color-mix(in srgb,var(--t-muted,#8f9db2) 80%,transparent);transition:color .3s}
+.gm-track span:nth-child(3n+1){color:var(--t-accent,#6aa7ff)}
+.status-grid{counter-reset:sc}
+.status-card h3{counter-increment:sc}
+.status-card h3:before{content:counter(sc,decimal-leading-zero);display:inline-block;margin-right:9px;font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.1em;color:var(--t-accent,#6aa7ff);opacity:.85;vertical-align:2px}
+.balance{position:relative}
+.balance:before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;background:conic-gradient(from var(--ang),transparent 0 72%,var(--t-accent,#6aa7ff) 90%,transparent);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.roadmap-list{position:relative}
+.roadmap-list:before,.roadmap-list:after{content:"";position:absolute;left:15px;top:20px;bottom:20px;width:2px;border-radius:2px;pointer-events:none}
+.roadmap-list:before{background:color-mix(in srgb,var(--t-accent,#4d8dff) 18%,transparent)}
+.roadmap-list:after{background:linear-gradient(var(--t-accent,#6aa7ff),var(--t-accent2,#c5d3e8));transform-origin:50% 0;transform:scaleY(var(--rp,0));box-shadow:0 0 12px color-mix(in srgb,var(--t-accent,#6aa7ff) 60%,transparent)}
+.roadmap-item{z-index:1}
+.ripple{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:color-mix(in srgb,var(--t-accent,#fff) 45%,rgba(255,255,255,.4));pointer-events:none;transform:scale(0);opacity:.55;animation:orvex-ripple .6s ease-out forwards}
+.outline-link,.profile-btn,.balance-add{position:relative;overflow:hidden}
+.cursor-glow{display:none}
+@media(prefers-reduced-motion:no-preference){
+ .hero>.hero-grid{animation:orvex-grid-pan 4s linear infinite}
+ .hero h1{animation-name:orvex-blur-in;animation-duration:.95s}
+ .radar{animation:orvex-radar 5.5s ease-out infinite}.radar.r2{animation-delay:-2.75s}
+ .core-ring,.balance:before{animation:orvex-ang 7s linear infinite}
+ .orbit-b{animation:orvex-orbit-rev 60s linear infinite}
+ .gm-track{animation:orvex-gm 38s linear infinite}
+ .glyph-marquee:hover .gm-track{animation-play-state:paused}
+}
+@media(hover:hover) and (pointer:fine){
+ .cursor-glow{display:block;position:fixed;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;pointer-events:none;z-index:0;opacity:0;transition:opacity .4s;background:radial-gradient(circle,color-mix(in srgb,var(--t-accent,#4d8dff) 13%,transparent),transparent 62%);will-change:transform}
+ .cursor-glow.on{opacity:1}
+ .status-card:hover,.roadmap-item:hover{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-3px)}
+ .primary-link,.outline-link{translate:var(--mgx,0) var(--mgy,0);transition:translate .25s ease-out,transform .25s,box-shadow .25s}
+}
+@media(max-width:620px){.hero>.hero-grid{opacity:.35;inset:-30px -15px 0}.radar,.core-ring,.orbit-b{display:none}.gm-track span{width:72px;font-size:18px}}
+@media(prefers-reduced-motion:reduce){.gm-track{animation:none}.hero>.hero-grid{animation:none}}
 </style>
 </head>
 <body class="orvex-booting">
+<div class="cursor-glow" aria-hidden="true"></div>
 <div class="orvex-entry-loader" id="orvexEntryLoader" role="status" aria-live="polite" aria-label="Загрузка ORVEX Agent">
  <div class="entry-loader-glow"></div>
  <div class="entry-loader-mark"><span></span><i></i></div>
@@ -1178,6 +1231,7 @@ html.theme-fade,html.theme-fade *{transition:background-color .45s ease,color .4
 </header>
 <main class="wrap" id="home">
 <section class="hero">
+<div class="hero-grid" aria-hidden="true"></div>
 <div>
 <div class="eyebrow">Персональная AI-платформа</div>
 <h1>Ваше пространство<br>для <span>нового интеллекта.</span></h1>
@@ -1186,13 +1240,14 @@ html.theme-fade,html.theme-fade *{transition:background-color .45s ease,color .4
 <div class="hero-footnote">Текущие возможности и этапы разработки указаны без демонстрационных данных.</div>
 </div>
 <div class="visual" aria-hidden="true">
-<div class="visual-glow"></div><div class="orbit"></div>
+<div class="visual-glow"></div><div class="radar"></div><div class="radar r2"></div><div class="orbit"></div><div class="orbit orbit-b"></div><div class="core-ring"></div>
 <div class="core"><div class="core-mark"></div></div>
 <div class="float-chip chip-one"><span class="signal"></span>Платформа<small>Интерфейс опубликован</small></div>
 <div class="float-chip chip-two">AI WORKSPACE<small>Разработка продолжается</small></div>
 <div class="float-chip chip-three">ORVEX <small>Ваше единое пространство</small></div>
 </div>
 </section>
+<div class="glyph-marquee" aria-hidden="true"><div class="gm-track"><span>◈</span><span>⌘</span><span>◎</span><span>⌁</span><span>✳</span><span>⌕</span><span>◈</span><span>⌘</span><span>◎</span><span>⌁</span><span>✳</span><span>⌕</span><span>◈</span><span>⌘</span><span>◎</span><span>⌁</span><span>✳</span><span>⌕</span><span>◈</span><span>⌘</span><span>◎</span><span>⌁</span><span>✳</span><span>⌕</span></div></div>
 <section class="section" id="status">
 <div class="section-head"><div><div class="kicker">Состояние разработки</div><h2 class="section-title">Что уже готово</h2></div><div class="section-sub">Актуальные статусы без вымышленных показателей и функций.</div></div>
 <div class="status-grid">
@@ -2114,6 +2169,35 @@ loadBalance();
    if(innerWidth>820){var v=document.querySelector('.visual');if(v){v.style.setProperty('--px',((lx/innerWidth-.5)*-16).toFixed(1)+'px');v.style.setProperty('--py',((ly/innerHeight-.5)*-12).toFixed(1)+'px')}}
   });
  },{passive:true});
+})();
+</script>
+<script>
+(function(){
+ var root=document.documentElement,reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ // tap ripple (touch and mouse)
+ if(!reduce)document.addEventListener('pointerdown',function(e){
+  var b=e.target.closest&&e.target.closest('.primary-link,.outline-link,.profile-btn,.balance-add');if(!b)return;
+  var r=b.getBoundingClientRect(),d=document.createElement('span');d.className='ripple';d.style.left=(e.clientX-r.left)+'px';d.style.top=(e.clientY-r.top)+'px';
+  b.appendChild(d);setTimeout(function(){d.remove()},650);
+ },{passive:true});
+ // roadmap timeline fill
+ var rl=document.querySelector('.roadmap-list');
+ function rp(){if(!rl)return;var r=rl.getBoundingClientRect();var p=Math.max(0,Math.min(1,(innerHeight*.7-r.top)/(r.height||1)));rl.style.setProperty('--rp',p.toFixed(3))}
+ if(rl&&!reduce){addEventListener('scroll',rp,{passive:true});addEventListener('resize',rp);rp()}else if(rl){rl.style.setProperty('--rp','1')}
+ if(reduce||!window.matchMedia('(hover: hover) and (pointer: fine)').matches)return;
+ // cursor glow, 3D tilt, magnetic buttons
+ var glow=document.querySelector('.cursor-glow'),raf=0,mx=0,my=0,tgt=null;
+ addEventListener('pointermove',function(e){mx=e.clientX;my=e.clientY;tgt=e.target;if(raf)return;raf=requestAnimationFrame(function(){
+  raf=0;
+  if(glow){glow.classList.add('on');glow.style.transform='translate3d('+mx+'px,'+my+'px,0)'}
+  var c=tgt&&tgt.closest&&tgt.closest('.status-card,.roadmap-item');
+  if(c){var r=c.getBoundingClientRect(),x=(mx-r.left)/r.width-.5,y=(my-r.top)/r.height-.5;c.style.setProperty('--rx',(-y*5).toFixed(2)+'deg');c.style.setProperty('--ry',(x*7).toFixed(2)+'deg')}
+  var m=tgt&&tgt.closest&&tgt.closest('.primary-link,.outline-link');
+  if(m){var q=m.getBoundingClientRect();m.style.setProperty('--mgx',((mx-q.left-q.width/2)*.12).toFixed(1)+'px');m.style.setProperty('--mgy',((my-q.top-q.height/2)*.2).toFixed(1)+'px')}
+ })},{passive:true});
+ document.addEventListener('pointerout',function(e){var c=e.target.closest&&e.target.closest('.status-card,.roadmap-item,.primary-link,.outline-link');if(!c)return;
+  c.style.removeProperty('--rx');c.style.removeProperty('--ry');c.style.removeProperty('--mgx');c.style.removeProperty('--mgy')});
+ document.addEventListener('mouseleave',function(){if(glow)glow.classList.remove('on')});
 })();
 </script>
 </body>
