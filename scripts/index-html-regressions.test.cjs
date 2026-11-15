@@ -81,3 +81,11 @@ test("motion v3 additions are decorative and gated", () => {
   assert.ok(v3.includes("(hover:hover) and (pointer:fine)"), "tilt/magnetic/cursor glow only on fine pointers");
   assert.ok(v3.includes("prefers-reduced-motion:no-preference"), "animations opt in to motion");
 });
+
+test("mobile dock reuses translated labels and stays below modals", () => {
+  assert.ok(html.includes('class="dock"'));
+  const start = html.indexOf("const translations={");
+  const end = html.indexOf("const originalTextNodes");
+  const translations = new Function(html.slice(start, end).replace(/function isDeletePhrase[\s\S]*$/, "") + "\nreturn translations;")();
+  for (const label of ["Статус", "Память", "Планы"]) assert.ok(translations.en[label] && translations.de[label], label);
+});

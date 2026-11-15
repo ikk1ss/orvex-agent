@@ -1206,6 +1206,41 @@ html.theme-fade,html.theme-fade *{transition:background-color .45s ease,color .4
 }
 @media(max-width:620px){.hero>.hero-grid{opacity:.35;inset:-30px -15px 0}.radar,.core-ring,.orbit-b{display:none}.gm-track span{width:72px;font-size:18px}}
 @media(prefers-reduced-motion:reduce){.gm-track{animation:none}.hero>.hero-grid{animation:none}}
+
+/* Mobile redesign: app-like dock, bento tiles, bolder hero */
+.dock{display:none}
+@media(max-width:620px){
+ body{padding-bottom:92px}
+ .dock{display:flex;position:fixed;z-index:30;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(calc(100% - 28px),380px);transform:translateX(-50%);padding:6px;gap:4px;border-radius:24px;border:1px solid color-mix(in srgb,var(--t-accent,#6aa7ff) 28%,var(--t-border,#2a3550));background:color-mix(in srgb,var(--t-card,#0e1624) 86%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 18px 40px rgba(0,0,0,.28),0 0 0 1px rgba(255,255,255,.03) inset;animation:orvex-dock-in .7s .6s cubic-bezier(.2,.8,.2,1) both}
+ .dock a{flex:1;display:grid;justify-items:center;gap:3px;padding:9px 4px 8px;border-radius:18px;text-decoration:none;color:var(--t-muted,#98a5b9);font-size:11px;font-weight:600;transition:background .3s,color .3s,transform .2s}
+ .dock a i{font-style:normal;font-size:18px;line-height:1}
+ .dock a:active{transform:scale(.94)}
+ .dock a.on{background:linear-gradient(135deg,var(--t-accent,#4d8dff),var(--t-accent2,#c5d3e8));color:var(--t-on-accent,#0a111b)}
+ .dock a.on i{animation:orvex-dock-pop .4s cubic-bezier(.2,.8,.2,1)}
+ /* hero: bigger, visible motion */
+ .hero{padding-top:34px}
+ .hero h1{font-size:clamp(40px,12.4vw,56px);line-height:1.04}
+ .hero>.hero-grid{opacity:.5;inset:-20px -15px 0}
+ .visual{height:300px;transform:scale(.9);margin:6px 0 -10px}
+ .radar,.core-ring{display:block}
+ .radar{width:280px;height:280px}.core-ring{width:178px;height:178px}
+ .orbit-b{display:none}
+ /* status as 2-column bento, first and last tiles wide */
+ .status-grid{grid-template-columns:1fr 1fr;gap:10px}
+ .status-card{min-height:0;padding:14px;border-radius:20px}
+ .status-card:first-child,.status-card:last-child{grid-column:1/-1}
+ .status-card .status-top{flex-wrap:wrap;gap:8px}
+ .status-card h3{font-size:14px;margin-top:12px}
+ .status-card p{font-size:12px;line-height:1.55}
+ .pill{font-size:10px;padding:4px 7px}
+ .section-title{font-size:24px}
+ .section-title:after{width:44px}
+ .roadmap-list{padding-left:0}
+ .glyph-marquee{margin:2px -15px;padding:12px 0}
+}
+@keyframes orvex-dock-in{from{opacity:0;transform:translate(-50%,40px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes orvex-dock-pop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+@media(max-width:620px) and (prefers-reduced-motion:reduce){.dock{animation:none}}
 </style>
 </head>
 <body class="orvex-booting">
@@ -1291,6 +1326,7 @@ html.theme-fade,html.theme-fade *{transition:background-color .45s ease,color .4
 <div class="notice"><b>О профиле.</b> Сейчас имя и выбранные настройки сохраняются только в этом браузере. Это не полноценная регистрация, данные не отправляются на сервер. Не вводите пароли, платёжные данные или секретные ключи.</div>
 </main>
 <footer class="footer wrap"><span class="footer-brand">ORVEX AGENT</span><span>Персональное пространство на базе искусственного интеллекта</span><span>© 2026 ORVEX Agent</span></footer>
+<nav class="dock" aria-label="Основная навигация"><a href="#status"><i aria-hidden="true">◈</i><span>Статус</span></a><a href="#memory"><i aria-hidden="true">⌕</i><span>Память</span></a><a href="#roadmap"><i aria-hidden="true">✳</i><span>Планы</span></a></nav>
 
 <div id="onboarding" aria-hidden="true">
  <div class="onboarding-ambient" aria-hidden="true">
@@ -2198,6 +2234,20 @@ loadBalance();
  document.addEventListener('pointerout',function(e){var c=e.target.closest&&e.target.closest('.status-card,.roadmap-item,.primary-link,.outline-link');if(!c)return;
   c.style.removeProperty('--rx');c.style.removeProperty('--ry');c.style.removeProperty('--mgx');c.style.removeProperty('--mgy')});
  document.addEventListener('mouseleave',function(){if(glow)glow.classList.remove('on')});
+})();
+</script>
+<script>
+(function(){
+ var links=[].slice.call(document.querySelectorAll('.dock a'));
+ if(!links.length||!('IntersectionObserver' in window))return;
+ var map={};links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.toggle('on',a===map[e.target.id])});
+ })},{rootMargin:'-30% 0px -55% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el)});
+ // home: clear active state near the top
+ addEventListener('scroll',function(){if(scrollY<240)links.forEach(function(a){a.classList.remove('on')})},{passive:true});
 })();
 </script>
 </body>
